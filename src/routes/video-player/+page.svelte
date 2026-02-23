@@ -56,8 +56,9 @@ function onRateChange() {
   if (isRemoteAction) return;
 
   send({
-	type: "rate change",
-	value: video_element.playbackRate
+	type: "rate",
+	value: video_element.playbackRate,
+	time: video_element.currentTime
   });
 }
 
@@ -72,7 +73,7 @@ function onWaiting(): void {
 // Buffer resume
 function onPlaying(): void {
 	send({
-      type: "playing after stall",
+      type: "resume",
       time: video_element.currentTime
     });
 }
@@ -91,17 +92,17 @@ function play() {
 	isRemoteAction = true;
 	video_element.play();
 	isRemoteAction = false;
-
 }
 
 function pause() {
 	isRemoteAction = true;
 	video_element.pause();
 	isRemoteAction = false;
-
 }
-function set_playback_speed(new_playback_speed: number) {
+
+function set_playback_speed(msg) {
 	isRemoteAction = true;
+	video_element.currentTime = msg.time;
 	video_element.playbackRate = msg.value;
 	playback_speed = msg.value; // keep UI in sync
 	isRemoteAction = false;
