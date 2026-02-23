@@ -17,103 +17,102 @@ let playback_speed = $state(1.0)
 let segments = $state([])
 
 // Guard against feedback loop, since remote command will fire events locally too...
-let isRemoteAction = false;
+let isRemoteAction = false
 
 // Replace with p2p send
 function send(msg) {
-	console.log("Send: ", msg);
+	console.log("Send: ", msg)
 }
 
 function onPlay(): void {
-	if (isRemoteAction) return;
+	if (isRemoteAction) return
 
 	send({
-      type: "play",
-      time: video_element.currentTime
-    });
+		type: "play",
+		time: video_element.currentTime,
+	})
 	// Resumes playback or pauses
 }
 
 function onPause(): void {
-	if (isRemoteAction) return;
+	if (isRemoteAction) return
 
 	send({
-      type: "pause",
-      time: video_element.currentTime
-    });
+		type: "pause",
+		time: video_element.currentTime,
+	})
 }
 
 function onSeeked(): void {
-	if (isRemoteAction) return;
+	if (isRemoteAction) return
 
 	send({
-      type: "seeked",
-      time: video_element.currentTime
-    });
+		type: "seeked",
+		time: video_element.currentTime,
+	})
 }
 
 function onRateChange() {
-  if (isRemoteAction) return;
+	if (isRemoteAction) return
 
-  send({
-	type: "rate",
-	value: video_element.playbackRate,
-	time: video_element.currentTime
-  });
+	send({
+		type: "rate",
+		value: video_element.playbackRate,
+		time: video_element.currentTime,
+	})
 }
 
 // Buffering
 function onWaiting(): void {
 	send({
-      type: "waiting",
-      time: video_element.currentTime
-    });
+		type: "waiting",
+		time: video_element.currentTime,
+	})
 }
 
 // Buffer resume
 function onPlaying(): void {
 	send({
-      type: "resume",
-      time: video_element.currentTime
-    });
+		type: "resume",
+		time: video_element.currentTime,
+	})
 }
 
 // Network issues
 function onStalled(): void {
 	send({
-      type: "stalled",
-      time: video_element.currentTime
-    });
+		type: "stalled",
+		time: video_element.currentTime,
+	})
 }
-
 
 // play/pause/speed should be changed to `if (msg.type == "play")` etc
 function play() {
-	isRemoteAction = true;
-	video_element.play();
-	isRemoteAction = false;
+	isRemoteAction = true
+	video_element.play()
+	isRemoteAction = false
 }
 
 function pause() {
-	isRemoteAction = true;
-	video_element.pause();
-	isRemoteAction = false;
+	isRemoteAction = true
+	video_element.pause()
+	isRemoteAction = false
 }
 
 function set_playback_speed(msg) {
-	isRemoteAction = true;
-	video_element.currentTime = msg.time;
-	video_element.playbackRate = msg.value;
-	playback_speed = msg.value; // keep UI in sync
-	isRemoteAction = false;
+	isRemoteAction = true
+	video_element.currentTime = msg.time
+	video_element.playbackRate = msg.value
+	playback_speed = msg.value // keep UI in sync
+	isRemoteAction = false
 }
 
 function seek(new_playback_position: number) {
 	// Seeks to target time in video
-	isRemoteAction = true;
-	video_element.currentTime = new_playback_position;
+	isRemoteAction = true
+	video_element.currentTime = new_playback_position
 	video_element.play()
-	isRemoteAction = false;
+	isRemoteAction = false
 }
 
 function set_volume(new_volume: number) {
