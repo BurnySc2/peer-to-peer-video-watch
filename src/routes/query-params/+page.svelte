@@ -1,4 +1,5 @@
 <script lang="ts">
+// TODO: Keep when re-joining a room (f5)
 import { page } from "$app/state"
 
 // Parse query parameters from URL

@@ -1,4 +1,6 @@
 <script lang="ts">
+// TODO: Uplaod video file and split it into chunks / segments
+// TODO: Read video metadata
 let { children } = $props()
 
 // Single file upload state

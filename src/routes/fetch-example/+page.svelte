@@ -1,4 +1,6 @@
 <script lang="ts">
+// TODO: Fetch video from url?
+
 type Props = {
 	data: {
 		title: string

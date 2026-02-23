@@ -1,4 +1,6 @@
 <script lang="ts">
+// TODO: Collect segments and download full video file
+
 import { resolve } from "$app/paths"
 
 let download_link: HTMLAnchorElement

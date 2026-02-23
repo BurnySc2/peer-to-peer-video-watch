@@ -1,4 +1,5 @@
 <script lang="ts">
+// TODO: Send video segment data
 import type { DataConnection } from "peerjs"
 import { Peer } from "peerjs"
 import { onMount } from "svelte"
