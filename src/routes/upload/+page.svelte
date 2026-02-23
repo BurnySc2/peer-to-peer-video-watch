@@ -1,7 +1,14 @@
 <script lang="ts">
+import { onMount } from "svelte"
+
 // TODO: Uplaod video file and split it into chunks / segments
 // TODO: Read video metadata
 let { children } = $props()
+
+// Video
+// let video_element = $state<HTMLVideoElement>(new HTMLVideoElement())
+let media_source_local = $state<MediaSource>()
+let video_url = $state("")
 
 // Single file upload state
 let single_file_input = $state<HTMLInputElement | null>(null)
@@ -119,8 +126,15 @@ const handle_drop = async (e: DragEvent, target: "single" | "multiple") => {
 			size_bytes: file.size,
 		}
 
+		// Get metadata
 		const meta_info = await get_video_metadata(file)
 		console.log(meta_info)
+
+		// video_element.src = file.
+		if (video_url) {
+			URL.revokeObjectURL(video_url)
+		}
+		video_url = URL.createObjectURL(file)
 	}
 }
 </script>
@@ -215,6 +229,18 @@ const handle_drop = async (e: DragEvent, target: "single" | "multiple") => {
 							Clear File
 						</button>
 					</div>
+				{/if}
+				{#if video_url}
+					<video
+						controls
+						autoplay
+						muted
+						playsinline
+						src={video_url}
+						style="max-width: 100%; max-height: 60vh; border-radius: 8px;"
+					>
+						Your browser does not support the video tag.
+					</video>
 				{/if}
 			</div>
 		</div>
