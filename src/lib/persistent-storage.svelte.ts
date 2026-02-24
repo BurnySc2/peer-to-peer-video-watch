@@ -5,10 +5,12 @@ import { browser } from "$app/environment"
 const GlobalSettings = z
 	.object({
 		loading: z.boolean(),
+		peer_id: z.string(),
 		volume: z.number(),
 	})
 	.catch({
 		loading: false,
+		peer_id: "",
 		volume: 0.5,
 	})
 const RoomData = z.object({ loading: z.boolean() }).catch({
@@ -32,6 +34,7 @@ export type TPermaState = z.infer<typeof PermaState>
 export const perma_state = $state<TPermaState>({
 	global_settings: {
 		loading: true,
+		peer_id: "",
 		volume: 0.5,
 	},
 	room_data: {
