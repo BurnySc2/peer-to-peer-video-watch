@@ -6,9 +6,6 @@ import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 
 // TODO Implement video player with control buttons
 
-let video_element = $state<HTMLVideoElement>()
-let video_url = $state("")
-
 // normal: show meta info below player, enable scroll
 // theater:
 // fullscreen: only show video unless hovering with mouse in video player, then temporarily (debounce) show controls
@@ -19,19 +16,25 @@ function toggle_fullscreen() {}
 
 <div class="flex flex-col items-center w-screen">
 	<!-- TODO Implement controls of adding and removing from playlist -->
-	 <div class="max-h-[75vh]">
+	 <div class="">
 		<VideoPlayer />
 	 </div>
-	{#if video_element}
-		<div class="flex">
-			<label for="playback_speed">Playback rate</label>
-			<select id="playback_speed" bind:value={temp_state.video_playback_speed}>
-				{#each PLAYBACK_SPEED_VALUES as ps}
-					<option value={ps}>{ps}</option>
-				{/each}
-			</select>
-		</div>		
-	{/if}
+	<div class="flex items-center space-x-2">
+		<label for="playback_speed">Playback rate</label>
+		<select class="border m-2" id="playback_speed" bind:value={temp_state.video_playback_speed}>
+			{#each PLAYBACK_SPEED_VALUES as ps}
+				<option value={ps}>{ps}</option>
+			{/each}
+		</select>
+	</div>
+	<div class="flex items-center space-x-2">
+		<label for="">Autoplay</label>
+		<input type="checkbox" name="" id="">
+	</div>
+	<div class="flex items-center space-x-2">
+		<input type="url" name="" id="" placeholder="New playlist item">
+		<button class="p-2 border hover:bg-green-400">Add to playlist</button>
+	</div>
 </div>
 
 

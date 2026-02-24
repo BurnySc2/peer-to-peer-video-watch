@@ -26,5 +26,5 @@ export const temp_state: TTempState = $state({
 	video_current_time: 0,
 	video_p2p_max_time: 0,
 	video_state_paused: true,
-	video_can_play: false, 
+	video_can_play: false,
 })

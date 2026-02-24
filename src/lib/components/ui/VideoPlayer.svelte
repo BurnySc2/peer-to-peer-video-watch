@@ -1,8 +1,8 @@
 <script lang="ts">
+import { untrack } from "svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { type TMessage } from "$lib/types/peer_to_peer"
-import { untrack } from "svelte"
 
 interface MyProps {
 	send_playlist_set_current_playing?: (message: TMessage) => void
@@ -48,12 +48,12 @@ function local_video_seek_to(event: Event) {
 	if (!event.target) {
 		return
 	}
-	// @ts-ignore
+	// @ts-expect-error
 	const seek_time: number = event.target.currentTime
 	temp_state.video_state_paused = true
 	send_video_seek_to({ type: "video_seek_to", time: seek_time })
 }
-function local_can_play(event: Event) {
+function local_can_play(_event: Event) {
 	temp_state.video_can_play = true
 	console.log("canplay event fired")
 }
