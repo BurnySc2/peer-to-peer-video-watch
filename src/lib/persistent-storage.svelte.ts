@@ -1,5 +1,9 @@
 import { browser } from "$app/environment"
 
+// Permanent settings here
+// TODO: Volume
+// TODO: Room info - playlist, current index, current video time and playback speed
+
 export const perma_state = $state({
 	loading: true,
 	data: {
