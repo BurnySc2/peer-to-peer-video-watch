@@ -1,6 +1,8 @@
 <script lang="ts">
+import type { TMessage } from "$lib/types/peer_to_peer"
+import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
+
 // TODO Implement video player with control buttons
-const playback_speeds = [0.75, 1.0, 1.1, 1.2, 1.25, 1.3, 1.4, 1.5, 1.75, 2.0, 3.0, 4.0, 10.0]
 
 let video_element = $state<HTMLVideoElement>()
 let video_url = $state("")
@@ -20,8 +22,8 @@ let segments = $state([])
 let isRemoteAction = false
 
 // Replace with p2p send
-function send(msg) {
-	console.log("Send: ", msg)
+function send(message: TMessage) {
+	console.log("Send: ", message)
 }
 
 function onPlay(): void {
@@ -147,7 +149,7 @@ function toggle_fullscreen() {}
 		<div class="flex">
 			<label for="playback_speed">Playback rate</label>
 			<select id="playback_speed" bind:value={playback_speed}>
-				{#each playback_speeds as ps}
+				{#each PLAYBACK_SPEED_VALUES as ps}
 					<option value={ps}>{ps}</option>
 				{/each}
 			</select>
