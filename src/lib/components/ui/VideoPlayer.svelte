@@ -5,16 +5,12 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import { type TMessage } from "$lib/types/peer_to_peer"
 
 interface MyProps {
-	send_playlist_set_current_playing?: (message: TMessage) => void
 	send_video_play?: (message: TMessage) => void
 	send_video_pause?: (message: TMessage) => void
 	send_video_seek_to?: (message: TMessage) => void
 }
 
 let {
-	send_playlist_set_current_playing = (message: TMessage) => {
-		console.log("Sending playlist_set_current_playing", message)
-	},
 	send_video_play = (message: TMessage) => {
 		console.log("Sending video_play", message)
 	},
