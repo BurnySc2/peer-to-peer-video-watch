@@ -40,7 +40,7 @@ const is_active = (path: string) => page.url.pathname.includes(path)
 		>
 		<a
 			href={resolve('/p2p-video')}
-			class="transition-colors hover:text-gray-300 {is_active('/video-player') ? 'font-bold' : ''}">P2P video player</a
+			class="transition-colors hover:text-gray-300 {is_active('/p2p-video') ? 'font-bold' : ''}">P2P video player</a
 		>
 	</div>
 </nav>
