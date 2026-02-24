@@ -34,7 +34,11 @@ function delete_playlist_item(_event: Event) {
 	temp_state.playlist_index = new_index
 }
 function set_playlist_index() {
-	temp_state.playlist_index = temp_state.playlist.indexOf(select_playlist_items[0])
+	const target_index = temp_state.playlist.indexOf(select_playlist_items[0])
+	if (target_index === temp_state.playlist_index) {
+		return
+	}
+	temp_state.playlist_index = target_index
 	temp_state.video_current_time = 0
 	temp_state.video_p2p_max_time = 0
 	temp_state.video_state_paused = true
