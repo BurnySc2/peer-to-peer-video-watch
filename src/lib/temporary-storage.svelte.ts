@@ -1,5 +1,6 @@
 import * as z from "zod"
 
+// Zod
 const TempState = z.object({
 	playlist: z.array(z.string()),
 	playlist_index: z.number(),
@@ -9,9 +10,10 @@ const TempState = z.object({
 	video_current_time: z.number(),
 	// Max time of any connected client. If difference to current time is larger than threshold, try to catch up
 	video_p2p_max_time: z.number(),
-	video_state: z.union([z.literal("playing"), z.literal("paused")]),
+	video_state_paused: z.boolean(),
 })
 
+// Types
 export type TTempState = z.infer<typeof TempState>
 
 export const temp_state: TTempState = $state({
@@ -21,5 +23,5 @@ export const temp_state: TTempState = $state({
 	video_target_playback_speed: 1,
 	video_current_time: 0,
 	video_p2p_max_time: 0,
-	video_state: "paused",
+	video_state_paused: true,
 })
