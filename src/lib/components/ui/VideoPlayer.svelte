@@ -9,8 +9,6 @@ interface MyProps {
 	send_video_play?: (message: TMessage) => void
 	send_video_pause?: (message: TMessage) => void
 	send_video_seek_to?: (message: TMessage) => void
-	// TODO: Will be set outside the player
-	// send_video_set_playback_rate: (message: TMessage) => void
 }
 
 let {
@@ -26,16 +24,10 @@ let {
 	send_video_seek_to = (message: TMessage) => {
 		console.log("Sending video_seek_to", message)
 	},
-	// send_video_set_playback_rate = (message: TMessage) => {
-	// 	console.log("Sending video_set_playback_rate", message)
-	// },
 }: MyProps = $props()
 
 let video_element = $state<HTMLVideoElement>()
 
-function local_playlist_set_current_playing(index: number) {
-	send_playlist_set_current_playing({ type: "playlist_set_current_playing", value: index })
-}
 function local_video_play() {
 	temp_state.video_state_paused = false
 	send_video_play({ type: "video_play", time: untrack(() => temp_state.video_current_time) })
@@ -57,11 +49,6 @@ function local_can_play(_event: Event) {
 	temp_state.video_can_play = true
 	console.log("canplay event fired")
 }
-
-// function local_video_set_playback_rate(rate: number) {
-// 	temp_state.video_state = "playing"
-// 	send_video_set_playback_rate({ type: "video_set_playback_rate", value: rate, time: temp_state.video_current_time })
-// }
 
 // Watch pause/play
 $effect(() => {

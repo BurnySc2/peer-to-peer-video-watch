@@ -1,7 +1,6 @@
 <script lang="ts">
 import VideoPlayer from "$lib/components/ui/VideoPlayer.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-import type { TMessage } from "$lib/types/peer_to_peer"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 
 // TODO Implement video player with control buttons
