@@ -53,6 +53,11 @@ function local_video_seek_to(event: Event) {
 	temp_state.video_state_paused = true
 	send_video_seek_to({ type: "video_seek_to", time: seek_time })
 }
+function local_can_play(event: Event) {
+	temp_state.video_can_play = true
+	console.log("canplay event fired")
+}
+
 // function local_video_set_playback_rate(rate: number) {
 // 	temp_state.video_state = "playing"
 // 	send_video_set_playback_rate({ type: "video_set_playback_rate", value: rate, time: temp_state.video_current_time })
@@ -82,6 +87,7 @@ $effect(() => {
 	bind:currentTime={temp_state.video_current_time}
 	src={temp_state.playlist[temp_state.playlist_index]}
 	onseeking={local_video_seek_to}
+	oncanplay={local_can_play}
 >
 	Your browser does not support the video tag.
 </video>
