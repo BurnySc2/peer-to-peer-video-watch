@@ -7,6 +7,8 @@ const TempState = z.object({
 	video_playback_speed: z.number(),
 	video_target_playback_speed: z.number(),
 	video_current_time: z.number(),
+	// Max time of any connected client. If difference to current time is larger than threshold, try to catch up
+	video_p2p_max_time: z.number(),
 	video_state: z.union([z.literal("playing"), z.literal("paused")]),
 })
 
@@ -18,5 +20,6 @@ export const temp_state: TTempState = $state({
 	video_playback_speed: 1,
 	video_target_playback_speed: 1,
 	video_current_time: 0,
+	video_p2p_max_time: 0,
 	video_state: "paused",
 })

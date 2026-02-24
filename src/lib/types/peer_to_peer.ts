@@ -3,7 +3,7 @@ import * as z from "zod"
 const Message = z.union([
 	z.object({
 		type: z.literal("init_connect"),
-        peer_ids: z.array(z.string()),
+		peer_ids: z.array(z.string()),
 		playlist: z.array(z.string()),
 		// Currently playing
 		playlist_index: z.number(),
