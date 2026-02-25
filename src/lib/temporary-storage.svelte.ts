@@ -32,5 +32,5 @@ export const temp_state: TTempState = $state({
 	video_state_paused: true,
 	video_can_play: false,
 	peer_connections: [],
-	video_element: null
+	video_element: null,
 })
