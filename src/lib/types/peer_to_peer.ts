@@ -14,14 +14,11 @@ export const Message = z.union([
 		video_current_time: z.number(),
 		video_state_paused: z.boolean(),
 	}),
-	z.object({
-		type: z.literal("playlist_set_current_playing"),
-		value: z.number(),
-	}),
 	// Set new playlist (triggered by adding or removing an item)
 	z.object({
 		type: z.literal("playlist_set"),
 		playlist: z.array(z.string()),
+		playlist_index: z.number(),
 	}),
 	z.object({
 		type: z.literal("video_play"),

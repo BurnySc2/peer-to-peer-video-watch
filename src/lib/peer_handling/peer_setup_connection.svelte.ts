@@ -37,11 +37,9 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				temp_state.video_state_paused = data_validated.video_state_paused
 				break
 			}
-			case "playlist_set_current_playing":
-				temp_state.playlist_index = data_validated.value
-				break
 			case "playlist_set":
 				temp_state.playlist = data_validated.playlist
+				temp_state.playlist_index = data_validated.playlist_index
 				break
 			case "video_play":
 				temp_state.video_state_paused = false
