@@ -3,6 +3,9 @@ import { untrack } from "svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 
+import PlayIcon from "$lib/icons/PlayIcon.svelte"
+    import NewControls from "./NewControls.svelte";
+
 interface MyProps {
 	send_video_seek_to?: (time: number) => void
 }
@@ -14,6 +17,16 @@ let {
 }: MyProps = $props()
 
 // let video_element = $state<HTMLVideoElement>()
+
+let player_container: HTMLDivElement | null = null
+
+function full_screen_toggle() {
+	if (!document.fullscreenElement) {
+		player_container?.requestFullscreen()
+	} else {
+		document.exitFullscreen()
+	}
+}
 
 function local_video_seek_to(event: Event) {
 	if (!event.target) {
@@ -31,18 +44,21 @@ function local_can_play(_event: Event) {
 }
 </script>
 
-<video bind:this={temp_state.video_element}
-	class="w-full h-full"
-	controls
-	muted={false}
-	playsinline
-	bind:volume={perma_state.global_settings.volume}
-	bind:playbackRate={temp_state.video_playback_speed}
-	bind:paused={temp_state.video_state_paused}
-	bind:currentTime={temp_state.video_current_time}
-	src={temp_state.playlist[temp_state.playlist_index]}
-	onseeking={local_video_seek_to}
-	oncanplay={local_can_play}
->
-	Your browser does not support the video tag.
-</video>
+<div bind:this={player_container} class="relative w-full h-full">
+	<video bind:this={temp_state.video_element}
+		class="w-full h-full"
+		muted={false}
+		playsinline
+		bind:volume={perma_state.global_settings.volume}
+		bind:playbackRate={temp_state.video_playback_speed}
+		bind:paused={temp_state.video_state_paused}
+		bind:currentTime={temp_state.video_current_time}
+		src={temp_state.playlist[temp_state.playlist_index]}
+		onseeking={local_video_seek_to}
+		oncanplay={local_can_play}
+	>
+		Your browser does not support the video tag.
+	</video>
+	<NewControls onFullscreen={full_screen_toggle}/>
+
+</div>
