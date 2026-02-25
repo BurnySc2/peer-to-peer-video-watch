@@ -19,14 +19,14 @@ let current_remaining_time = $derived.by(() => {
 	// TODO: Replace 'temp_state.video_playback_speed' with 'temp_state.video_target_playback_speed' once catch-up is implemented
 	if (temp_state.video_element?.duration) {
 		return format_time(
-			(temp_state.video_element.duration - temp_state.video_current_time) / temp_state.video_playback_speed,
+			(temp_state.video_element?.duration - temp_state.video_current_time) / temp_state.video_playback_speed,
 		)
 	}
 	return "0"
 })
 let total_time = $derived.by(() => {
 	if (temp_state.video_element?.duration) {
-		return format_time(temp_state.video_element.duration)
+		return format_time(temp_state.video_element?.duration)
 	}
 	return "0"
 })
