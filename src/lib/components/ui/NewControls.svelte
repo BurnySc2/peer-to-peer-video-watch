@@ -47,7 +47,7 @@ function local_set_play_pause() {
 
 function seek_to_time(new_time: number) {
 	temp_state.video_current_time = new_time
-    send_video_seek_to(new_time)
+	send_video_seek_to(new_time)
 }
 
 function seek_forward() {
