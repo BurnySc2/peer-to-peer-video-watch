@@ -38,8 +38,8 @@ onMount(() => {
 	const my_peer_id = perma_state.global_settings.peer_id
 	if (!my_peer_id) {
 		// Create new peer id, assign to localStorage
-		peer = new Peer(perma_state.global_settings.peer_id)
-		handle_peer_on_assign_id(peer)
+		peer = new Peer()
+		handle_peer_on_assign_id(peer, room_id)
 	} else {
 		// Register with saved peer_id from localStorage
 		peer = new Peer(my_peer_id)

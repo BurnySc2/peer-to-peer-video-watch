@@ -1,4 +1,5 @@
 import type { DataConnection, Peer } from "peerjs"
+import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { Message, type TMessage, type TSetupOptions } from "$lib/types/peer_to_peer"
 import { connection_send_validated } from "./peer_send.svelte"
@@ -25,7 +26,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				const peers_connected = temp_state.peer_connections.map((c) => c.peer)
 				data_validated.peer_ids.forEach((peer_id) => {
 					// Connect to missing peers
-					if (!peers_connected.includes(peer_id)) {
+					if (!peers_connected.includes(peer_id) && peer_id !== perma_state.global_settings.peer_id) {
 						peer.connect(peer_id)
 					}
 				})
@@ -40,20 +41,26 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 			case "playlist_set":
 				temp_state.playlist = data_validated.playlist
 				temp_state.playlist_index = data_validated.playlist_index
+				console.log("Receiving playlist set")
 				break
 			case "video_play":
 				temp_state.video_state_paused = false
+				console.log("Receiving play")
 				break
 			case "video_pause":
 				// TODO: catch up and pause at target time
 				temp_state.video_state_paused = true
+				console.log("Receiving pause")
 				break
 			case "video_seek_to":
 				temp_state.video_state_paused = true
 				temp_state.video_current_time = data_validated.time
+				console.log("Receiving seek to")
 				break
 			case "video_set_playback_rate":
 				temp_state.video_target_playback_speed = data_validated.value
+				temp_state.video_playback_speed = data_validated.value
+				console.log("Receiving playback speed")
 				break
 			case "video_current_time_sync":
 				// TODO: If far away, catch up by increasing playback speed to:

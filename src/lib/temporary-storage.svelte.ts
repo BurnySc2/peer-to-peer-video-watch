@@ -7,6 +7,7 @@ const TempState = z.object({
 	playlist_index: z.number(),
 	// May be different when catching up to other clients
 	video_playback_speed: z.number(),
+	// TODO: Use 'video_target_playback_speed' as goal, but use 'video_playback_speed' to catch up
 	video_target_playback_speed: z.number(),
 	video_current_time: z.number(),
 	// Max time of any connected client. If difference to current time is larger than threshold, try to catch up
