@@ -4,18 +4,10 @@ import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 
 interface MyProps {
-	send_video_play?: (time: number) => void
-	send_video_pause?: (time: number) => void
 	send_video_seek_to?: (time: number) => void
 }
 
 let {
-	send_video_play = (time: number) => {
-		console.log("Sending video_play", time)
-	},
-	send_video_pause = (time: number) => {
-		console.log("Sending video_pause", time)
-	},
 	send_video_seek_to = (time: number) => {
 		console.log("Sending video_seek_to", time)
 	},
@@ -23,14 +15,6 @@ let {
 
 // let video_element = $state<HTMLVideoElement>()
 
-function local_video_play() {
-	// temp_state.video_state_paused = false
-	send_video_play(untrack(() => temp_state.video_current_time))
-}
-function local_video_pause() {
-	// temp_state.video_state_paused = true
-	send_video_pause(untrack(() => temp_state.video_current_time))
-}
 function local_video_seek_to(event: Event) {
 	if (!event.target) {
 		return
@@ -45,18 +29,6 @@ function local_can_play(_event: Event) {
 	temp_state.video_can_play = true
 	console.log("canplay event fired")
 }
-
-// Watch pause/play
-$effect(() => {
-	if (temp_state.video_element === null) {
-		return
-	}
-	if (temp_state.video_state_paused) {
-		local_video_pause()
-	} else {
-		local_video_play()
-	}
-})
 </script>
 
 <video bind:this={temp_state.video_element}

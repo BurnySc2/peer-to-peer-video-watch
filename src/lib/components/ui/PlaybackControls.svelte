@@ -7,6 +7,8 @@ import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 interface MyProps {
 	send_playlist_set?: (message: { playlist: string[]; playlist_index: number }) => void
 	send_video_set_playback_rate?: (message: { time: number; value: number }) => void
+	send_video_play?: (time: number) => void
+	send_video_pause?: (time: number) => void
 }
 let {
 	send_playlist_set = (message: { playlist: string[]; playlist_index: number }) => {
@@ -14,6 +16,12 @@ let {
 	},
 	send_video_set_playback_rate = (message: { time: number; value: number }) => {
 		console.log("Sending video_set_playback_rate", message.value)
+	},
+	send_video_play = (time: number) => {
+		console.log("Sending video_play", time)
+	},
+	send_video_pause = (time: number) => {
+		console.log("Sending video_pause", time)
 	},
 }: MyProps = $props()
 
@@ -63,6 +71,15 @@ function set_playlist_index() {
 		playlist_index: target_index,
 	})
 }
+function local_set_play_pause() {
+	if (temp_state.video_state_paused) {
+		temp_state.video_element?.play()
+		send_video_play(temp_state.video_current_time)
+	} else {
+		temp_state.video_element?.pause()
+		send_video_pause(temp_state.video_current_time)
+	}
+}
 
 $effect(() => {
 	send_video_set_playback_rate({
@@ -74,39 +91,42 @@ $effect(() => {
 // function toggle_fullscreen() {}
 </script>
 
-	<div class="flex items-center space-x-2">
-		<label for="playback_speed">Playback rate</label>
-		<select class="border m-2" id="playback_speed" bind:value={temp_state.video_playback_speed}>
-			{#each PLAYBACK_SPEED_VALUES as ps}
-				<option value={ps}>{ps}</option>
-			{/each}
-		</select>
-	</div>
-	<div class="flex items-center space-x-2">
-		<label for="autoplay">Autoplay</label>
-		<input type="checkbox" id="autoplay">
-	</div>
-	<div class="flex items-center space-x-2">
-		<input type="url" placeholder="New playlist item" bind:value={input_new_playlist_url}>
-		<button class="p-2 border hover:bg-green-400" onclick={add_playlist_item}>Add to playlist</button>
-	</div>
-	<div class="flex items-center space-x-2">
-		<label for="select-playlist">Current playlist</label>
-		<select id="select-playlist" multiple bind:value={select_playlist_items}>
-			{#each temp_state.playlist as playlist_item}
-				<option value={playlist_item}>{playlist_item}</option>
-			{/each}
-		</select>
-		<button 
-			class:opacity-0={select_playlist_items.length !== 1}
-			disabled={select_playlist_items.length < 1}
-			onclick={set_playlist_index}>
-			Play
-		</button>
-		<button 
-			class:opacity-0={select_playlist_items.length < 1}
-			disabled={select_playlist_items.length < 1}
-			onclick={delete_playlist_item}>
-			Delete
-		</button>
-	</div>
+<div>
+	<button class="m-2 p-2 border bg-green-300 hover:bg-green-400" onclick={local_set_play_pause}>{temp_state.video_state_paused ? "Play" : "Pausechamp"}</button>
+</div>
+<div class="flex items-center space-x-2">
+	<label for="playback_speed">Playback rate</label>
+	<select class="border m-2" id="playback_speed" bind:value={temp_state.video_playback_speed}>
+		{#each PLAYBACK_SPEED_VALUES as ps}
+			<option value={ps}>{ps}</option>
+		{/each}
+	</select>
+</div>
+<div class="flex items-center space-x-2">
+	<label for="autoplay">Autoplay</label>
+	<input type="checkbox" id="autoplay">
+</div>
+<div class="flex items-center space-x-2">
+	<input type="url" placeholder="New playlist item" bind:value={input_new_playlist_url}>
+	<button class="p-2 border hover:bg-green-400" onclick={add_playlist_item}>Add to playlist</button>
+</div>
+<div class="flex items-center space-x-2">
+	<label for="select-playlist">Current playlist</label>
+	<select id="select-playlist" multiple bind:value={select_playlist_items}>
+		{#each temp_state.playlist as playlist_item}
+			<option value={playlist_item}>{playlist_item}</option>
+		{/each}
+	</select>
+	<button 
+		class:opacity-0={select_playlist_items.length !== 1}
+		disabled={select_playlist_items.length < 1}
+		onclick={set_playlist_index}>
+		Play
+	</button>
+	<button 
+		class:opacity-0={select_playlist_items.length < 1}
+		disabled={select_playlist_items.length < 1}
+		onclick={delete_playlist_item}>
+		Delete
+	</button>
+</div>
