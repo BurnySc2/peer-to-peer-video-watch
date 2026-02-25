@@ -5,19 +5,15 @@ import type { TMessage } from "$lib/types/peer_to_peer"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 
 interface MyProps {
-	send_playlist_set_current_playing?: (message: TMessage) => void
-	send_playlist_set?: (message: TMessage) => void
-	send_video_set_playback_rate?: (message: TMessage) => void
+	send_playlist_set?: (message: { playlist: string[]; playlist_index: number }) => void
+	send_video_set_playback_rate?: (message: { time: number; value: number }) => void
 }
 let {
-	send_playlist_set_current_playing = (message: TMessage) => {
-		console.log("Sending playlist_set_current_playing", message)
-	},
-	send_playlist_set = (message: TMessage) => {
+	send_playlist_set = (message: { playlist: string[]; playlist_index: number }) => {
 		console.log("Sending playlist_set", message)
 	},
-	send_video_set_playback_rate = (message: TMessage) => {
-		console.log("Sending video_set_playback_rate", message)
+	send_video_set_playback_rate = (message: { time: number; value: number }) => {
+		console.log("Sending video_set_playback_rate", message.value)
 	},
 }: MyProps = $props()
 
@@ -40,7 +36,7 @@ function add_playlist_item(_event: Event) {
 		temp_state.playlist.push(input_new_playlist_url)
 	}
 	input_new_playlist_url = ""
-	send_playlist_set({ type: "playlist_set", playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
+	send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
 }
 function delete_playlist_item(_event: Event) {
 	// Delete items, set new index
@@ -50,7 +46,7 @@ function delete_playlist_item(_event: Event) {
 	)
 	const new_index = temp_state.playlist.indexOf(current_playing_url)
 	temp_state.playlist_index = new_index
-	send_playlist_set({ type: "playlist_set", playlist: temp_state.playlist, playlist_index: new_index })
+	send_playlist_set({ playlist: temp_state.playlist, playlist_index: new_index })
 }
 function set_playlist_index() {
 	const target_index = temp_state.playlist.indexOf(select_playlist_items[0])
@@ -62,8 +58,7 @@ function set_playlist_index() {
 	temp_state.video_p2p_max_time = 0
 	temp_state.video_state_paused = true
 	temp_state.video_can_play = false
-	send_playlist_set_current_playing({
-		type: "playlist_set",
+	send_playlist_set({
 		playlist: temp_state.playlist,
 		playlist_index: target_index,
 	})
@@ -71,7 +66,6 @@ function set_playlist_index() {
 
 $effect(() => {
 	send_video_set_playback_rate({
-		type: "video_set_playback_rate",
 		value: temp_state.video_playback_speed,
 		time: untrack(() => temp_state.video_current_time),
 	})

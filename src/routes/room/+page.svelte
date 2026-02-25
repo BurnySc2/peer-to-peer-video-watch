@@ -2,8 +2,17 @@
 import Peer from "peerjs"
 import { onMount } from "svelte"
 import { page } from "$app/state"
+import PlaybackControls from "$lib/components/ui/PlaybackControls.svelte"
+import VideoPlayer from "$lib/components/ui/VideoPlayer.svelte"
 import { handle_peer_on_connection } from "$lib/peer_handling/peer_on_connection.svelte"
 import { handle_peer_on_assign_id, handle_peer_on_open } from "$lib/peer_handling/peer_on_open.svelte"
+import {
+	p2p_send_playlist_set,
+	p2p_send_video_pause,
+	p2p_send_video_play,
+	p2p_send_video_seek_to,
+	p2p_send_video_set_playback_rate,
+} from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 
 // Parse query parameters from URL
@@ -41,6 +50,7 @@ onMount(() => {
 })
 </script>
 
-<div>
-    alo
+<div class="flex flex-col items-center w-screen p-4 space-y-2">
+    <VideoPlayer send_video_play={p2p_send_video_play} send_video_pause={p2p_send_video_pause} send_video_seek_to={p2p_send_video_seek_to} />
+	<PlaybackControls send_playlist_set={p2p_send_playlist_set} send_video_set_playback_rate={p2p_send_video_set_playback_rate} />
 </div>

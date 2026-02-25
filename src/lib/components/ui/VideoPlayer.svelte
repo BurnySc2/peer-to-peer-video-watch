@@ -5,20 +5,20 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import { type TMessage } from "$lib/types/peer_to_peer"
 
 interface MyProps {
-	send_video_play?: (message: TMessage) => void
-	send_video_pause?: (message: TMessage) => void
-	send_video_seek_to?: (message: TMessage) => void
+	send_video_play?: (time: number) => void
+	send_video_pause?: (time: number) => void
+	send_video_seek_to?: (time: number) => void
 }
 
 let {
-	send_video_play = (message: TMessage) => {
-		console.log("Sending video_play", message)
+	send_video_play = (time: number) => {
+		console.log("Sending video_play", time)
 	},
-	send_video_pause = (message: TMessage) => {
-		console.log("Sending video_pause", message)
+	send_video_pause = (time: number) => {
+		console.log("Sending video_pause", time)
 	},
-	send_video_seek_to = (message: TMessage) => {
-		console.log("Sending video_seek_to", message)
+	send_video_seek_to = (time: number) => {
+		console.log("Sending video_seek_to", time)
 	},
 }: MyProps = $props()
 
@@ -26,11 +26,11 @@ let video_element = $state<HTMLVideoElement>()
 
 function local_video_play() {
 	temp_state.video_state_paused = false
-	send_video_play({ type: "video_play", time: untrack(() => temp_state.video_current_time) })
+	send_video_play(untrack(() => temp_state.video_current_time))
 }
 function local_video_pause() {
 	temp_state.video_state_paused = true
-	send_video_pause({ type: "video_pause", time: untrack(() => temp_state.video_current_time) })
+	send_video_pause(untrack(() => temp_state.video_current_time))
 }
 function local_video_seek_to(event: Event) {
 	if (!event.target) {
@@ -39,7 +39,7 @@ function local_video_seek_to(event: Event) {
 	// @ts-expect-error
 	const seek_time: number = event.target.currentTime
 	temp_state.video_state_paused = true
-	send_video_seek_to({ type: "video_seek_to", time: seek_time })
+	send_video_seek_to(seek_time)
 }
 function local_can_play(_event: Event) {
 	temp_state.video_can_play = true
