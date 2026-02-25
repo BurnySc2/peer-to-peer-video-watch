@@ -10,6 +10,7 @@ import { format_time } from "$lib/utils/format_time"
 interface Props {
 	send_video_play?: (time: number) => void
 	send_video_pause?: (time: number) => void
+	send_video_seek_to?: (time: number) => void
 	toggle_fullscreen: () => void
 	controls_opacity: number
 }
@@ -20,6 +21,9 @@ let {
 	},
 	send_video_pause = (time: number) => {
 		console.log("Sending video_pause", time)
+	},
+	send_video_seek_to = (time: number) => {
+		console.log("Sending video_seek_to", time)
 	},
 	toggle_fullscreen,
 	controls_opacity = $bindable(),
@@ -41,12 +45,17 @@ function local_set_play_pause() {
 	}
 }
 
+function seek_to_time(new_time: number) {
+	temp_state.video_current_time = new_time
+    send_video_seek_to(new_time)
+}
+
 function seek_forward() {
-	temp_state.video_current_time += 10
+	seek_to_time(temp_state.video_current_time + 10)
 }
 
 function seek_back() {
-	temp_state.video_current_time -= 10
+	seek_to_time(temp_state.video_current_time - 10)
 }
 </script>
 
@@ -73,8 +82,8 @@ function seek_back() {
         step="0.01"
         value={temp_state.video_current_time || 0}
         oninput={(e) => {
-            // @ts-ignore
-            temp_state.video_current_time = e.target.value
+            // @ts-ignore            
+            seek_to_time(Number.parseFloat(e.target.value))
         }}
     />
     <div id="remaining-time" class="text-white select-none min-w-14 max-w-14 text-right">{current_remaining_time}</div>

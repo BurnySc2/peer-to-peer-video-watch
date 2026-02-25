@@ -34,16 +34,6 @@ function toggle_fullscreen() {
 	}
 }
 
-function local_video_seek_to(event: Event) {
-	if (!event.target) {
-		return
-	}
-	// TODO: After seeking, there should be a pause, but it doesnt work and keeps the old state
-	// temp_state.video_element?.pause()
-	// @ts-expect-error
-	const seek_time: number = event.target.currentTime
-	send_video_seek_to(seek_time)
-}
 function local_can_play(_event: Event) {
 	temp_state.video_can_play = true
 	console.log("canplay event fired")
@@ -79,10 +69,9 @@ function debounce_mouse_move(_event: Event) {
 		bind:currentTime={temp_state.video_current_time}
 		bind:duration={temp_state.video_duration}
 		src={temp_state.playlist[temp_state.playlist_index]}
-		onseeking={local_video_seek_to}
 		oncanplay={local_can_play}
 	>
 		Your browser does not support the video tag.
 	</video>
-	<NewControls send_video_play={send_video_play} send_video_pause={send_video_pause} toggle_fullscreen={toggle_fullscreen} bind:controls_opacity={controls_opacity}/>
+	<NewControls send_video_play={send_video_play} send_video_pause={send_video_pause} send_video_seek_to={send_video_seek_to} toggle_fullscreen={toggle_fullscreen} bind:controls_opacity={controls_opacity}/>
 </div>
