@@ -33,10 +33,10 @@ let total_time = $derived(format_time(temp_state.video_duration))
 
 function local_set_play_pause() {
 	if (temp_state.video_state_paused) {
-		temp_state.video_element?.play()
+		temp_state.video_state_paused = false
 		send_video_play(temp_state.video_current_time)
 	} else {
-		temp_state.video_element?.pause()
+		temp_state.video_state_paused = true
 		send_video_pause(temp_state.video_current_time)
 	}
 }

@@ -40,11 +40,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				temp_state.video_playback_speed = data_validated.video_target_playback_speed
 				temp_state.video_target_playback_speed = data_validated.video_target_playback_speed
 				temp_state.video_current_time = data_validated.video_current_time
-				if (data_validated.video_state_paused) {
-					temp_state.video_element?.pause()
-				} else {
-					temp_state.video_element?.play()
-				}
+				temp_state.video_state_paused = data_validated.video_state_paused
 				break
 			}
 			case "playlist_set":
@@ -54,13 +50,13 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				break
 			case "video_play":
 				console.log("Receiving play")
-				temp_state.video_element?.play()
+				temp_state.video_state_paused = false
 				toast(`Resumed`, { icon: "⏯️" })
 				break
 			case "video_pause":
 				// TODO: catch up and pause at target time
 				console.log("Receiving pause")
-				temp_state.video_element?.pause()
+				temp_state.video_state_paused = true
 				toast(`Paused`, { icon: "⏸️" })
 				break
 			case "video_seek_to":
