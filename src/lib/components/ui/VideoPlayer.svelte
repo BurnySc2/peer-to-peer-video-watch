@@ -1,4 +1,5 @@
 <script lang="ts">
+import { Toaster } from "svelte-5-french-toast"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import NewControls from "./NewControls.svelte"
@@ -59,6 +60,7 @@ function debounce_mouse_move(_event: Event) {
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div bind:this={player_container} class="relative w-full h-full" onmousemove={debounce_mouse_move}>
+	<Toaster />
 	<video bind:this={temp_state.video_element}
 		class="w-full h-full"
 		muted={false}
@@ -74,5 +76,4 @@ function debounce_mouse_move(_event: Event) {
 		Your browser does not support the video tag.
 	</video>
 	<NewControls toggle_fullscreen={toggle_fullscreen} bind:controls_opacity={controls_opacity}/>
-
 </div>
