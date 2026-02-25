@@ -14,6 +14,8 @@ let {
 }: MyProps = $props()
 
 let player_container: HTMLDivElement | null = null
+let controls_opacity = $state(1)
+let hide_timeout: number | null = null
 
 function toggle_fullscreen() {
 	if (!document.fullscreenElement) {
@@ -37,9 +39,26 @@ function local_can_play(_event: Event) {
 	temp_state.video_can_play = true
 	console.log("canplay event fired")
 }
+
+function debounce_mouse_move(_event: Event) {
+	// Clear any existing timeout
+	if (hide_timeout) {
+		clearTimeout(hide_timeout)
+		hide_timeout = null
+	}
+
+	// Show controls immediately
+	controls_opacity = 1
+
+	// Set a timeout to hide controls after 3 seconds
+	hide_timeout = setTimeout(() => {
+		controls_opacity = 0
+	}, 1000) as unknown as number
+}
 </script>
 
-<div bind:this={player_container} class="relative w-full h-full">
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div bind:this={player_container} class="relative w-full h-full" onmousemove={debounce_mouse_move}>
 	<video bind:this={temp_state.video_element}
 		class="w-full h-full"
 		muted={false}
@@ -54,6 +73,6 @@ function local_can_play(_event: Event) {
 	>
 		Your browser does not support the video tag.
 	</video>
-	<NewControls toggle_fullscreen={toggle_fullscreen}/>
+	<NewControls toggle_fullscreen={toggle_fullscreen} bind:controls_opacity={controls_opacity}/>
 
 </div>

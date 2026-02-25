@@ -9,14 +9,14 @@ import { format_time } from "$lib/utils/format_time"
 
 interface Props {
 	toggle_fullscreen: () => void
+	controls_opacity: number
 }
 
-let { toggle_fullscreen }: Props = $props()
+let { toggle_fullscreen, controls_opacity = $bindable() }: Props = $props()
 
 let current_time_formatted = $derived(format_time(temp_state.video_current_time))
 let current_remaining_time = $derived.by(() => {
 	// TODO: Replace 'temp_state.video_playback_speed' with 'temp_state.video_target_playback_speed' once catch-up is implemented
-
 	if (temp_state.video_element?.duration) {
 		return format_time(
 			(temp_state.video_element.duration - temp_state.video_current_time) / temp_state.video_playback_speed,
@@ -45,7 +45,7 @@ function seek_back() {
 }
 </script>
 
-<div class="absolute bottom-0 left-0 right-0 bg-black/60 p-2 flex gap-2 w-full">
+<div class="absolute bottom-0 left-0 right-0 bg-black/60 p-2 flex gap-2 w-full transition-opacity duration-500" style="opacity: {controls_opacity};">
     <button onclick={local_set_play_pause}>
         {#if temp_state.video_state_paused}
         <PlayIcon />
