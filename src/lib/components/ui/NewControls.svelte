@@ -24,7 +24,12 @@ let current_remaining_time = $derived.by(() => {
 	}
 	return "0"
 })
-let total_time = $derived(format_time(temp_state.video_element?.duration ?? 0))
+let total_time = $derived.by(() => {
+	if (temp_state.video_element?.duration) {
+		return format_time(temp_state.video_element.duration)
+	}
+	return "0"
+})
 
 function local_set_play_pause() {
 	if (temp_state.video_state_paused) {
