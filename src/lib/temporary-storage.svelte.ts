@@ -16,6 +16,7 @@ const TempState = z.object({
 	// In sync with "oncanplay" event, will be false on load and when seeking
 	video_can_play: z.boolean(),
 	peer_connections: z.array(z.custom<DataConnection>()),
+	video_element: z.custom<HTMLVideoElement | null>(),
 })
 
 // Types
@@ -31,4 +32,5 @@ export const temp_state: TTempState = $state({
 	video_state_paused: true,
 	video_can_play: false,
 	peer_connections: [],
+	video_element: null
 })

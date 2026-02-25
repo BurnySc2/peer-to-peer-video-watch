@@ -2,7 +2,6 @@
 import { untrack } from "svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-import { type TMessage } from "$lib/types/peer_to_peer"
 
 interface MyProps {
 	send_video_play?: (time: number) => void
@@ -22,23 +21,24 @@ let {
 	},
 }: MyProps = $props()
 
-let video_element = $state<HTMLVideoElement>()
+// let video_element = $state<HTMLVideoElement>()
 
 function local_video_play() {
-	temp_state.video_state_paused = false
+	// temp_state.video_state_paused = false
 	send_video_play(untrack(() => temp_state.video_current_time))
 }
 function local_video_pause() {
-	temp_state.video_state_paused = true
+	// temp_state.video_state_paused = true
 	send_video_pause(untrack(() => temp_state.video_current_time))
 }
 function local_video_seek_to(event: Event) {
 	if (!event.target) {
 		return
 	}
+	// TODO: After seeking, there should be a pause, but it doesnt work and keeps the old state
+	// temp_state.video_element?.pause()
 	// @ts-expect-error
 	const seek_time: number = event.target.currentTime
-	temp_state.video_state_paused = true
 	send_video_seek_to(seek_time)
 }
 function local_can_play(_event: Event) {
@@ -48,7 +48,7 @@ function local_can_play(_event: Event) {
 
 // Watch pause/play
 $effect(() => {
-	if (!video_element) {
+	if (temp_state.video_element === null) {
 		return
 	}
 	if (temp_state.video_state_paused) {
@@ -59,7 +59,7 @@ $effect(() => {
 })
 </script>
 
-<video bind:this={video_element}
+<video bind:this={temp_state.video_element}
 	class="w-full h-full"
 	controls
 	muted={false}

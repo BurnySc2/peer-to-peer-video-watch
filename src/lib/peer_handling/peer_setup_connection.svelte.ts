@@ -35,7 +35,11 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				temp_state.playlist = data_validated.playlist
 				temp_state.playlist_index = data_validated.playlist_index
 				temp_state.video_current_time = data_validated.video_current_time
-				temp_state.video_state_paused = data_validated.video_state_paused
+				if (data_validated.video_state_paused) {
+					temp_state.video_element?.pause()
+				} else {
+					temp_state.video_element?.play()
+				}
 				break
 			}
 			case "playlist_set":
@@ -44,17 +48,17 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				console.log("Receiving playlist set")
 				break
 			case "video_play":
-				temp_state.video_state_paused = false
 				console.log("Receiving play")
+				temp_state.video_element?.play()
 				break
 			case "video_pause":
 				// TODO: catch up and pause at target time
-				temp_state.video_state_paused = true
 				console.log("Receiving pause")
+				temp_state.video_element?.pause()
 				break
 			case "video_seek_to":
-				temp_state.video_state_paused = true
 				temp_state.video_current_time = data_validated.time
+				temp_state.video_element?.pause()
 				console.log("Receiving seek to")
 				break
 			case "video_set_playback_rate":
