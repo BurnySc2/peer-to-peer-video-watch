@@ -54,25 +54,25 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 			case "video_play":
 				console.log("Receiving play")
 				temp_state.video_element?.play()
-				toast(`Resumed by ${conn.peer}`, { icon: "⏯️" })
+				toast(`Resumed`, { icon: "⏯️" })
 				break
 			case "video_pause":
 				// TODO: catch up and pause at target time
 				console.log("Receiving pause")
 				temp_state.video_element?.pause()
-				toast(`Paused by ${conn.peer}`, { icon: "⏸️" })
+				toast(`Paused`, { icon: "⏸️" })
 				break
 			case "video_seek_to":
 				temp_state.video_current_time = data_validated.time
 				// temp_state.video_element?.pause()
 				console.log("Receiving seek to")
-				toast(`Seeking by ${conn.peer}`, { icon: "⏩" })
+				toast(`Seeking`, { icon: "⏩" })
 				break
 			case "video_set_playback_rate":
 				temp_state.video_target_playback_speed = data_validated.value
 				temp_state.video_playback_speed = data_validated.value
 				console.log("Receiving playback speed")
-				toast(`Playback rate change by ${conn.peer}`, { icon: "⏫", duration: 3000 })
+				toast(`Playback rate change to ${data_validated.value}`, { icon: "⏫", duration: 3000 })
 				break
 			case "video_current_time_sync":
 				// TODO: If far away, catch up by increasing playback speed to:
