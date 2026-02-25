@@ -62,7 +62,7 @@ $effect(() => {
 <video bind:this={video_element}
 	class="w-full h-full"
 	controls
-	muted={true}
+	muted={false}
 	playsinline
 	bind:volume={perma_state.global_settings.volume}
 	bind:playbackRate={temp_state.video_playback_speed}
