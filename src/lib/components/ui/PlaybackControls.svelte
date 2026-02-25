@@ -1,14 +1,11 @@
 <script lang="ts">
 import { untrack } from "svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-import type { TMessage } from "$lib/types/peer_to_peer"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 
 interface MyProps {
 	send_playlist_set?: (message: { playlist: string[]; playlist_index: number }) => void
 	send_video_set_playback_rate?: (message: { time: number; value: number }) => void
-	send_video_play?: (time: number) => void
-	send_video_pause?: (time: number) => void
 }
 let {
 	send_playlist_set = (message: { playlist: string[]; playlist_index: number }) => {
@@ -17,24 +14,11 @@ let {
 	send_video_set_playback_rate = (message: { time: number; value: number }) => {
 		console.log("Sending video_set_playback_rate", message.value)
 	},
-	send_video_play = (time: number) => {
-		console.log("Sending video_play", time)
-	},
-	send_video_pause = (time: number) => {
-		console.log("Sending video_pause", time)
-	},
 }: MyProps = $props()
-
-// TODO Implement video player with control buttons
 
 // Input items
 let input_new_playlist_url = $state("")
 let select_playlist_items = $state<string[]>([])
-
-// normal: show meta info below player, enable scroll
-// theater:
-// fullscreen: only show video unless hovering with mouse in video player, then temporarily (debounce) show controls
-let mode = $state<"normal" | "theater" | "fullscreen">("normal")
 
 function add_playlist_item(_event: Event) {
 	if (!input_new_playlist_url) {
@@ -71,15 +55,6 @@ function set_playlist_index() {
 		playlist_index: target_index,
 	})
 }
-function local_set_play_pause() {
-	if (temp_state.video_state_paused) {
-		temp_state.video_element?.play()
-		send_video_play(temp_state.video_current_time)
-	} else {
-		temp_state.video_element?.pause()
-		send_video_pause(temp_state.video_current_time)
-	}
-}
 
 $effect(() => {
 	send_video_set_playback_rate({
@@ -87,13 +62,8 @@ $effect(() => {
 		time: untrack(() => temp_state.video_current_time),
 	})
 })
-
-// function toggle_fullscreen() {}
 </script>
 
-<div>
-	<button class="m-2 p-2 border bg-green-300 hover:bg-green-400" onclick={local_set_play_pause}>{temp_state.video_state_paused ? "Play" : "Pausechamp"}</button>
-</div>
 <div class="flex items-center space-x-2">
 	<label for="playback_speed">Playback rate</label>
 	<select class="border m-2" id="playback_speed" bind:value={temp_state.video_playback_speed}>

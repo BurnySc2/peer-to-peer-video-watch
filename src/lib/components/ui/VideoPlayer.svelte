@@ -5,10 +5,18 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import NewControls from "./NewControls.svelte"
 
 interface MyProps {
+	send_video_play?: (time: number) => void
+	send_video_pause?: (time: number) => void
 	send_video_seek_to?: (time: number) => void
 }
 
 let {
+	send_video_play = (time: number) => {
+		console.log("Sending video_play", time)
+	},
+	send_video_pause = (time: number) => {
+		console.log("Sending video_pause", time)
+	},
 	send_video_seek_to = (time: number) => {
 		console.log("Sending video_seek_to", time)
 	},
@@ -76,5 +84,5 @@ function debounce_mouse_move(_event: Event) {
 	>
 		Your browser does not support the video tag.
 	</video>
-	<NewControls toggle_fullscreen={toggle_fullscreen} bind:controls_opacity={controls_opacity}/>
+	<NewControls send_video_play={send_video_play} send_video_pause={send_video_pause} toggle_fullscreen={toggle_fullscreen} bind:controls_opacity={controls_opacity}/>
 </div>

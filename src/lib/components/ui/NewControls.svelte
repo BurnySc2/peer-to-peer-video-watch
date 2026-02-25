@@ -8,11 +8,22 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import { format_time } from "$lib/utils/format_time"
 
 interface Props {
+	send_video_play?: (time: number) => void
+	send_video_pause?: (time: number) => void
 	toggle_fullscreen: () => void
 	controls_opacity: number
 }
 
-let { toggle_fullscreen, controls_opacity = $bindable() }: Props = $props()
+let {
+	send_video_play = (time: number) => {
+		console.log("Sending video_play", time)
+	},
+	send_video_pause = (time: number) => {
+		console.log("Sending video_pause", time)
+	},
+	toggle_fullscreen,
+	controls_opacity = $bindable(),
+}: Props = $props()
 
 let current_time_formatted = $derived(format_time(temp_state.video_current_time))
 let current_remaining_time = $derived(
@@ -23,10 +34,10 @@ let total_time = $derived(format_time(temp_state.video_duration))
 function local_set_play_pause() {
 	if (temp_state.video_state_paused) {
 		temp_state.video_element?.play()
-		// send_video_play(temp_state.video_current_time)
+		send_video_play(temp_state.video_current_time)
 	} else {
 		temp_state.video_element?.pause()
-		// send_video_pause(temp_state.video_current_time)
+		send_video_pause(temp_state.video_current_time)
 	}
 }
 
