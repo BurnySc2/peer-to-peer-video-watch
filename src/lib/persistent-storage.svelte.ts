@@ -48,24 +48,17 @@ $effect.root(() => {
 	$effect(() => {
 		// Save data
 		if (browser && !perma_state.loading.global_settings) {
-			console.log("saving")
-
 			localStorage.setItem("vodching_global_settings", JSON.stringify(perma_state.global_settings))
 		}
 		// Load data
 		if (browser && perma_state.loading.global_settings) {
-			console.log("loading")
-
 			perma_state.loading.global_settings = false
 			const data = localStorage.getItem("vodching_global_settings")
 			if (data !== null) {
-				console.log(JSON.parse(data))
-
 				perma_state.global_settings = {
 					// Set default
 					...perma_state.global_settings,
-					// Set loaded values
-					// TODO: Load using zod instead
+					// Load using zod instead
 					...GlobalSettings.parse(JSON.parse(data)),
 				}
 			}
@@ -86,8 +79,7 @@ $effect.root(() => {
 				perma_state.room_data = {
 					// Set default
 					...perma_state.room_data,
-					// Set loaded values
-					// TODO: Load using zod instead
+					// Load using zod instead
 					...RoomData.parse(JSON.parse(data)),
 				}
 			}

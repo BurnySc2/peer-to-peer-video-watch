@@ -1,3 +1,4 @@
+import type { DataConnection } from "peerjs"
 import * as z from "zod"
 
 // Zod
@@ -13,6 +14,7 @@ const TempState = z.object({
 	video_state_paused: z.boolean(),
 	// In sync with "oncanplay" event, will be false on load and when seeking
 	video_can_play: z.boolean(),
+	peer_connections: z.array(z.custom<DataConnection>()),
 })
 
 // Types
@@ -27,4 +29,5 @@ export const temp_state: TTempState = $state({
 	video_p2p_max_time: 0,
 	video_state_paused: true,
 	video_can_play: false,
+	peer_connections: [],
 })
