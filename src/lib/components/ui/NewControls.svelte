@@ -22,7 +22,7 @@ let current_remaining_time = $derived.by(() => {
 			(temp_state.video_element.duration - temp_state.video_current_time) / temp_state.video_playback_speed,
 		)
 	}
-	return 0
+	return "0"
 })
 let total_time = $derived(format_time(temp_state.video_element?.duration ?? 0))
 
