@@ -1,10 +1,7 @@
 <script lang="ts">
-import { untrack } from "svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-
-import PlayIcon from "$lib/icons/PlayIcon.svelte"
-    import NewControls from "./NewControls.svelte";
+import NewControls from "./NewControls.svelte"
 
 interface MyProps {
 	send_video_seek_to?: (time: number) => void
@@ -16,11 +13,9 @@ let {
 	},
 }: MyProps = $props()
 
-// let video_element = $state<HTMLVideoElement>()
-
 let player_container: HTMLDivElement | null = null
 
-function full_screen_toggle() {
+function toggle_fullscreen() {
 	if (!document.fullscreenElement) {
 		player_container?.requestFullscreen()
 	} else {
@@ -59,6 +54,6 @@ function local_can_play(_event: Event) {
 	>
 		Your browser does not support the video tag.
 	</video>
-	<NewControls onFullscreen={full_screen_toggle}/>
+	<NewControls toggle_fullscreen={toggle_fullscreen}/>
 
 </div>

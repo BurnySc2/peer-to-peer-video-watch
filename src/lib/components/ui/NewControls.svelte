@@ -1,20 +1,30 @@
 <script lang="ts">
-import { untrack } from "svelte"
-import { temp_state } from "$lib/temporary-storage.svelte"
-import type { TMessage } from "$lib/types/peer_to_peer"
-import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
-
-import PlayIcon from "$lib/icons/PlayIcon.svelte"
-import PauseIcon from "$lib/icons/PauseIcon.svelte"
 import BackIcon from "$lib/icons/BackIcon.svelte"
 import ForwardIcon from "$lib/icons/ForwardIcon.svelte"
-import FullscreenIcon from "$lib/icons/FullscreenIcon.svelte";
+import FullscreenIcon from "$lib/icons/FullscreenIcon.svelte"
+import PauseIcon from "$lib/icons/PauseIcon.svelte"
+import PlayIcon from "$lib/icons/PlayIcon.svelte"
+import { temp_state } from "$lib/temporary-storage.svelte"
+import { format_time } from "$lib/utils/format_time"
 
 interface Props {
-    onFullscreen: () => void
+	toggle_fullscreen: () => void
 }
 
-let { onFullscreen }: Props = $props()
+let { toggle_fullscreen }: Props = $props()
+
+let current_time_formatted = $derived(format_time(temp_state.video_current_time))
+let current_remaining_time = $derived.by(() => {
+	// TODO: Replace 'temp_state.video_playback_speed' with 'temp_state.video_target_playback_speed' once catch-up is implemented
+
+	if (temp_state.video_element?.duration) {
+		return format_time(
+			(temp_state.video_element.duration - temp_state.video_current_time) / temp_state.video_playback_speed,
+		)
+	}
+	return 0
+})
+let total_time = $derived(format_time(temp_state.video_element?.duration ?? 0))
 
 function local_set_play_pause() {
 	if (temp_state.video_state_paused) {
@@ -27,18 +37,12 @@ function local_set_play_pause() {
 }
 
 function seek_forward() {
-    temp_state.video_current_time = temp_state.video_current_time + 10
+	temp_state.video_current_time += 10
 }
 
 function seek_back() {
-    temp_state.video_current_time = temp_state.video_current_time - 10
+	temp_state.video_current_time -= 10
 }
-
-// The parent container needs to be full screened, since the video controls are now separate
-function full_screen() {
-    temp_state.video_element?.requestFullscreen()
-}
-
 </script>
 
 <div class="absolute bottom-0 left-0 right-0 bg-black/60 p-2 flex gap-2 w-full">
@@ -55,30 +59,23 @@ function full_screen() {
     <button onclick={seek_forward}>
         <ForwardIcon />
     </button>
-    <!-- <input
-        type="range"
-        min="0"
-        max={video_element?.duration || 0}
-        step="0.01"
-        value={video_element?.currentTime || 0}
-        oninput={(e) => {
-            if (video_element) {
-                video_element.currentTime = e.target.value
-            }
-        }}
-    /> -->
+    <div id="current-time" class="text-white select-none min-w-14 max-w-14">{current_time_formatted}</div>
     <input
         type="range"
-        class="w-full"
+        class="w-full mx-8"
         min="0"
         max={temp_state.video_element?.duration}
         step="0.01"
         value={temp_state.video_current_time || 0}
         oninput={(e) => {
+            // @ts-ignore
             temp_state.video_current_time = e.target.value
         }}
     />
-    <button class="ml-auto" onclick={onFullscreen}>
+    <div id="remaining-time" class="text-white select-none min-w-14 max-w-14 text-right">{current_remaining_time}</div>
+    <div id="time-separator" class="text-white select-none mx-[-8px]">|</div>
+    <div id="total-time" class="text-white select-none min-w-14 max-w-14">{total_time}</div>
+    <button class="ml-auto" onclick={toggle_fullscreen}>
         <FullscreenIcon />
     </button>
 </div>
