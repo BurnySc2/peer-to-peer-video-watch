@@ -11,6 +11,7 @@ export const Message = z.union([
 		playlist: z.array(z.string()),
 		// Currently playing
 		playlist_index: z.number(),
+		video_target_playback_speed: z.number(),
 		video_current_time: z.number(),
 		video_state_paused: z.boolean(),
 	}),

@@ -12,6 +12,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				peer_ids: temp_state.peer_connections.map((c) => c.peer),
 				playlist: temp_state.playlist,
 				playlist_index: temp_state.playlist_index,
+				video_target_playback_speed: temp_state.video_target_playback_speed,
 				video_current_time: temp_state.video_current_time,
 				video_state_paused: temp_state.video_state_paused,
 			})
@@ -34,6 +35,8 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				// Sync local data
 				temp_state.playlist = data_validated.playlist
 				temp_state.playlist_index = data_validated.playlist_index
+				temp_state.video_playback_speed = data_validated.video_target_playback_speed
+				temp_state.video_target_playback_speed = data_validated.video_target_playback_speed
 				temp_state.video_current_time = data_validated.video_current_time
 				if (data_validated.video_state_paused) {
 					temp_state.video_element?.pause()
