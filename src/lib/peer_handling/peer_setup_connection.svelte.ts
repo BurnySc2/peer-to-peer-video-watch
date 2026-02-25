@@ -58,7 +58,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				break
 			case "video_seek_to":
 				temp_state.video_current_time = data_validated.time
-				temp_state.video_element?.pause()
+				// temp_state.video_element?.pause()
 				console.log("Receiving seek to")
 				break
 			case "video_set_playback_rate":
