@@ -15,21 +15,10 @@ interface Props {
 let { toggle_fullscreen, controls_opacity = $bindable() }: Props = $props()
 
 let current_time_formatted = $derived(format_time(temp_state.video_current_time))
-let current_remaining_time = $derived.by(() => {
-	// TODO: Replace 'temp_state.video_playback_speed' with 'temp_state.video_target_playback_speed' once catch-up is implemented
-	if (temp_state.video_element?.duration) {
-		return format_time(
-			(temp_state.video_element?.duration - temp_state.video_current_time) / temp_state.video_playback_speed,
-		)
-	}
-	return "0"
-})
-let total_time = $derived.by(() => {
-	if (temp_state.video_element?.duration) {
-		return format_time(temp_state.video_element?.duration)
-	}
-	return "0"
-})
+let current_remaining_time = $derived(
+	format_time((temp_state.video_duration - temp_state.video_current_time) / temp_state.video_playback_speed),
+)
+let total_time = $derived(format_time(temp_state.video_duration))
 
 function local_set_play_pause() {
 	if (temp_state.video_state_paused) {
@@ -69,7 +58,7 @@ function seek_back() {
         type="range"
         class="w-full mx-8"
         min="0"
-        max={temp_state.video_element?.duration}
+        max={temp_state.video_duration}
         step="0.01"
         value={temp_state.video_current_time || 0}
         oninput={(e) => {

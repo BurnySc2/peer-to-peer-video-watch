@@ -69,6 +69,7 @@ function debounce_mouse_move(_event: Event) {
 		bind:playbackRate={temp_state.video_playback_speed}
 		bind:paused={temp_state.video_state_paused}
 		bind:currentTime={temp_state.video_current_time}
+		bind:duration={temp_state.video_duration}
 		src={temp_state.playlist[temp_state.playlist_index]}
 		onseeking={local_video_seek_to}
 		oncanplay={local_can_play}
