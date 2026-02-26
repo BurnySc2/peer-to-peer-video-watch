@@ -54,13 +54,17 @@ function debounce_mouse_move(_event: Event) {
 		controls_opacity = 0
 	}, 1000) as unknown as number
 }
+console.log(`hey ${temp_state.playlist[temp_state.playlist_index]}`)
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div bind:this={player_container} class="relative w-full h-full" onmousemove={debounce_mouse_move}>
+	{#if (temp_state.playlist[temp_state.playlist_index] === undefined)}
+	<div class="p-6 w-full text-center text-xl">Enter a link below to begin.</div>
+	{:else}
 	<Toaster />
 	<video bind:this={temp_state.video_element}
-		class="w-full h-full"
+		class="flex w-full h-full"
 		muted={false}
 		playsinline
 		bind:volume={perma_state.global_settings.volume}
@@ -74,4 +78,5 @@ function debounce_mouse_move(_event: Event) {
 		Your browser does not support the video tag.
 	</video>
 	<NewControls send_video_play={send_video_play} send_video_pause={send_video_pause} send_video_seek_to={send_video_seek_to} toggle_fullscreen={toggle_fullscreen} bind:controls_opacity={controls_opacity}/>
+	{/if}
 </div>
