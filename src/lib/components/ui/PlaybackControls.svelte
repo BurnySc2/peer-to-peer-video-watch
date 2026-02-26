@@ -56,6 +56,20 @@ function set_playlist_index() {
 	})
 }
 
+let volume_hover_value = $state<number | null>(null)
+let volume_hover_percent = $state(0)
+function handle_volume_hover(event: PointerEvent) {
+	const target = event.currentTarget as HTMLElement
+	const rect = target.getBoundingClientRect()
+
+	let percent = (event.clientX - rect.left) / rect.width
+
+	percent = Math.min(1, Math.max(0, percent))
+
+	volume_hover_percent = percent * 100
+	volume_hover_value = percent
+}
+
 $effect(() => {
 	send_video_set_playback_rate({
 		value: temp_state.video_playback_speed,
@@ -73,18 +87,34 @@ $effect(() => {
 	</select>
 	<div class="mx-2">|</div>
 	<label class= "mx-2" for="volume_control">Volume</label>
-    <input
-        type="range"
-        class="w-full mx-2"
-        min="0"
-        max="1"
-        step="0.01"
-        value={temp_state.video_element?.volume || "0"}
-        oninput={(e) => {
-            // @ts-ignore            
-            temp_state.video_element.volume = e.target.value
-        }}
-    />
+	<div
+		class="relative w-full mx-2"
+		role="presentation"
+		onpointermove={handle_volume_hover}
+		onpointerleave={() => volume_hover_value = null}
+	>
+		<input
+			type="range"
+			class="w-full"
+			min="0"
+			max="1"
+			step="0.01"
+			value={temp_state.video_element?.volume || 0}
+			oninput={(e) => {
+				temp_state.video_element!.volume =
+					(e.target as HTMLInputElement).valueAsNumber
+			}}
+		/>
+
+		{#if volume_hover_value !== null}
+			<div
+				class="absolute -top-6 -translate-x-1/2	bg-black text-white text-xs px-2 py-1 rounded pointer-events-none"
+				style="left: {volume_hover_percent}%"
+			>
+				{Math.round(volume_hover_value * 100)}%
+			</div>
+		{/if}
+	</div>
 </div>
 <div class="flex items-center space-x-2">
 	<label for="autoplay">Autoplay</label>
