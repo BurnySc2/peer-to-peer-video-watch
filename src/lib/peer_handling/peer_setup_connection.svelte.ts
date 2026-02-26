@@ -51,25 +51,25 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 			case "video_play":
 				console.log("Receiving play")
 				temp_state.video_state_paused = false
-				toast(`Resumed`, { icon: "⏯️" })
+				toast(`Resumed`, { icon: "⏯️", position: "top-right" })
 				break
 			case "video_pause":
 				// TODO: catch up and pause at target time
 				console.log("Receiving pause")
 				temp_state.video_state_paused = true
-				toast(`Paused`, { icon: "⏸️" })
+				toast(`Paused`, { icon: "⏸️", position: "top-right" })
 				break
 			case "video_seek_to":
 				temp_state.video_current_time = data_validated.time
 				// temp_state.video_element?.pause()
 				console.log("Receiving seek to")
-				toast(`Seeking`, { icon: "⏩" })
+				toast(`Seeking`, { icon: "⏩", position: "top-right" })
 				break
 			case "video_set_playback_rate":
 				temp_state.video_target_playback_speed = data_validated.value
 				temp_state.video_playback_speed = data_validated.value
 				console.log("Receiving playback speed")
-				toast(`Playback rate change to ${data_validated.value}`, { icon: "⏫", duration: 3000 })
+				toast(`Playback rate change to ${data_validated.value}`, { icon: "⏫", duration: 3000, position: "top-right" })
 				break
 			case "video_current_time_sync":
 				// TODO: If far away, catch up by increasing playback speed to:
@@ -83,13 +83,13 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 
 	conn.on("close", () => {
 		// Clean up when peer disconnects
-		toast("Peer disconnected")
+		toast("Peer disconnected", { position: "top-right" })
 		console.log("Peer disconnected")
 		temp_state.peer_connections = temp_state.peer_connections.filter((c) => c !== conn)
 	})
 
 	conn.on("error", (err) => {
-		toast("Peer connection closed/error")
+		toast("Peer connection closed/error", { position: "top-right" })
 		console.error("Connection error:", err)
 	})
 
