@@ -13,6 +13,8 @@ interface Props {
 	send_video_seek_to?: (time: number) => void
 	toggle_fullscreen: () => void
 	controls_opacity: number
+	onMouseEnterControls?: () => void
+	onMouseLeaveControls?: () => void
 }
 
 let {
@@ -27,6 +29,8 @@ let {
 	},
 	toggle_fullscreen,
 	controls_opacity = $bindable(),
+	onMouseEnterControls = () => {},
+	onMouseLeaveControls = () => {},
 }: Props = $props()
 
 let current_time_formatted = $derived(format_time(temp_state.video_current_time))
@@ -72,7 +76,11 @@ function handle_seek_hover(event: MouseEvent) {
 }
 </script>
 
-<div class="absolute bottom-0 left-0 right-0 bg-black/60 p-2 flex gap-2 w-full transition-opacity duration-500" style="opacity: {controls_opacity};">
+<div
+    class="absolute bottom-0 left-0 right-0 bg-black/60 p-2 flex gap-2 w-full transition-opacity duration-500"
+    style="opacity: {controls_opacity};"
+    onpointerenter={onMouseEnterControls}
+    onpointerleave={onMouseLeaveControls}>
     <button onclick={local_set_play_pause}>
         {#if temp_state.video_state_paused}
             <PlayIcon />
