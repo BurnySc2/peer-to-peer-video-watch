@@ -83,10 +83,13 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 
 	conn.on("close", () => {
 		// Clean up when peer disconnects
+		toast("Peer disconnected")
+		console.log("Peer disconnected")
 		temp_state.peer_connections = temp_state.peer_connections.filter((c) => c !== conn)
 	})
 
 	conn.on("error", (err) => {
+		toast("Connection closed/error")
 		console.error("Connection error:", err)
 	})
 
