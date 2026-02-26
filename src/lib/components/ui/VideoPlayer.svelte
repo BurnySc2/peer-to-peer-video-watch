@@ -67,6 +67,21 @@ function debounce_mouse_enter_controls(_event: Event) {
 	controls_opacity = 1
 	console.log("controls")
 }
+
+// Experimental
+let test_title = $state("")
+async function get_file_name(url: string) {
+	const res = await fetch(url, { method: "HEAD" })
+
+	const cd = res.headers.get("Content-Disposition")
+	if (!cd) return null
+	
+	const match = cd.match(/filename="?([^"]+)"?/)
+	console.log(match?.[1] ?? null)
+	test_title = match?.[1] ?? ""
+	return match?.[1] ?? null
+}
+
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -99,4 +114,9 @@ function debounce_mouse_enter_controls(_event: Event) {
 		onMouseLeaveControls={() => mouse_in_controls = false}
 		/>
 	{/if}
+</div>
+<div id="experimental">
+	<button onclick={() => get_file_name(temp_state.playlist[temp_state.playlist_index])} class="p-2 rounded-lg hover:bg-blue-400">
+		Title {`${test_title}`}
+	</button>
 </div>
