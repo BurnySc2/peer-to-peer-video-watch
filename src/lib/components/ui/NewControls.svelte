@@ -81,17 +81,17 @@ function handle_seek_hover(event: MouseEvent) {
     style="opacity: {controls_opacity};"
     onpointerenter={onMouseEnterControls}
     onpointerleave={onMouseLeaveControls}>
-    <button onclick={local_set_play_pause}>
+    <button class="text-white hover:text-blue-400 hover:scale-130 transition" onclick={local_set_play_pause}>
         {#if temp_state.video_state_paused}
             <PlayIcon />
         {:else}
             <PauseIcon />
         {/if}
     </button>
-    <button onclick={seek_back}>
+    <button class="text-white hover:text-blue-400 hover:scale-130 transition" onclick={seek_back}>
         <BackIcon />
     </button>
-    <button onclick={seek_forward}>
+    <button class="text-white hover:text-blue-400 hover:scale-130 transition" onclick={seek_forward}>
         <ForwardIcon />
     </button>
     <div id="current-time" class="text-white select-none text-right min-w-14 max-w-14">{current_time_formatted}</div>
@@ -120,7 +120,7 @@ function handle_seek_hover(event: MouseEvent) {
         {/if}
     </div>
     <div id="remaining-time" class="text-white select-none mr-4 min-w-14 max-w-14 text-right">({current_remaining_time})</div>
-    <button class="ml-auto" onclick={toggle_fullscreen}>
+    <button class="ml-auto text-white hover:text-blue-400 hover:scale-130 transition" onclick={toggle_fullscreen}>
         <FullscreenIcon />
     </button>
 </div>

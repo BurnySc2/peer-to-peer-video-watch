@@ -122,7 +122,7 @@ $effect(() => {
 </div>
 <div class="flex items-center space-x-2">
 	<input type="url" placeholder="New playlist item" bind:value={input_new_playlist_url}>
-	<button class="p-2 border hover:bg-green-400" onclick={add_playlist_item}>Add to playlist</button>
+	<button class="p-2 border hover:bg-blue-400" onclick={add_playlist_item}>Add to playlist</button>
 </div>
 <div class="flex items-center space-x-2">
 	<label for="select-playlist">Current playlist</label>
@@ -132,14 +132,14 @@ $effect(() => {
 		{/each}
 	</select>
 	<button 
-		class="p-2 border hover:bg-green-400"
+		class="p-2 border hover:bg-blue-400"
 		class:opacity-0={select_playlist_items.length !== 1}
 		disabled={select_playlist_items.length < 1}
 		onclick={set_playlist_index}>
 		Play
 	</button>
 	<button 
-		class="p-2 border hover:bg-green-400"
+		class="p-2 border hover:bg-blue-400"
 		class:opacity-0={select_playlist_items.length < 1}
 		disabled={select_playlist_items.length < 1}
 		onclick={delete_playlist_item}>
