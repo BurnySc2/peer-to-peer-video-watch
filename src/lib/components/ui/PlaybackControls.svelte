@@ -71,6 +71,20 @@ $effect(() => {
 			<option value={ps}>{ps}</option>
 		{/each}
 	</select>
+	<div class="mx-2">|</div>
+	<label class= "mx-2" for="volume_control">Volume</label>
+    <input
+        type="range"
+        class="w-full mx-2"
+        min="0"
+        max="1"
+        step="0.01"
+        value={temp_state.video_element?.volume || "0"}
+        oninput={(e) => {
+            // @ts-ignore            
+            temp_state.video_element.volume = e.target.value
+        }}
+    />
 </div>
 <div class="flex items-center space-x-2">
 	<label for="autoplay">Autoplay</label>
