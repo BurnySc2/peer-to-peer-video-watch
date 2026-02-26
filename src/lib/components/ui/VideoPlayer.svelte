@@ -71,15 +71,18 @@ function debounce_mouse_enter_controls(_event: Event) {
 // Experimental
 let test_title = $state("")
 async function get_file_name(url: string) {
-	const res = await fetch(url, { method: "HEAD" })
+	url = url.replace("/Download", "")
+	const res = await fetch(url, { credentials: "include"})
+	console.log(res.json())
+	// const res = await fetch(url, { method: "HEAD" })
 
-	const cd = res.headers.get("Content-Disposition")
-	if (!cd) return null
+	// const cd = res.headers.get("Content-Disposition")
+	// if (!cd) return null
 	
-	const match = cd.match(/filename="?([^"]+)"?/)
-	console.log(match?.[1] ?? null)
-	test_title = match?.[1] ?? ""
-	return match?.[1] ?? null
+	// const match = cd.match(/filename="?([^"]+)"?/)
+	// console.log(match?.[1] ?? null)
+	// test_title = match?.[1] ?? ""
+	// return match?.[1] ?? null
 }
 
 </script>
