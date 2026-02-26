@@ -86,7 +86,9 @@ function handle_seek_hover(event: MouseEvent) {
     <button onclick={seek_forward}>
         <ForwardIcon />
     </button>
-    <div id="current-time" class="text-white select-none min-w-14 max-w-14">{current_time_formatted}</div>
+    <div id="current-time" class="text-white select-none max-w-14">{current_time_formatted}</div>
+    <div id="time-separator" class="text-white select-none mx-[-2px]">/</div>
+    <div id="total-time" class="text-white select-none max-w-14">{total_time}</div>
     <div class="relative w-full mx-8" role="presentation" onmousemove={handle_seek_hover} onmouseleave={() => seek_hover_value = null}>
         <input
             type="range"
@@ -109,9 +111,7 @@ function handle_seek_hover(event: MouseEvent) {
 			</div>
         {/if}
     </div>
-    <div id="remaining-time" class="text-white select-none min-w-14 max-w-14 text-right">{current_remaining_time}</div>
-    <div id="time-separator" class="text-white select-none mx-[-8px]">|</div>
-    <div id="total-time" class="text-white select-none min-w-14 max-w-14">{total_time}</div>
+    <div id="remaining-time" class="text-white select-none mr-4 min-w-14 max-w-14 text-right">({current_remaining_time})</div>
     <button class="ml-auto" onclick={toggle_fullscreen}>
         <FullscreenIcon />
     </button>
