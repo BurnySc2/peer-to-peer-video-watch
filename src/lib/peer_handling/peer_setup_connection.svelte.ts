@@ -89,7 +89,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 	})
 
 	conn.on("error", (err) => {
-		toast("Connection closed/error")
+		toast("Peer connection closed/error")
 		console.error("Connection error:", err)
 	})
 
