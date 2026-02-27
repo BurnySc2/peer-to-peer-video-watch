@@ -5,6 +5,7 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import { Message, type TMessage, type TSetupOptions } from "$lib/types/peer_to_peer"
 import { connection_send_validated } from "./peer_send.svelte"
 
+let last_seek_toast_time = 0
 export function setup_connection(peer: Peer, conn: DataConnection, options: TSetupOptions) {
 	conn.on("open", () => {
 		if (options.send_init) {
@@ -63,7 +64,11 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				temp_state.video_current_time = data_validated.time
 				// temp_state.video_element?.pause()
 				console.log("Receiving seek to")
-				toast(`Seeking`, { icon: "⏩", position: "top-right" })
+				if (Date.now() - last_seek_toast_time > 500) {
+					toast(`Seeking`, { icon: "⏩", position: "top-right" })
+					last_seek_toast_time = Date.now()
+					console.log("hey")
+				}
 				break
 			case "video_set_playback_rate":
 				temp_state.video_target_playback_speed = data_validated.value
