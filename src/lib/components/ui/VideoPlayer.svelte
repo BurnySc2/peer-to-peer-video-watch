@@ -69,13 +69,13 @@ async function get_file_name(url: string) {
 
 		if (url === last_url) {
 			if (data.SeriesName)
-				vid_title = `${data.SeriesName} - S${data.ParentIndexNumber ?? "?"}:E${data.IndexNumber ?? "?"} - ${data.Name ?? "Untitled"}}`
-			else vid_title = data.Name ?? ""
-			if (vid_title !== "" && data.ProductionYear) vid_title += ` (${data.ProductionYear})`
+				temp_state.video_title = `${data.SeriesName} - S${data.ParentIndexNumber ?? "?"}:E${data.IndexNumber ?? "?"} - ${data.Name ?? "Untitled"}}`
+			else temp_state.video_title = data.Name ?? ""
+			if (temp_state.video_title !== "" && data.ProductionYear) temp_state.video_title += ` (${data.ProductionYear})`
 		}
 	} catch (err) {
 		console.warn("Metadata fetch failed:", err)
-		if (url === last_url) vid_title = ""
+		if (url === last_url) temp_state.video_title = ""
 	}
 }
 $effect(() => {
@@ -126,12 +126,3 @@ $effect(() => {
 		/>
 	{/if}
 </div>
-<!-- <div id="experimental">
-	<button
-		onclick={() =>
-			get_file_name(temp_state.playlist[temp_state.playlist_index])}
-		class="p-2 rounded-lg hover:bg-blue-400"
-	>
-		Title {`${test_title}`}
-	</button>
-</div> -->

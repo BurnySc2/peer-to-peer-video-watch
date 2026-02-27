@@ -18,6 +18,7 @@ const TempState = z.object({
 	peer_connections: z.array(z.custom<DataConnection>()),
 	video_element: z.custom<HTMLVideoElement | null>(),
 	video_duration: z.number(),
+	video_title: z.string(),
 })
 
 // Types
@@ -35,4 +36,5 @@ export const temp_state: TTempState = $state({
 	peer_connections: [],
 	video_element: null,
 	video_duration: 0,
+	video_title: "",
 })

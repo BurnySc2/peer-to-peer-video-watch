@@ -78,11 +78,11 @@ function handle_seek_hover(event: MouseEvent) {
 }
 </script>
 
-{#if title}
+{#if temp_state.video_title}
 <div 
 	class="absolute top-0 left-0 p-2 text-white bg-gray-800 rounded-br-xl text-xl transition-opacity duration-500"
 	style="opacity: {controls_opacity / 2};">
-	{title}
+	{temp_state.video_title}
 </div>
 {/if}
 <div
