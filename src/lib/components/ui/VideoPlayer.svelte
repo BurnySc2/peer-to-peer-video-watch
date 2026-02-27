@@ -60,6 +60,8 @@ function debounce_mouse_move(_event: Event) {
 // Fetch video title (for Jellyfin links only)
 let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
 async function get_file_name(url: string) {
+	if (!url.includes("vodching")) return;
+
 	url = url.replace("/Download", "")
 	last_url = url
 	try {
@@ -79,7 +81,7 @@ async function get_file_name(url: string) {
 }
 $effect(() => {
 	const url = temp_state.playlist[temp_state.playlist_index]
-	if (!url || !url.includes("vodching")) return
+	if (!url) return
 
 	get_file_name(url)
 })
