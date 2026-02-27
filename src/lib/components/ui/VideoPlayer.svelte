@@ -1,85 +1,88 @@
 <script lang="ts">
-	import { Toaster } from "svelte-5-french-toast";
-	import { perma_state } from "$lib/persistent-storage.svelte";
-	import { temp_state } from "$lib/temporary-storage.svelte";
-	import type { JellyfinItem } from "$lib/types/jellyfin_item";
-	import NewControls from "./NewControls.svelte";
+import { Toaster } from "svelte-5-french-toast"
+import { perma_state } from "$lib/persistent-storage.svelte"
+import { temp_state } from "$lib/temporary-storage.svelte"
+import type { JellyfinItem } from "$lib/types/jellyfin_item"
+import NewControls from "./NewControls.svelte"
 
-	interface MyProps {
-		send_video_play?: (time: number) => void;
-		send_video_pause?: (time: number) => void;
-		send_video_seek_to?: (time: number) => void;
+interface MyProps {
+	send_video_play?: (time: number) => void
+	send_video_pause?: (time: number) => void
+	send_video_seek_to?: (time: number) => void
+}
+
+let {
+	send_video_play = (time: number) => {
+		console.log("Sending video_play", time)
+	},
+	send_video_pause = (time: number) => {
+		console.log("Sending video_pause", time)
+	},
+	send_video_seek_to = (time: number) => {
+		console.log("Sending video_seek_to", time)
+	},
+}: MyProps = $props()
+
+let player_container: HTMLDivElement | null = null
+let controls_opacity = $state(1)
+let hide_timeout: number | null = null
+
+function toggle_fullscreen() {
+	if (!document.fullscreenElement) {
+		player_container?.requestFullscreen()
+	} else {
+		document.exitFullscreen()
+	}
+}
+
+function local_can_play(_event: Event) {
+	temp_state.video_can_play = true
+	console.log("canplay event fired")
+}
+
+let mouse_in_controls = false
+function debounce_mouse_move(_event: Event) {
+	// Clear any existing timeout
+	if (hide_timeout) {
+		clearTimeout(hide_timeout)
+		hide_timeout = null
 	}
 
-	let {
-		send_video_play = (time: number) => {
-			console.log("Sending video_play", time);
-		},
-		send_video_pause = (time: number) => {
-			console.log("Sending video_pause", time);
-		},
-		send_video_seek_to = (time: number) => {
-			console.log("Sending video_seek_to", time);
-		},
-	}: MyProps = $props();
+	// Show controls immediately
+	controls_opacity = 1
 
-	let player_container: HTMLDivElement | null = null;
-	let controls_opacity = $state(1);
-	let hide_timeout: number | null = null;
+	// Set a timeout to hide controls after 3 seconds
+	hide_timeout = setTimeout(() => {
+		if (!mouse_in_controls) controls_opacity = 0
+	}, 1000) as unknown as number
+}
 
-	function toggle_fullscreen() {
-		if (!document.fullscreenElement) {
-			player_container?.requestFullscreen();
-		} else {
-			document.exitFullscreen();
+// Fetch video title (for Jellyfin links only)
+let vid_title = $state("")
+let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
+async function get_file_name(url: string) {
+	url = url.replace("/Download", "")
+	last_url = url
+	try {
+		const res = await fetch(url, { credentials: "include" })
+		const data: JellyfinItem = await res.json()
+
+		if (url === last_url) {
+			if (data.SeriesName)
+				vid_title = `${data.SeriesName} - S${data.ParentIndexNumber ?? "?"}:E${data.IndexNumber ?? "?"} - ${data.Name ?? "Untitled"}${data.ProductionYear ? ` (${data.ProductionYear})` : ""}`
+			else vid_title = data.SortName ?? data.Name ?? ""
 		}
+	} catch (err) {
+		console.warn("Metadata fetch failed:", err)
+		if (url === last_url) vid_title = ""
 	}
+}
+$effect(() => {
+	const url = temp_state.playlist[temp_state.playlist_index]
+	if (!url || !url.includes("vodching")) return
 
-	function local_can_play(_event: Event) {
-		temp_state.video_can_play = true;
-		console.log("canplay event fired");
-	}
-
-	let mouse_in_controls = false;
-	function debounce_mouse_move(_event: Event) {
-		// Clear any existing timeout
-		if (hide_timeout) {
-			clearTimeout(hide_timeout);
-			hide_timeout = null;
-		}
-
-		// Show controls immediately
-		controls_opacity = 1;
-
-		// Set a timeout to hide controls after 3 seconds
-		hide_timeout = setTimeout(() => {
-			if (!mouse_in_controls) controls_opacity = 0;
-		}, 1000) as unknown as number;
-	}
-
-	// Fetch video title (for Jellyfin links only)
-	let test_title = $state("");
-	let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
-	async function get_file_name(url: string) {
-		url = url.replace("/Download", "");
-		last_url = url
-		try {
-			const res = await fetch(url, { credentials: "include" });	
-			const data: JellyfinItem = await res.json();
-
-			if (url === last_url) test_title = data.SortName ?? ""
-
-		} catch (err) {
-			console.warn("Metadata fetch failed:", err);
-			if (url === last_url) test_title = ""
-		}
-	}
-	$effect(() => {
-		const url = temp_state.playlist[temp_state.playlist_index];
-		if (!url || !url.includes("vodching")) return;
-
-		get_file_name(url);
-	});
+	get_file_name(url)
+})
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -111,7 +114,7 @@
 			Your browser does not support the video tag.
 		</video>
 		<NewControls
-			title={test_title}
+			title={vid_title}
 			{send_video_play}
 			{send_video_pause}
 			{send_video_seek_to}
