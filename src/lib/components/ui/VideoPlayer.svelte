@@ -57,37 +57,29 @@
 		}, 1000) as unknown as number;
 	}
 
-	function debounce_mouse_enter_controls(_event: Event) {
-		// Clear any existing timeout
-		if (hide_timeout) {
-			clearTimeout(hide_timeout);
-			hide_timeout = null;
-		}
-
-		// Show controls immediately
-		controls_opacity = 1;
-		console.log("controls");
-	}
-
-	// Experimental
+	// Fetch video title (for Jellyfin links only)
 	let test_title = $state("");
+	let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
 	async function get_file_name(url: string) {
 		url = url.replace("/Download", "");
-		const res = await fetch(url, { credentials: "include" });
+		last_url = url
+		try {
+			const res = await fetch(url, { credentials: "include" });	
+			const data: JellyfinItem = await res.json();
 
-		const data: JellyfinItem = await res.json();
-		console.log(res.json());
-		console.log(data.SortName)
-		// const res = await fetch(url, { method: "HEAD" })
+			if (url === last_url) test_title = data.SortName ?? ""
 
-		// const cd = res.headers.get("Content-Disposition")
-		// if (!cd) return null
-
-		// const match = cd.match(/filename="?([^"]+)"?/)
-		// console.log(match?.[1] ?? null)
-		// test_title = match?.[1] ?? ""
-		// return match?.[1] ?? null
+		} catch (err) {
+			console.warn("Metadata fetch failed:", err);
+			if (url === last_url) test_title = ""
+		}
 	}
+	$effect(() => {
+		const url = temp_state.playlist[temp_state.playlist_index];
+		if (!url || !url.includes("vodching")) return;
+
+		get_file_name(url);
+	});
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -119,6 +111,7 @@
 			Your browser does not support the video tag.
 		</video>
 		<NewControls
+			title={test_title}
 			{send_video_play}
 			{send_video_pause}
 			{send_video_seek_to}
@@ -129,7 +122,7 @@
 		/>
 	{/if}
 </div>
-<div id="experimental">
+<!-- <div id="experimental">
 	<button
 		onclick={() =>
 			get_file_name(temp_state.playlist[temp_state.playlist_index])}
@@ -137,4 +130,4 @@
 	>
 		Title {`${test_title}`}
 	</button>
-</div>
+</div> -->

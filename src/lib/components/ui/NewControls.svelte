@@ -8,6 +8,7 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import { format_time } from "$lib/utils/format_time"
 
 interface Props {
+	title: string
 	send_video_play?: (time: number) => void
 	send_video_pause?: (time: number) => void
 	send_video_seek_to?: (time: number) => void
@@ -18,6 +19,7 @@ interface Props {
 }
 
 let {
+	title = "",
 	send_video_play = (time: number) => {
 		console.log("Sending video_play", time)
 	},
@@ -76,6 +78,13 @@ function handle_seek_hover(event: MouseEvent) {
 }
 </script>
 
+{#if title}
+<div 
+	class="absolute top-0 left-0 p-2 text-white bg-gray-800 rounded-br-xl text-xl transition-opacity duration-500"
+	style="opacity: {controls_opacity / 2};">
+	{title}
+</div>
+{/if}
 <div
     class="absolute bottom-0 left-0 right-0 bg-black/60 p-2 flex gap-2 w-full transition-opacity duration-500"
     style="opacity: {controls_opacity};"
