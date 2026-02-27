@@ -50,7 +50,7 @@ onMount(() => {
 })
 </script>
 
-<div class="flex flex-col items-center max-w-screen p-4 space-y-2">
+<div class="flex flex-col items-center max-w-screen min-h-screen p-4 space-y-2 bg-gray-300">
     <VideoPlayer send_video_play={p2p_send_video_play} send_video_pause={p2p_send_video_pause} send_video_seek_to={p2p_send_video_seek_to} />
 	<PlaybackControls send_playlist_set={p2p_send_playlist_set} send_video_set_playback_rate={p2p_send_video_set_playback_rate} />
 </div>
