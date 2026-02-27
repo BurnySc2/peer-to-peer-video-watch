@@ -34,21 +34,21 @@ interface MediaSource {
 	Container?: string
 	Size?: number
 	Name?: string
-	IsRemote?: false
+	IsRemote?: boolean
 	ETag?: string
 	RunTimeTicks?: number
-	ReadAtNativeFramerate?: false
-	IgnoreDts?: false
-	IgnoreIndex?: false
-	GenPtsInput?: false
+	ReadAtNativeFramerate?: boolean
+	IgnoreDts?: boolean
+	IgnoreIndex?: boolean
+	GenPtsInput?: boolean
 	SupportsTranscoding?: boolean
 	SupportsDirectStream?: boolean
 	SupportsDirectPlay?: boolean
-	IsInfiniteStream?: false
-	UseMostCompatibleTranscodingProfile?: false
-	RequiresOpening?: false
-	RequiresClosing?: false
-	RequiresLooping?: false
+	IsInfiniteStream?: boolean
+	UseMostCompatibleTranscodingProfile?: boolean
+	RequiresOpening?: boolean
+	RequiresClosing?: boolean
+	RequiresLooping?: boolean
 	SupportsProbing?: boolean
 	VideoType?: string
 	MediaStreams?: MediaStream[]
