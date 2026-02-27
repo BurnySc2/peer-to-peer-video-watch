@@ -109,7 +109,7 @@ function handle_seek_hover(event: MouseEvent) {
     <div class="relative w-full mx-8" role="presentation" onmousemove={handle_seek_hover} onmouseleave={() => seek_hover_value = null}>
         <input
             type="range"
-            class="w-full "
+            class="w-full"
             min="0"
             max={temp_state.video_duration}
             step="0.01"
