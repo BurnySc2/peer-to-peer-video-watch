@@ -70,7 +70,7 @@ async function get_file_name(url: string) {
 		if (url === last_url) {
 			if (data.SeriesName)
 				vid_title = `${data.SeriesName} - S${data.ParentIndexNumber ?? "?"}:E${data.IndexNumber ?? "?"} - ${data.Name ?? "Untitled"}}`
-			else vid_title = data.SortName ?? data.Name ?? ""
+			else vid_title = data.Name ?? ""
 			if (vid_title !== "" && data.ProductionYear) vid_title += ` (${data.ProductionYear})`
 		}
 	} catch (err) {
