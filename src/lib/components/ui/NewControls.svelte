@@ -8,7 +8,6 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import { format_time } from "$lib/utils/format_time"
 
 interface Props {
-	title: string
 	send_video_play?: (time: number) => void
 	send_video_pause?: (time: number) => void
 	send_video_seek_to?: (time: number) => void
@@ -19,7 +18,6 @@ interface Props {
 }
 
 let {
-	title = "",
 	send_video_play = (time: number) => {
 		console.log("Sending video_play", time)
 	},

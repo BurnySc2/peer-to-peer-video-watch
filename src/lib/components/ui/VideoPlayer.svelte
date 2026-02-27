@@ -58,7 +58,6 @@ function debounce_mouse_move(_event: Event) {
 }
 
 // Fetch video title (for Jellyfin links only)
-let vid_title = $state("")
 let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
 async function get_file_name(url: string) {
 	url = url.replace("/Download", "")
@@ -115,7 +114,6 @@ $effect(() => {
 			Your browser does not support the video tag.
 		</video>
 		<NewControls
-			title={vid_title}
 			{send_video_play}
 			{send_video_pause}
 			{send_video_seek_to}
