@@ -5,6 +5,7 @@ import * as z from "zod"
 const TempState = z.object({
 	playlist: z.array(z.string()),
 	playlist_index: z.number(),
+	ready_peers: z.set(z.string()),
 	// May be different when catching up to other clients
 	video_playback_speed: z.number(),
 	// TODO: Use 'video_target_playback_speed' as goal, but use 'video_playback_speed' to catch up
@@ -27,6 +28,7 @@ export type TTempState = z.infer<typeof TempState>
 export const temp_state: TTempState = $state({
 	playlist: [],
 	playlist_index: 0,
+	ready_peers: new Set<string>(),
 	video_playback_speed: 1,
 	video_target_playback_speed: 1,
 	video_current_time: 0,

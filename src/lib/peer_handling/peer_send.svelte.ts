@@ -1,6 +1,7 @@
 import type { DataConnection } from "peerjs"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { TMessage } from "$lib/types/peer_to_peer"
+import { perma_state } from "$lib/persistent-storage.svelte"
 
 export function broadcast(data: TMessage) {
 	temp_state.peer_connections.forEach((conn) => {
@@ -33,4 +34,24 @@ export function p2p_send_video_seek_to(time: number) {
 export function p2p_send_video_set_playback_rate(message: { time: number; value: number }) {
 	broadcast({ type: "video_set_playback_rate", time: message.time, value: message.value })
 	console.log("broadcasting playback rate")
+}
+
+export function p2p_send_ready_check() {
+	if (temp_state.peer_connections.length === 0) {
+		console.log("Ready check not run - no peers are connected")
+		return
+	}
+	if (temp_state.ready_peers.size > 0) {
+		console.log("Ready check already active")
+		return
+	}
+	broadcast({ type: "start_ready_check", peer_id: perma_state.global_settings.peer_id })
+	temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)
+	console.log("broadcasting start ready check")
+}
+
+export function p2p_send_ready() {
+	broadcast({ type: "send_ready", peer_id: perma_state.global_settings.peer_id })
+	temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)
+	console.log("broadcasting send_ready")
 }

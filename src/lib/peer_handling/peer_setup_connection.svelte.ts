@@ -67,7 +67,6 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				if (Date.now() - last_seek_toast_time > 500) {
 					toast(`Seeking`, { icon: "⏩", position: "top-right" })
 					last_seek_toast_time = Date.now()
-					console.log("hey")
 				}
 				break
 			case "video_set_playback_rate":
@@ -81,6 +80,14 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 				// 1.1 * temp_state.video_target_playback_speed
 				temp_state.video_p2p_max_time = Math.max(temp_state.video_p2p_max_time, data_validated.value)
 				break
+			case "start_ready_check":
+				console.log("Receiving start ready check from ", data_validated.peer_id)
+				temp_state.ready_peers = new Set(temp_state.ready_peers).add(data_validated.peer_id)
+				console.log(temp_state.ready_peers)
+				break
+			case "send_ready":
+				console.log("Received ready from ", data_validated.peer_id)
+				temp_state.ready_peers = new Set(temp_state.ready_peers).add(data_validated.peer_id)
 			default:
 				break
 		}

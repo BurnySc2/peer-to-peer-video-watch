@@ -4,6 +4,7 @@ import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
 import NewControls from "./NewControls.svelte"
+import ReadyCheck from "./ReadyCheck.svelte";
 
 interface MyProps {
 	send_video_play?: (time: number) => void
@@ -90,7 +91,7 @@ $effect(() => {
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	bind:this={player_container}
-	class="relative w-full h-full"
+	class="relative w-10/12 h-10/12"
 	onmousemove={debounce_mouse_move}
 	onpointerdown={debounce_mouse_move}
 >
@@ -115,6 +116,7 @@ $effect(() => {
 		>
 			Your browser does not support the video tag.
 		</video>
+		<ReadyCheck {send_video_play}/>
 		<NewControls
 			{send_video_play}
 			{send_video_pause}

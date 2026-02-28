@@ -43,6 +43,14 @@ export const Message = z.union([
 		value: z.number(),
 		time: z.number(),
 	}),
+	z.object({
+		type: z.literal("start_ready_check"),
+		peer_id: z.string(),
+	}),
+	z.object({
+		type: z.literal("send_ready"),
+		peer_id: z.string()
+	})
 ])
 
 export type TSetupOptions = z.infer<typeof SetupOptions>

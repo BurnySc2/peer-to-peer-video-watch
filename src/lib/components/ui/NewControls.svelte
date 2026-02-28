@@ -4,6 +4,7 @@ import ForwardIcon from "$lib/icons/ForwardIcon.svelte"
 import FullscreenIcon from "$lib/icons/FullscreenIcon.svelte"
 import PauseIcon from "$lib/icons/PauseIcon.svelte"
 import PlayIcon from "$lib/icons/PlayIcon.svelte"
+    import { p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte";
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { format_time } from "$lib/utils/format_time"
 
@@ -127,6 +128,9 @@ function handle_seek_hover(event: MouseEvent) {
         {/if}
     </div>
     <div id="remaining-time" class="text-white select-none mr-4 min-w-14 max-w-14 text-right">({current_remaining_time})</div>
+	<button class="ml-auto text-white hover:text-blue-400 hover:scale-130 transition" onclick={p2p_send_ready_check}>
+        R
+    </button>
     <button class="ml-auto text-white hover:text-blue-400 hover:scale-130 transition" onclick={toggle_fullscreen}>
         <FullscreenIcon />
     </button>
