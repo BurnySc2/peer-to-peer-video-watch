@@ -51,7 +51,6 @@ function handle_ready_success() {
 }
 
 $effect(() => {
-	console.log("effect hit")
 	if (temp_state.ready_peers.size - 1 >= temp_state.peer_connections.length) {
 		handle_ready_success()
 	} else if (temp_state.ready_peers.size > 0) {

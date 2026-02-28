@@ -3,7 +3,12 @@ import * as z from "zod"
 
 // Zod
 const TempState = z.object({
-	playlist: z.array(z.string()),
+	playlist: z.array(
+		z.object({
+			url: z.string(),
+			video_title: z.string(),
+		}),
+	),
 	playlist_index: z.number(),
 	ready_peers: z.set(z.string()),
 	// May be different when catching up to other clients

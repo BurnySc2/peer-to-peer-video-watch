@@ -1,14 +1,16 @@
 <script lang="ts">
 import { untrack } from "svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
+import type { PlayListItem } from "$lib/types/playlist_item"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
+import { get_file_name as extract_title, fetch_file_name } from "$lib/utils/fetch_jelly_data"
 
 interface MyProps {
-	send_playlist_set?: (message: { playlist: string[]; playlist_index: number }) => void
+	send_playlist_set?: (message: { playlist: PlayListItem[]; playlist_index: number }) => void
 	send_video_set_playback_rate?: (message: { time: number; value: number }) => void
 }
 let {
-	send_playlist_set = (message: { playlist: string[]; playlist_index: number }) => {
+	send_playlist_set = (message: { playlist: PlayListItem[]; playlist_index: number }) => {
 		console.log("Sending playlist_set", message)
 	},
 	send_video_set_playback_rate = (message: { time: number; value: number }) => {
@@ -20,28 +22,45 @@ let {
 let input_new_playlist_url = $state("")
 let select_playlist_items = $state<string[]>([])
 
-function add_playlist_item(_event: Event) {
+async function add_playlist_item(_event: Event) {
 	if (!input_new_playlist_url) {
 		return
 	}
-	if (!temp_state.playlist.includes(input_new_playlist_url)) {
-		temp_state.playlist.push(input_new_playlist_url)
+
+	const exists = temp_state.playlist.some((item) => item.url === input_new_playlist_url)
+	if (!exists) {
+		const index =
+			temp_state.playlist.push({
+				url: input_new_playlist_url,
+				video_title: input_new_playlist_url,
+			}) - 1
+
+		const metadata = await fetch_file_name(input_new_playlist_url)
+		const video_title = extract_title(metadata)
+
+		temp_state.playlist[index] = {
+			...temp_state.playlist[index],
+			video_title: video_title || "",
+		}
 	}
+
 	input_new_playlist_url = ""
 	send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
 }
 function delete_playlist_item(_event: Event) {
 	// Delete items, set new index
-	const current_playing_url = temp_state.playlist[temp_state.playlist_index]
+	const current_playing = temp_state.playlist[temp_state.playlist_index]
 	temp_state.playlist = temp_state.playlist.filter(
-		(url) => url === current_playing_url || !select_playlist_items.includes(url),
+		(item) => item.url === current_playing.url || !select_playlist_items.includes(item.url),
 	)
-	const new_index = temp_state.playlist.indexOf(current_playing_url)
+	const new_index = temp_state.playlist.findIndex((item) => item.url === current_playing.url)
 	temp_state.playlist_index = new_index
 	send_playlist_set({ playlist: temp_state.playlist, playlist_index: new_index })
 }
 function set_playlist_index() {
-	const target_index = temp_state.playlist.indexOf(select_playlist_items[0])
+	// const target_index = temp_state.playlist.indexOf(select_playlist_items[0])
+	const selected_url = select_playlist_items[0]
+	const target_index = temp_state.playlist.findIndex((item) => item.url === selected_url)
 	if (target_index === temp_state.playlist_index) {
 		return
 	}
@@ -127,8 +146,8 @@ $effect(() => {
 <div class="flex items-center space-x-2">
 	<label for="select-playlist">Current playlist</label>
 	<select id="select-playlist" multiple bind:value={select_playlist_items}>
-		{#each temp_state.playlist as playlist_item}
-			<option value={playlist_item}>{playlist_item}</option>
+		{#each temp_state.playlist as item}
+			<option value={item.url}>{item.video_title || item.url}</option>
 		{/each}
 	</select>
 	<button 

@@ -59,33 +59,33 @@ function debounce_mouse_move(_event: Event) {
 }
 
 // Fetch video title (for Jellyfin links only)
-let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
-async function get_file_name(url: string) {
-	if (!url.includes("vodching")) return
+// let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
+// async function get_file_name(url: string) {
+// 	if (!url.includes("vodching")) return
 
-	url = url.replace("/Download", "")
-	last_url = url
-	try {
-		const res = await fetch(url, { credentials: "include" })
-		const data: JellyfinItem = await res.json()
+// 	url = url.replace("/Download", "")
+// 	last_url = url
+// 	try {
+// 		const res = await fetch(url, { credentials: "include" })
+// 		const data: JellyfinItem = await res.json()
 
-		if (url === last_url) {
-			if (data.SeriesName)
-				temp_state.video_title = `${data.SeriesName} - S${data.ParentIndexNumber ?? "?"}:E${data.IndexNumber ?? "?"} - ${data.Name ?? "Untitled"}`
-			else temp_state.video_title = data.Name ?? ""
-			if (temp_state.video_title !== "" && data.ProductionYear) temp_state.video_title += ` (${data.ProductionYear})`
-		}
-	} catch (err) {
-		console.warn("Metadata fetch failed:", err)
-		if (url === last_url) temp_state.video_title = ""
-	}
-}
-$effect(() => {
-	const url = temp_state.playlist[temp_state.playlist_index]
-	if (!url) return
+// 		if (url === last_url) {
+// 			if (data.SeriesName)
+// 				temp_state.video_title = `${data.SeriesName} - S${data.ParentIndexNumber ?? "?"}:E${data.IndexNumber ?? "?"} - ${data.Name ?? "Untitled"}`
+// 			else temp_state.video_title = data.Name ?? ""
+// 			if (temp_state.video_title !== "" && data.ProductionYear) temp_state.video_title += ` (${data.ProductionYear})`
+// 		}
+// 	} catch (err) {
+// 		console.warn("Metadata fetch failed:", err)
+// 		if (url === last_url) temp_state.video_title = ""
+// 	}
+// }
+// $effect(() => {
+// 	const url = temp_state.playlist[temp_state.playlist_index]?.url
+// 	if (!url) return
 
-	get_file_name(url)
-})
+// 	get_file_name(url)
+// })
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -111,7 +111,7 @@ $effect(() => {
 			bind:paused={temp_state.video_state_paused}
 			bind:currentTime={temp_state.video_current_time}
 			bind:duration={temp_state.video_duration}
-			src={temp_state.playlist[temp_state.playlist_index]}
+			src={temp_state.playlist[temp_state.playlist_index].url}
 			oncanplay={local_can_play}
 		>
 			Your browser does not support the video tag.
