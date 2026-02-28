@@ -1,16 +1,16 @@
 <script lang="ts">
 import { untrack } from "svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-import type { PlayListItem } from "$lib/types/playlist_item"
+import type { TPlayListItem } from "$lib/types/peer_to_peer"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 import { get_file_name as extract_title, fetch_file_name } from "$lib/utils/fetch_jelly_data"
 
 interface MyProps {
-    send_playlist_set?: (message: { playlist: PlayListItem[]; playlist_index: number }) => void
+    send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
     send_video_set_playback_rate?: (message: { time: number; value: number }) => void
 }
 let {
-    send_playlist_set = (message: { playlist: PlayListItem[]; playlist_index: number }) => {
+    send_playlist_set = (message: { playlist: TPlayListItem[]; playlist_index: number }) => {
         console.log("Sending playlist_set", message)
     },
     send_video_set_playback_rate = (message: { time: number; value: number }) => {

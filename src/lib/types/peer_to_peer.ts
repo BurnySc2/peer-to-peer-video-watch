@@ -4,11 +4,16 @@ export const SetupOptions = z.object({
     send_init: z.boolean(),
 })
 
+export const PlayListItem = z.object({
+    url: z.string(),
+    video_title: z.string(),
+})
+
 export const Message = z.union([
     z.object({
         type: z.literal("init_connect"),
         peer_ids: z.array(z.string()),
-        playlist: z.array(z.string()),
+        playlist: z.array(PlayListItem),
         // Currently playing
         playlist_index: z.number(),
         video_target_playback_speed: z.number(),
@@ -18,7 +23,7 @@ export const Message = z.union([
     // Set new playlist (triggered by adding or removing an item)
     z.object({
         type: z.literal("playlist_set"),
-        playlist: z.array(z.string()),
+        playlist: z.array(PlayListItem),
         playlist_index: z.number(),
     }),
     z.object({
@@ -53,5 +58,6 @@ export const Message = z.union([
     }),
 ])
 
+export type TPlayListItem = z.infer<typeof PlayListItem>
 export type TSetupOptions = z.infer<typeof SetupOptions>
 export type TMessage = z.infer<typeof Message>
