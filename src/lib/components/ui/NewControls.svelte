@@ -4,7 +4,7 @@ import ForwardIcon from "$lib/icons/ForwardIcon.svelte"
 import FullscreenIcon from "$lib/icons/FullscreenIcon.svelte"
 import PauseIcon from "$lib/icons/PauseIcon.svelte"
 import PlayIcon from "$lib/icons/PlayIcon.svelte"
-    import { p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte";
+import { p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { format_time } from "$lib/utils/format_time"
 

@@ -1,68 +1,64 @@
 <script lang="ts">
-    import { connection_send_validated, p2p_send_ready } from "$lib/peer_handling/peer_send.svelte";
-    import { temp_state } from "$lib/temporary-storage.svelte";
-    import { p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte";
-    import { perma_state } from "$lib/persistent-storage.svelte";
-    import toast from "svelte-5-french-toast";
+import toast from "svelte-5-french-toast"
+import { connection_send_validated, p2p_send_ready, p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte"
+import { perma_state } from "$lib/persistent-storage.svelte"
+import { temp_state } from "$lib/temporary-storage.svelte"
 
-    interface Props {
-	    send_video_play?: (time: number) => void
-    }
+interface Props {
+	send_video_play?: (time: number) => void
+}
 
-    let {
-        send_video_play = (time: number) => {
-            console.log("Sending video_play", time)
-        },
-    }: Props = $props()
+let {
+	send_video_play = (time: number) => {
+		console.log("Sending video_play", time)
+	},
+}: Props = $props()
 
-    function local_set_play() {
-        if (temp_state.video_state_paused) {
-            temp_state.video_state_paused = false
-            send_video_play(temp_state.video_current_time)
-        }
-    }
+function local_set_play() {
+	if (temp_state.video_state_paused) {
+		temp_state.video_state_paused = false
+		send_video_play(temp_state.video_current_time)
+	}
+}
 
-    let ready_check_active = $state(false);
-    let ready_check_timer: ReturnType<typeof setTimeout> | null = null;
-    function handle_ready_check() {
-        if (ready_check_active) return
-        
-        ready_check_active = true
+let ready_check_active = $state(false)
+let ready_check_timer: ReturnType<typeof setTimeout> | null = null
+function handle_ready_check() {
+	if (ready_check_active) return
 
-        ready_check_timer = setTimeout(() => {
-            console.log("Ready check ended")
-            
-            ready_check_active = false
-            ready_check_timer = null
-            if (temp_state.ready_peers.size - 1 < temp_state.peer_connections.length) {
-                console.log("Peers not ready")
-                toast("Peers not ready")
-            }
-            temp_state.ready_peers = new Set()
-        }, 5000)
+	ready_check_active = true
 
-    }
+	ready_check_timer = setTimeout(() => {
+		console.log("Ready check ended")
 
-    function handle_ready_success() {
-        if (ready_check_active === true) {
-            console.log("Ready check success")
-            toast.success("Peers ready")
-            ready_check_active = false
-            local_set_play()
-        }
-    }
+		ready_check_active = false
+		ready_check_timer = null
+		if (temp_state.ready_peers.size - 1 < temp_state.peer_connections.length) {
+			console.log("Peers not ready")
+			toast("Peers not ready")
+		}
+		temp_state.ready_peers = new Set()
+	}, 5000)
+}
 
-    $effect(() => {
-        console.log("effect hit")
-        if (temp_state.ready_peers.size - 1 >= temp_state.peer_connections.length) {
-            handle_ready_success()
-        }
-        else if (temp_state.ready_peers.size > 0) {
-            console.log("Handle ready check")
-            handle_ready_check()
-        }
+function handle_ready_success() {
+	if (ready_check_active === true) {
+		console.log("Ready check success")
+		toast.success("Peers ready")
+		ready_check_active = false
+		local_set_play()
+	}
+}
 
-    });
+$effect(() => {
+	console.log("effect hit")
+	if (temp_state.ready_peers.size - 1 >= temp_state.peer_connections.length) {
+		handle_ready_success()
+	} else if (temp_state.ready_peers.size > 0) {
+		console.log("Handle ready check")
+		handle_ready_check()
+	}
+})
 </script>
 
 {#if ready_check_active}

@@ -4,7 +4,7 @@ import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
 import NewControls from "./NewControls.svelte"
-import ReadyCheck from "./ReadyCheck.svelte";
+import ReadyCheck from "./ReadyCheck.svelte"
 
 interface MyProps {
 	send_video_play?: (time: number) => void
@@ -61,7 +61,7 @@ function debounce_mouse_move(_event: Event) {
 // Fetch video title (for Jellyfin links only)
 let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
 async function get_file_name(url: string) {
-	if (!url.includes("vodching")) return;
+	if (!url.includes("vodching")) return
 
 	url = url.replace("/Download", "")
 	last_url = url

@@ -88,6 +88,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 			case "send_ready":
 				console.log("Received ready from ", data_validated.peer_id)
 				temp_state.ready_peers = new Set(temp_state.ready_peers).add(data_validated.peer_id)
+				break
 			default:
 				break
 		}
