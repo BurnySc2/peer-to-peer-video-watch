@@ -4,54 +4,54 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import type { TMessage } from "$lib/types/peer_to_peer"
 
 export function broadcast(data: TMessage) {
-	temp_state.peer_connections.forEach((conn) => {
-		if (conn.open) {
-			connection_send_validated(conn, data)
-		}
-	})
+    temp_state.peer_connections.forEach((conn) => {
+        if (conn.open) {
+            connection_send_validated(conn, data)
+        }
+    })
 }
 
 export function connection_send_validated(conn: DataConnection, data: TMessage) {
-	conn.send(data)
+    conn.send(data)
 }
 
 export function p2p_send_playlist_set(message: { playlist: string[]; playlist_index: number }) {
-	broadcast({ type: "playlist_set", playlist: message.playlist, playlist_index: message.playlist_index })
-	console.log("broadcasting playlist set")
+    broadcast({ type: "playlist_set", playlist: message.playlist, playlist_index: message.playlist_index })
+    console.log("broadcasting playlist set")
 }
 export function p2p_send_video_play(time: number) {
-	broadcast({ type: "video_play", time: time })
-	console.log("broadcasting play")
+    broadcast({ type: "video_play", time: time })
+    console.log("broadcasting play")
 }
 export function p2p_send_video_pause(time: number) {
-	broadcast({ type: "video_pause", time: time })
-	console.log("broadcasting pause")
+    broadcast({ type: "video_pause", time: time })
+    console.log("broadcasting pause")
 }
 export function p2p_send_video_seek_to(time: number) {
-	broadcast({ type: "video_seek_to", time: time })
-	console.log("broadcasting seek to")
+    broadcast({ type: "video_seek_to", time: time })
+    console.log("broadcasting seek to")
 }
 export function p2p_send_video_set_playback_rate(message: { time: number; value: number }) {
-	broadcast({ type: "video_set_playback_rate", time: message.time, value: message.value })
-	console.log("broadcasting playback rate")
+    broadcast({ type: "video_set_playback_rate", time: message.time, value: message.value })
+    console.log("broadcasting playback rate")
 }
 
 export function p2p_send_ready_check() {
-	if (temp_state.peer_connections.length === 0) {
-		console.log("Ready check not run - no peers are connected")
-		return
-	}
-	if (temp_state.ready_peers.size > 0) {
-		console.log("Ready check already active")
-		return
-	}
-	broadcast({ type: "start_ready_check", peer_id: perma_state.global_settings.peer_id })
-	temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)
-	console.log("broadcasting start ready check")
+    if (temp_state.peer_connections.length === 0) {
+        console.log("Ready check not run - no peers are connected")
+        return
+    }
+    if (temp_state.ready_peers.size > 0) {
+        console.log("Ready check already active")
+        return
+    }
+    broadcast({ type: "start_ready_check", peer_id: perma_state.global_settings.peer_id })
+    temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)
+    console.log("broadcasting start ready check")
 }
 
 export function p2p_send_ready() {
-	broadcast({ type: "send_ready", peer_id: perma_state.global_settings.peer_id })
-	temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)
-	console.log("broadcasting send_ready")
+    broadcast({ type: "send_ready", peer_id: perma_state.global_settings.peer_id })
+    temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)
+    console.log("broadcasting send_ready")
 }
