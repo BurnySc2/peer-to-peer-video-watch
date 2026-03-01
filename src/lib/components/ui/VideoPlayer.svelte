@@ -67,6 +67,7 @@ async function handle_load_subtitles() {
 	}
 	temp_state.subtitles_blob_url = ""
 	console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
+	console.log("Subtitle load attempt - ", temp_state.playlist[temp_state.playlist_index].subtitles_original_url)
     await load_subtitles(temp_state.playlist[temp_state.playlist_index].subtitles_original_url)
 	await tick()
     if (temp_state.subtitles_blob_url) {
