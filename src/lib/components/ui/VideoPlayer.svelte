@@ -67,7 +67,7 @@ async function handle_load_subtitles() {
 	temp_state.subtitles_blob_url = ""
 	console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
 
-	const subtitles_original_url = temp_state.playlist[temp_state.playlist_index].subtitles_original_url
+	const subtitles_original_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
 	if (!subtitles_original_url) {
 		console.log("No subtitles_original_url found")
 		return
@@ -124,7 +124,6 @@ $effect(() => {
                         src={temp_state.subtitles_blob_url}
                         srclang="en"
                         label="English"
-                        default
                     >
                 {/key}
             {/if}
