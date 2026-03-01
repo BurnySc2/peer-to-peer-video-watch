@@ -61,15 +61,15 @@ function debounce_mouse_move(_event: Event) {
 
 async function handle_load_subtitles() {
 	if (currently_playing !== temp_state.playlist[temp_state.playlist_index]?.url) return
-	
+
 	if (temp_state.subtitles_blob_url) {
 		URL.revokeObjectURL(temp_state.subtitles_blob_url)
 	}
 	temp_state.subtitles_blob_url = ""
 	console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
     await load_subtitles(temp_state.playlist[temp_state.playlist_index].subtitles_original_url)
+	await tick()
     if (temp_state.subtitles_blob_url) {
-        await tick()
         enable_subtitles()
         console.log("Subtitles loaded ", temp_state.subtitles_blob_url)
     } else console.log("Subtitles not loaded")
@@ -94,7 +94,7 @@ $effect(() => {
     onpointerdown={debounce_mouse_move}
 >
     {#if temp_state.playlist[temp_state.playlist_index] === undefined}
-        <div class="p-6 w-full text-center text-xl">Enter a link below to begin.</div>
+        <div class="p-6 w-full text-center text-xl">Enter a link below to begin...</div>
     {:else}
         <Toaster />
         <video

@@ -52,6 +52,7 @@ export async function load_subtitles(real_url: string) {
         if (temp_state.subtitles_blob_url) URL.revokeObjectURL(temp_state.subtitles_blob_url)
 
         temp_state.subtitles_blob_url = blob_url
+        console.log("load_subtitles success")
     } catch (err) {
         console.error(err)
         if (temp_state.subtitles_blob_url) URL.revokeObjectURL(temp_state.subtitles_blob_url)
