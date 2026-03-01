@@ -2,7 +2,7 @@
 import { Toaster } from "svelte-5-french-toast"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-import { fetch_file_data } from "$lib/utils/fetch_jelly_data"
+import { extract_subtitle_url, fetch_file_data } from "$lib/utils/fetch_jelly_data"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
 
@@ -58,9 +58,15 @@ function debounce_mouse_move(_event: Event) {
     }, 1000) as unknown as number
 }
 
+let subs_url = $state("")
 async function fetch_data() {
-	const data = await fetch_file_data(temp_state.playlist[temp_state.playlist_index].url)
-	console.log(data)
+    const url = new URL(temp_state.playlist[temp_state.playlist_index].url)
+    const data = await fetch_file_data(temp_state.playlist[temp_state.playlist_index].url)
+    console.log(data)
+
+    const subs_path = extract_subtitle_url(data)
+    subs_url = url.origin + subs_path
+    console.log(subs_url)
 }
 </script>
 
@@ -77,6 +83,7 @@ async function fetch_data() {
         <Toaster />
         <video
             bind:this={temp_state.video_element}
+            controls
             class="flex w-full h-full"
             muted={false}
             playsinline
@@ -88,10 +95,21 @@ async function fetch_data() {
             src={temp_state.playlist[temp_state.playlist_index].url}
             oncanplay={local_can_play}
         >
+            {#if subs_url}
+                {#key subs_url}
+                    <track
+                        kind="subtitles"
+                        src={subs_url}
+                        srclang="en"
+                        label="English"
+                        default
+                    >
+                {/key}
+            {/if}
             Your browser does not support the video tag.
         </video>
         <ReadyCheck {send_video_play} />
-        <NewControls
+    <!-- <NewControls
             {send_video_play}
             {send_video_pause}
             {send_video_seek_to}
@@ -99,9 +117,7 @@ async function fetch_data() {
             bind:controls_opacity
             onMouseEnterControls={() => (mouse_in_controls = true)}
             onMouseLeaveControls={() => (mouse_in_controls = false)}
-        />
+        /> -->
     {/if}
 </div>
-<button onclick={fetch_data}>
-	Subs
-</button>
+<button onclick={fetch_data}>Subs</button>

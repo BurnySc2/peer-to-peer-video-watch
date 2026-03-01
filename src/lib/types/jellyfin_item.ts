@@ -58,4 +58,7 @@ interface MediaSource {
 interface MediaStream {
     Codec?: string
     Language?: string
+    Index?: number
+    Type?: string
+    IsTextSubtitleStream?: boolean
 }
