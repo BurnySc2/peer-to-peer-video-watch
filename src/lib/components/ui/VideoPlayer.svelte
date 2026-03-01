@@ -60,22 +60,21 @@ function debounce_mouse_move(_event: Event) {
 }
 
 async function handle_load_subtitles() {
+    if (temp_state.subtitles_blob_url) {
+        URL.revokeObjectURL(temp_state.subtitles_blob_url)
+    }
+    temp_state.subtitles_blob_url = ""
+    console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
 
-	if (temp_state.subtitles_blob_url) {
-		URL.revokeObjectURL(temp_state.subtitles_blob_url)
-	}
-	temp_state.subtitles_blob_url = ""
-	console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
+    const subtitles_original_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
+    if (!subtitles_original_url) {
+        console.log("No subtitles_original_url found")
+        return
+    }
 
-	const subtitles_original_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
-	if (!subtitles_original_url) {
-		console.log("No subtitles_original_url found")
-		return
-	}
-
-	console.log("Subtitle load attempt - ", subtitles_original_url)
+    console.log("Subtitle load attempt - ", subtitles_original_url)
     await load_subtitles(subtitles_original_url)
-	await tick()
+    await tick()
     if (temp_state.subtitles_blob_url) {
         enable_subtitles()
         console.log("Subtitles loaded ", temp_state.subtitles_blob_url)

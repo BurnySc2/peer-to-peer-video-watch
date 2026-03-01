@@ -174,11 +174,11 @@ function toggle_subtitles() {
         ({current_remaining_time})
     </div>
     <button
-        class="ml-auto {temp_state.subtitles_enabled ? "text-blue-400": "text-white"} hover:scale-130 transition"
+        class={`ml-auto ${temp_state.subtitles_enabled ? "text-blue-400": "text-white"} hover:scale-130 transition`}
         onclick={toggle_subtitles}
     >
-		CC
-	</button>
+        CC
+    </button>
     <button
         class="ml-auto text-white hover:text-blue-400 hover:scale-130 transition"
         onclick={p2p_send_ready_check}

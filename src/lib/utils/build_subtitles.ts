@@ -1,3 +1,4 @@
+import { APP_CONFIG } from "$lib/config"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
 import { fetch_file_data } from "$lib/utils/fetch_jelly_data"
@@ -70,4 +71,6 @@ export function enable_subtitles() {
     for (let i = 0; i < tracks.length; i++) {
         tracks[i].mode = "disabled"
     }
+
+    if (APP_CONFIG.subtitles_default_on) tracks[0].mode = "showing"
 }
