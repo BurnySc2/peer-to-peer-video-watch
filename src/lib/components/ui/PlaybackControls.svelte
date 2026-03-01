@@ -3,7 +3,7 @@ import { untrack } from "svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { TPlayListItem } from "$lib/types/peer_to_peer"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
-import { get_file_name as extract_title, fetch_file_name } from "$lib/utils/fetch_jelly_data"
+import { get_file_name as extract_title, fetch_file_data } from "$lib/utils/fetch_jelly_data"
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
@@ -35,7 +35,7 @@ async function add_playlist_item(_event: Event) {
                 video_title: input_new_playlist_url,
             }) - 1
 
-        const metadata = await fetch_file_name(input_new_playlist_url)
+        const metadata = await fetch_file_data(input_new_playlist_url)
         const video_title = extract_title(metadata)
 
         temp_state.playlist[index] = {
@@ -45,7 +45,10 @@ async function add_playlist_item(_event: Event) {
     }
 
     input_new_playlist_url = ""
-    send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
+    send_playlist_set({
+        playlist: temp_state.playlist,
+        playlist_index: temp_state.playlist_index,
+    })
 }
 function delete_playlist_item(_event: Event) {
     // Delete items, set new index
@@ -55,7 +58,10 @@ function delete_playlist_item(_event: Event) {
     )
     const new_index = temp_state.playlist.findIndex((item) => item.url === current_playing.url)
     temp_state.playlist_index = new_index
-    send_playlist_set({ playlist: temp_state.playlist, playlist_index: new_index })
+    send_playlist_set({
+        playlist: temp_state.playlist,
+        playlist_index: new_index,
+    })
 }
 function set_playlist_index() {
     // const target_index = temp_state.playlist.indexOf(select_playlist_items[0])
@@ -118,7 +124,7 @@ $effect(() => {
         class="relative w-full mx-2"
         role="presentation"
         onpointermove={handle_volume_hover}
-        onpointerleave={() => volume_hover_value = null}
+        onpointerleave={() => (volume_hover_value = null)}
     >
         <input
             type="range"
@@ -128,14 +134,15 @@ $effect(() => {
             step="0.01"
             value={temp_state.video_element?.volume || 0}
             oninput={(e) => {
-				temp_state.video_element!.volume =
-					(e.target as HTMLInputElement).valueAsNumber
-			}}
+                temp_state.video_element!.volume = (
+                    e.target as HTMLInputElement
+                ).valueAsNumber;
+            }}
         >
 
         {#if volume_hover_value !== null}
             <div
-                class="absolute -top-6 -translate-x-1/2	bg-black text-white text-xs px-2 py-1 rounded pointer-events-none"
+                class="absolute -top-6 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded pointer-events-none"
                 style="left: {volume_hover_percent}%"
             >
                 {Math.round(volume_hover_value * 100)}%

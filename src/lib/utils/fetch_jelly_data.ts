@@ -13,7 +13,7 @@ export function get_file_name(data: JellyfinItem | null) {
 
 // Fetch video title (for Jellyfin links only)
 let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
-export async function fetch_file_name(url: string) {
+export async function fetch_file_data(url: string) {
     if (!url.includes("vodching")) return null
 
     url = url.replace("/Download", "")
