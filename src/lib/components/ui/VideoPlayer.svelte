@@ -75,10 +75,13 @@ async function handle_load_subtitles() {
     } else console.log("Subtitles not loaded")
 }
 
-$effect(() => {
-    const orig_sub_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
-    if (!orig_sub_url) return
+let last_sub_url = ""
 
+$effect(() => {
+    const url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
+    if (!url || url === last_sub_url) return
+
+    last_sub_url = url
     handle_load_subtitles()
 })
 </script>
