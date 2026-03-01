@@ -2,6 +2,7 @@
 import { Toaster } from "svelte-5-french-toast"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
+import { fetch_file_data } from "$lib/utils/fetch_jelly_data"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
 
@@ -56,6 +57,11 @@ function debounce_mouse_move(_event: Event) {
         if (!mouse_in_controls) controls_opacity = 0
     }, 1000) as unknown as number
 }
+
+async function fetch_data() {
+	const data = await fetch_file_data(temp_state.playlist[temp_state.playlist_index].url)
+	console.log(data)
+}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -96,3 +102,6 @@ function debounce_mouse_move(_event: Event) {
         />
     {/if}
 </div>
+<button onclick={fetch_data}>
+	Subs
+</button>
