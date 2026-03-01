@@ -74,6 +74,7 @@ $effect(() => {
             URL.revokeObjectURL(temp_state.subtitles_blob_url)
         }
         temp_state.subtitles_blob_url = ""
+		console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
         handle_load_subtitles()
     }
 })
