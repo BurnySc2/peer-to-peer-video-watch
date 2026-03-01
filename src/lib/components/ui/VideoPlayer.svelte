@@ -2,7 +2,6 @@
 import { Toaster } from "svelte-5-french-toast"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-import type { JellyfinItem } from "$lib/types/jellyfin_item"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
 
@@ -57,35 +56,6 @@ function debounce_mouse_move(_event: Event) {
         if (!mouse_in_controls) controls_opacity = 0
     }, 1000) as unknown as number
 }
-
-// Fetch video title (for Jellyfin links only)
-// let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
-// async function get_file_name(url: string) {
-// 	if (!url.includes("vodching")) return
-
-// 	url = url.replace("/Download", "")
-// 	last_url = url
-// 	try {
-// 		const res = await fetch(url, { credentials: "include" })
-// 		const data: JellyfinItem = await res.json()
-
-// 		if (url === last_url) {
-// 			if (data.SeriesName)
-// 				temp_state.video_title = `${data.SeriesName} - S${data.ParentIndexNumber ?? "?"}:E${data.IndexNumber ?? "?"} - ${data.Name ?? "Untitled"}`
-// 			else temp_state.video_title = data.Name ?? ""
-// 			if (temp_state.video_title !== "" && data.ProductionYear) temp_state.video_title += ` (${data.ProductionYear})`
-// 		}
-// 	} catch (err) {
-// 		console.warn("Metadata fetch failed:", err)
-// 		if (url === last_url) temp_state.video_title = ""
-// 	}
-// }
-// $effect(() => {
-// 	const url = temp_state.playlist[temp_state.playlist_index]?.url
-// 	if (!url) return
-
-// 	get_file_name(url)
-// })
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->

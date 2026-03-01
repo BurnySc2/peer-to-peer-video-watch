@@ -1,6 +1,7 @@
 <script lang="ts">
 import toast from "svelte-5-french-toast"
-import { connection_send_validated, p2p_send_ready, p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte"
+import { APP_CONFIG } from "$lib/config"
+import { p2p_send_ready } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 
@@ -38,13 +39,13 @@ function handle_ready_check() {
             toast("Peers not ready")
         }
         temp_state.ready_peers = new Set()
-    }, 5000)
+    }, APP_CONFIG.ready_check_delay_ms)
 }
 
 function handle_ready_success() {
     if (ready_check_active === true) {
         console.log("Ready check success")
-        toast.success("Peers ready")
+        toast.success("Peers ready", { position: APP_CONFIG.toast_location })
         ready_check_active = false
         local_set_play()
     }

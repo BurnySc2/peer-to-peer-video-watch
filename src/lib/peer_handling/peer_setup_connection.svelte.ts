@@ -4,6 +4,7 @@ import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { Message, type TMessage, type TSetupOptions } from "$lib/types/peer_to_peer"
 import { connection_send_validated } from "./peer_send.svelte"
+import { APP_CONFIG } from "$lib/config"
 
 let last_seek_toast_time = 0
 export function setup_connection(peer: Peer, conn: DataConnection, options: TSetupOptions) {
@@ -52,20 +53,20 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
             case "video_play":
                 console.log("Receiving play")
                 temp_state.video_state_paused = false
-                toast(`Resumed`, { icon: "⏯️", position: "top-right" })
+                toast(`Resumed`, { icon: "⏯️", position: APP_CONFIG.toast_location })
                 break
             case "video_pause":
                 // TODO: catch up and pause at target time
                 console.log("Receiving pause")
                 temp_state.video_state_paused = true
-                toast(`Paused`, { icon: "⏸️", position: "top-right" })
+                toast(`Paused`, { icon: "⏸️", position: APP_CONFIG.toast_location })
                 break
             case "video_seek_to":
                 temp_state.video_current_time = data_validated.time
                 // temp_state.video_element?.pause()
                 console.log("Receiving seek to")
                 if (Date.now() - last_seek_toast_time > 500) {
-                    toast(`Seeking`, { icon: "⏩", position: "top-right" })
+                    toast(`Seeking`, { icon: "⏩", position: APP_CONFIG.toast_location })
                     last_seek_toast_time = Date.now()
                 }
                 break
@@ -76,7 +77,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 toast(`Playback rate change to ${data_validated.value}`, {
                     icon: "⏫",
                     duration: 3000,
-                    position: "top-right",
+                    position: APP_CONFIG.toast_location,
                 })
                 break
             case "video_current_time_sync":
@@ -100,13 +101,13 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 
     conn.on("close", () => {
         // Clean up when peer disconnects
-        toast("Peer disconnected", { position: "top-right" })
+        toast("Peer disconnected", { position: APP_CONFIG.toast_location })
         console.log("Peer disconnected")
         temp_state.peer_connections = temp_state.peer_connections.filter((c) => c !== conn)
     })
 
     conn.on("error", (err) => {
-        toast("Peer connection closed/error", { position: "top-right" })
+        toast("Peer connection closed/error", { position: APP_CONFIG.toast_location })
         console.error("Connection error:", err)
     })
 
