@@ -11,19 +11,6 @@ export function extract_title(data: JellyfinItem | null) {
     return video_title
 }
 
-export function extract_subtitle_url(data: JellyfinItem | null) {
-    if (!data?.Id) return null
-
-    const media_source = data.MediaSources?.[0]
-    if (!media_source) return null
-
-    const subs_stream = media_source.MediaStreams?.find((stream) => stream.IsTextSubtitleStream === true)
-    if (!subs_stream) return null
-
-    const url = `/Videos/${data.Id}/${data.MediaSources?.[0].Id}/Subtitles/${subs_stream.Index}/Stream.vtt`
-    return url
-}
-
 // Fetch video title (for Jellyfin links only)
 let last_url = "" // Prevent issue: quickly changing videos -> incorrect name
 export async function fetch_file_data(url: string) {

@@ -2,9 +2,10 @@
 import { Toaster } from "svelte-5-french-toast"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-import { extract_subtitle_url, fetch_file_data } from "$lib/utils/fetch_jelly_data"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
+import { enable_subtitles, load_subtitles } from "$lib/utils/build_subtitles";
+import { tick } from "svelte";
 
 interface MyProps {
     send_video_play?: (time: number) => void
@@ -58,50 +59,23 @@ function debounce_mouse_move(_event: Event) {
     }, 1000) as unknown as number
 }
 
-async function get_subs_url() {
-    const url = new URL(temp_state.playlist[temp_state.playlist_index].url)
-    const data = await fetch_file_data(temp_state.playlist[temp_state.playlist_index].url)
-    console.log(data)
+async function handle_load_subtitles() {
+	await load_subtitles(temp_state.playlist[temp_state.playlist_index].subtitles_original_url)
+	if (temp_state.subtitles_blob_url) {		
+		await tick()
+		enable_subtitles()
+		console.log("Subtitles loaded ", temp_state.subtitles_blob_url)
+	}
+	else console.log("Subtitles not loaded")
 
-    const subs_path = extract_subtitle_url(data)
-    if (!subs_path) {
-        console.log("No subs path found")
-        return null
-    }
-    const real_url = url.origin + subs_path
-    console.log(real_url)
-    return real_url
 }
 
-let subs_url = $state("")
-async function load_subtitles() {
-    const real_url = await get_subs_url()
-    if (!real_url) return
+$effect(() => {
+    if (temp_state.playlist[temp_state.playlist_index]?.url) {
+		handle_load_subtitles()
+	}
+})
 
-    try {
-        const res = await fetch(real_url, {
-            credentials: "include", // if needed
-        })
-
-        if (!res.ok) throw new Error("Failed to fetch subtitles")
-
-        const text = await res.text()
-
-        // Ensure it's proper VTT
-        const vtt_text = text.startsWith("WEBVTT") ? text : "WEBVTT\n\n" + text
-
-        const blob = new Blob([vtt_text], { type: "text/vtt" })
-        const blob_url = URL.createObjectURL(blob)
-
-        if (subs_url) URL.revokeObjectURL(subs_url)
-
-        subs_url = blob_url
-        console.log(subs_url)
-    } catch (err) {
-        console.error(err)
-        subs_url = ""
-    }
-}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -117,7 +91,6 @@ async function load_subtitles() {
         <Toaster />
         <video
             bind:this={temp_state.video_element}
-            controls
             class="flex w-full h-full"
             muted={false}
             playsinline
@@ -129,11 +102,11 @@ async function load_subtitles() {
             src={temp_state.playlist[temp_state.playlist_index].url}
             oncanplay={local_can_play}
         >
-            {#if subs_url}
-                {#key subs_url}
+            {#if temp_state.subtitles_blob_url}
+                {#key temp_state.subtitles_blob_url}
                     <track
                         kind="subtitles"
-                        src={subs_url}
+                        src={temp_state.subtitles_blob_url}
                         srclang="en"
                         label="English"
                         default
@@ -143,7 +116,7 @@ async function load_subtitles() {
             Your browser does not support the video tag.
         </video>
         <ReadyCheck {send_video_play} />
-    <!-- <NewControls
+    <NewControls
             {send_video_play}
             {send_video_pause}
             {send_video_seek_to}
@@ -151,7 +124,7 @@ async function load_subtitles() {
             bind:controls_opacity
             onMouseEnterControls={() => (mouse_in_controls = true)}
             onMouseLeaveControls={() => (mouse_in_controls = false)}
-        /> -->
+        />
     {/if}
 </div>
-<button onclick={load_subtitles}>Subs</button>
+

@@ -4,6 +4,7 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import type { TPlayListItem } from "$lib/types/peer_to_peer"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 import { extract_title, fetch_file_data } from "$lib/utils/fetch_jelly_data"
+    import { get_subs_url } from "$lib/utils/build_subtitles";
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
@@ -33,14 +34,17 @@ async function add_playlist_item(_event: Event) {
             temp_state.playlist.push({
                 url: input_new_playlist_url,
                 video_title: input_new_playlist_url,
+                subtitles_original_url: "",
             }) - 1
 
         const metadata = await fetch_file_data(input_new_playlist_url)
         const video_title = extract_title(metadata)
+        const subs_original_url = get_subs_url(metadata)
 
         temp_state.playlist[index] = {
             ...temp_state.playlist[index],
             video_title: video_title || "",
+            subtitles_original_url: subs_original_url || "",
         }
     }
 

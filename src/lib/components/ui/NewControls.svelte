@@ -75,6 +75,18 @@ function handle_seek_hover(event: MouseEvent) {
     seek_hover_value = format_time(percent * temp_state.video_duration)
     seek_hover_percent = percent * 100
 }
+
+function toggle_subtitles() {
+	const tracks = temp_state.video_element?.textTracks
+    if (!tracks || tracks.length === 0) return
+
+    temp_state.subtitles_enabled = !temp_state.subtitles_enabled
+
+    tracks[0].mode = temp_state.subtitles_enabled
+        ? "showing"
+        : "disabled"
+
+}
 </script>
 
 {#if temp_state.playlist[temp_state.playlist_index]?.video_title}
@@ -164,6 +176,12 @@ function handle_seek_hover(event: MouseEvent) {
     >
         ({current_remaining_time})
     </div>
+	<button
+        class="ml-auto {temp_state.subtitles_enabled ? "text-blue-400": "text-white"} hover:scale-130 transition"
+        onclick={toggle_subtitles}
+    >
+		CC
+	</button>
     <button
         class="ml-auto text-white hover:text-blue-400 hover:scale-130 transition"
         onclick={p2p_send_ready_check}
