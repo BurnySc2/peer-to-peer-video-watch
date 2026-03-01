@@ -1,6 +1,6 @@
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
 
-export function get_file_name(data: JellyfinItem | null) {
+export function extract_title(data: JellyfinItem | null) {
     if (!data) return null
 
     let video_title = ""
