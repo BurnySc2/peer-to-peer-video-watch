@@ -1,7 +1,6 @@
 import { APP_CONFIG } from "$lib/config"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
-import { fetch_file_data } from "$lib/utils/fetch_jelly_data"
 
 // Returns the external url of a subtitle file
 export function get_subs_url(data: JellyfinItem | null) {
@@ -37,7 +36,7 @@ export async function load_subtitles(real_url: string) {
 
     try {
         const res = await fetch(real_url, {
-            credentials: "include", // if needed
+            credentials: "include",
         })
 
         if (!res.ok) throw new Error("Failed to fetch subtitles")
