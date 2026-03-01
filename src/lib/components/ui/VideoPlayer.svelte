@@ -70,6 +70,10 @@ async function handle_load_subtitles() {
 
 $effect(() => {
     if (temp_state.playlist[temp_state.playlist_index]?.url) {
+        if (temp_state.subtitles_blob_url) {
+            URL.revokeObjectURL(temp_state.subtitles_blob_url)
+        }
+        temp_state.subtitles_blob_url = ""
         handle_load_subtitles()
     }
 })
