@@ -7,6 +7,7 @@ export const SetupOptions = z.object({
 export const PlayListItem = z.object({
     url: z.string(),
     video_title: z.string(),
+    subtitles_original_url: z.string(),
 })
 
 export const Message = z.union([
