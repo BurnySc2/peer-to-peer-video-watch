@@ -60,6 +60,11 @@ function debounce_mouse_move(_event: Event) {
 }
 
 async function handle_load_subtitles() {
+	if (temp_state.subtitles_blob_url) {
+		URL.revokeObjectURL(temp_state.subtitles_blob_url)
+	}
+	temp_state.subtitles_blob_url = ""
+	console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
     await load_subtitles(temp_state.playlist[temp_state.playlist_index].subtitles_original_url)
     if (temp_state.subtitles_blob_url) {
         await tick()
@@ -70,11 +75,6 @@ async function handle_load_subtitles() {
 
 $effect(() => {
     if (temp_state.playlist[temp_state.playlist_index]?.url) {
-        if (temp_state.subtitles_blob_url) {
-            URL.revokeObjectURL(temp_state.subtitles_blob_url)
-        }
-        temp_state.subtitles_blob_url = ""
-		console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
         handle_load_subtitles()
     }
 })
