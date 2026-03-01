@@ -66,8 +66,15 @@ async function handle_load_subtitles() {
 	}
 	temp_state.subtitles_blob_url = ""
 	console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
-	console.log("Subtitle load attempt - ", temp_state.playlist[temp_state.playlist_index].subtitles_original_url)
-    await load_subtitles(temp_state.playlist[temp_state.playlist_index].subtitles_original_url)
+
+	const subtitles_original_url = temp_state.playlist[temp_state.playlist_index].subtitles_original_url
+	if (!subtitles_original_url) {
+		console.log("No subtitles_original_url found")
+		return
+	}
+
+	console.log("Subtitle load attempt - ", subtitles_original_url)
+    await load_subtitles(subtitles_original_url)
 	await tick()
     if (temp_state.subtitles_blob_url) {
         enable_subtitles()
@@ -79,7 +86,7 @@ let last_sub_url = ""
 
 $effect(() => {
     const url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
-    if (!url || url === last_sub_url) return
+    if (url === last_sub_url) return
 
     last_sub_url = url
     handle_load_subtitles()
