@@ -77,15 +77,12 @@ function handle_seek_hover(event: MouseEvent) {
 }
 
 function toggle_subtitles() {
-	const tracks = temp_state.video_element?.textTracks
+    const tracks = temp_state.video_element?.textTracks
     if (!tracks || tracks.length === 0) return
 
     temp_state.subtitles_enabled = !temp_state.subtitles_enabled
 
-    tracks[0].mode = temp_state.subtitles_enabled
-        ? "showing"
-        : "disabled"
-
+    tracks[0].mode = temp_state.subtitles_enabled ? "showing" : "disabled"
 }
 </script>
 
@@ -176,7 +173,7 @@ function toggle_subtitles() {
     >
         ({current_remaining_time})
     </div>
-	<button
+    <button
         class="ml-auto {temp_state.subtitles_enabled ? "text-blue-400": "text-white"} hover:scale-130 transition"
         onclick={toggle_subtitles}
     >

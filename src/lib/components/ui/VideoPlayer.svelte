@@ -1,11 +1,11 @@
 <script lang="ts">
+import { tick } from "svelte"
 import { Toaster } from "svelte-5-french-toast"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
+import { enable_subtitles, load_subtitles } from "$lib/utils/build_subtitles"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
-import { enable_subtitles, load_subtitles } from "$lib/utils/build_subtitles";
-import { tick } from "svelte";
 
 interface MyProps {
     send_video_play?: (time: number) => void
@@ -60,22 +60,19 @@ function debounce_mouse_move(_event: Event) {
 }
 
 async function handle_load_subtitles() {
-	await load_subtitles(temp_state.playlist[temp_state.playlist_index].subtitles_original_url)
-	if (temp_state.subtitles_blob_url) {		
-		await tick()
-		enable_subtitles()
-		console.log("Subtitles loaded ", temp_state.subtitles_blob_url)
-	}
-	else console.log("Subtitles not loaded")
-
+    await load_subtitles(temp_state.playlist[temp_state.playlist_index].subtitles_original_url)
+    if (temp_state.subtitles_blob_url) {
+        await tick()
+        enable_subtitles()
+        console.log("Subtitles loaded ", temp_state.subtitles_blob_url)
+    } else console.log("Subtitles not loaded")
 }
 
 $effect(() => {
     if (temp_state.playlist[temp_state.playlist_index]?.url) {
-		handle_load_subtitles()
-	}
+        handle_load_subtitles()
+    }
 })
-
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -116,7 +113,7 @@ $effect(() => {
             Your browser does not support the video tag.
         </video>
         <ReadyCheck {send_video_play} />
-    <NewControls
+        <NewControls
             {send_video_play}
             {send_video_pause}
             {send_video_seek_to}
@@ -127,4 +124,3 @@ $effect(() => {
         />
     {/if}
 </div>
-

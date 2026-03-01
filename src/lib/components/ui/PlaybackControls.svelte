@@ -3,8 +3,8 @@ import { untrack } from "svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { TPlayListItem } from "$lib/types/peer_to_peer"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
+import { get_subs_url } from "$lib/utils/build_subtitles"
 import { extract_title, fetch_file_data } from "$lib/utils/fetch_jelly_data"
-    import { get_subs_url } from "$lib/utils/build_subtitles";
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void

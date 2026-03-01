@@ -1,15 +1,13 @@
-import { fetch_file_data } from "$lib/utils/fetch_jelly_data"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
-
+import { fetch_file_data } from "$lib/utils/fetch_jelly_data"
 
 // Returns the external url of a subtitle file
 export function get_subs_url(data: JellyfinItem | null) {
     if (!data) return ""
     const url = new URL(temp_state.playlist[temp_state.playlist_index].url)
     if (!url.toString().includes("vodching")) return null
-    
-    
+
     const subs_path = extract_subtitle_path(data)
     if (!subs_path) {
         console.log("No subs path found")
@@ -35,7 +33,7 @@ function extract_subtitle_path(data: JellyfinItem) {
 
 export async function load_subtitles(real_url: string) {
     if (!real_url) return
-    
+
     try {
         const res = await fetch(real_url, {
             credentials: "include", // if needed
@@ -71,6 +69,4 @@ export function enable_subtitles() {
     for (let i = 0; i < tracks.length; i++) {
         tracks[i].mode = "disabled"
     }
-
-    tracks[0].mode = "showing"
 }
