@@ -58,15 +58,49 @@ function debounce_mouse_move(_event: Event) {
     }, 1000) as unknown as number
 }
 
-let subs_url = $state("")
-async function fetch_data() {
+async function get_subs_url() {
     const url = new URL(temp_state.playlist[temp_state.playlist_index].url)
     const data = await fetch_file_data(temp_state.playlist[temp_state.playlist_index].url)
     console.log(data)
 
     const subs_path = extract_subtitle_url(data)
-    subs_url = url.origin + subs_path
-    console.log(subs_url)
+    if (!subs_path) {
+        console.log("No subs path found")
+        return null
+    }
+    const real_url = url.origin + subs_path
+    console.log(real_url)
+    return real_url
+}
+
+let subs_url = $state("")
+async function load_subtitles() {
+    const real_url = await get_subs_url()
+    if (!real_url) return
+
+    try {
+        const res = await fetch(real_url, {
+            credentials: "include", // if needed
+        })
+
+        if (!res.ok) throw new Error("Failed to fetch subtitles")
+
+        const text = await res.text()
+
+        // Ensure it's proper VTT
+        const vtt_text = text.startsWith("WEBVTT") ? text : "WEBVTT\n\n" + text
+
+        const blob = new Blob([vtt_text], { type: "text/vtt" })
+        const blob_url = URL.createObjectURL(blob)
+
+        if (subs_url) URL.revokeObjectURL(subs_url)
+
+        subs_url = blob_url
+        console.log(subs_url)
+    } catch (err) {
+        console.error(err)
+        subs_url = ""
+    }
 }
 </script>
 
@@ -120,4 +154,4 @@ async function fetch_data() {
         /> -->
     {/if}
 </div>
-<button onclick={fetch_data}>Subs</button>
+<button onclick={load_subtitles}>Subs</button>
