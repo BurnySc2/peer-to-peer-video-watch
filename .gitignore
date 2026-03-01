@@ -1,5 +1,6 @@
 test-results
 node_modules
+data_return_example.json
 
 # Output
 .output
