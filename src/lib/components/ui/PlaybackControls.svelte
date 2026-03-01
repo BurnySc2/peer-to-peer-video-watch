@@ -46,6 +46,7 @@ async function add_playlist_item(_event: Event) {
             video_title: video_title || "",
             subtitles_original_url: subs_original_url || "",
         }
+        console.log("Added to playlist ", temp_state.playlist)
     }
 
     input_new_playlist_url = ""
