@@ -60,7 +60,6 @@ function debounce_mouse_move(_event: Event) {
 }
 
 async function handle_load_subtitles() {
-	if (currently_playing !== temp_state.playlist[temp_state.playlist_index]?.url) return
 
 	if (temp_state.subtitles_blob_url) {
 		URL.revokeObjectURL(temp_state.subtitles_blob_url)
@@ -76,13 +75,10 @@ async function handle_load_subtitles() {
     } else console.log("Subtitles not loaded")
 }
 
-let currently_playing = $state("")
-
 $effect(() => {
-    const new_url = temp_state.playlist[temp_state.playlist_index]?.url
-    if (!new_url || new_url === currently_playing) return
+    const orig_sub_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
+    if (!orig_sub_url) return
 
-    currently_playing = new_url
     handle_load_subtitles()
 })
 </script>
