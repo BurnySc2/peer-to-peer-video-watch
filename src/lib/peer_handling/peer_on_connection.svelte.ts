@@ -1,7 +1,7 @@
 import type Peer from "peerjs"
 import toast from "svelte-5-french-toast"
-import { setup_connection } from "./peer_setup_connection.svelte"
 import { APP_CONFIG } from "$lib/config"
+import { setup_connection } from "./peer_setup_connection.svelte"
 
 // When someone connects to us
 export function handle_peer_on_connection(peer: Peer) {

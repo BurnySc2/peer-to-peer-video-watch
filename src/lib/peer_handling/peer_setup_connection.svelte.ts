@@ -1,10 +1,10 @@
 import type { DataConnection, Peer } from "peerjs"
 import toast from "svelte-5-french-toast"
+import { APP_CONFIG } from "$lib/config"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { Message, type TMessage, type TSetupOptions } from "$lib/types/peer_to_peer"
 import { connection_send_validated } from "./peer_send.svelte"
-import { APP_CONFIG } from "$lib/config"
 
 let last_seek_toast_time = 0
 export function setup_connection(peer: Peer, conn: DataConnection, options: TSetupOptions) {
