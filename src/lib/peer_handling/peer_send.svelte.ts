@@ -1,7 +1,7 @@
 import type { DataConnection } from "peerjs"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-import type { TMessage } from "$lib/types/peer_to_peer"
+import type { TMessage, TPlayListItem } from "$lib/types/peer_to_peer"
 
 export function broadcast(data: TMessage) {
     temp_state.peer_connections.forEach((conn) => {
@@ -15,7 +15,7 @@ export function connection_send_validated(conn: DataConnection, data: TMessage) 
     conn.send(data)
 }
 
-export function p2p_send_playlist_set(message: { playlist: string[]; playlist_index: number }) {
+export function p2p_send_playlist_set(message: { playlist: TPlayListItem[]; playlist_index: number }) {
     broadcast({ type: "playlist_set", playlist: message.playlist, playlist_index: message.playlist_index })
     console.log("broadcasting playlist set")
 }
