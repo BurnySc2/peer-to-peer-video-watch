@@ -54,7 +54,7 @@ const is_active = (path: string) => page.url.pathname.includes(path)
         >
         <a
             href={resolve('/room')}
-            class="transition-colors hover:text-gray-300 {is_active('/p2p-video') ? 'font-bold' : ''}"
+            class="transition-colors hover:text-gray-300 {is_active('/room') ? 'font-bold' : ''}"
             >Room</a
         >
     </div>
