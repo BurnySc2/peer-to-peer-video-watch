@@ -22,7 +22,7 @@ function join_room() {
     <div class="flex space-x-2 items-center">
         <label for="">Your peer id is: {perma_state.global_settings.peer_id || 'No id assigned'}</label>
         <button
-            class="bg-green-200 hover:bg-green-300 m-2 p-2 rounded"
+            class="hover:bg-blue-400 m-2 p-2 border rounded"
             class:opacity-0={!perma_state.global_settings.peer_id}
             disabled={!perma_state.global_settings.peer_id}
             onclick={reset_peer_id}
@@ -31,7 +31,7 @@ function join_room() {
         </button>
     </div>
     <button
-        class="bg-green-200 hover:bg-green-300 m-2 p-2 rounded"
+        class="hover:bg-blue-400 m-2 p-2 border rounded"
         onclick={create_room}
     >
         Create room
@@ -44,7 +44,7 @@ function join_room() {
             bind:value={input_room_id}
         >
         <button
-            class="bg-green-200 hover:bg-green-300 m-2 p-2 rounded"
+            class="hover:bg-blue-400 m-2 p-2 border rounded"
             onclick={join_room}
         >
             Join room

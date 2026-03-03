@@ -116,7 +116,12 @@ $effect(() => {
         bind:value={temp_state.video_playback_speed}
     >
         {#each PLAYBACK_SPEED_VALUES as ps}
-            <option value={ps}>{ps}</option>
+            <option
+                class="bg-gray-900"
+                value={ps}
+            >
+                {ps}
+            </option>
         {/each}
     </select>
     <div class="mx-2">|</div>
@@ -164,6 +169,7 @@ $effect(() => {
 </div>
 <div class="flex items-center space-x-2">
     <input
+        class="border rounded m-2 p-2"
         type="url"
         placeholder="New playlist item"
         bind:value={input_new_playlist_url}
