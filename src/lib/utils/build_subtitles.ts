@@ -35,9 +35,7 @@ export async function load_subtitles(real_url: string) {
     if (!real_url) return
 
     try {
-        const res = await fetch(real_url, {
-            credentials: "include",
-        })
+        const res = await fetch(real_url)
 
         if (!res.ok) throw new Error("Failed to fetch subtitles")
 

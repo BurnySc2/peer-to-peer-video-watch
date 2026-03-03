@@ -19,7 +19,7 @@ export async function fetch_file_data(url: string) {
     url = url.replace("/Download", "")
     last_url = url
     try {
-        const res = await fetch(url, { credentials: "include" })
+        const res = await fetch(url)
         const data: JellyfinItem = await res.json()
 
         if (url === last_url) {
