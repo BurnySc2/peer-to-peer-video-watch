@@ -45,9 +45,9 @@ export const Message = z.union([
         time: z.number(),
     }),
     z.object({
-        type: z.literal("video_current_time_sync"),
-        value: z.number(),
+        type: z.literal("video_current_time_interval"),
         time: z.number(),
+        timestamp_now: z.number(),
     }),
     z.object({
         type: z.literal("start_ready_check"),

@@ -35,7 +35,9 @@ export function p2p_send_video_set_playback_rate(message: { time: number; value:
     broadcast({ type: "video_set_playback_rate", time: message.time, value: message.value })
     console.log("broadcasting playback rate")
 }
-
+export function p2p_video_current_time_sync(message: { time: number }) {
+    broadcast({ type: "video_current_time_interval", time: message.time, timestamp_now: Date.now() })
+}
 export function p2p_send_ready_check() {
     if (temp_state.peer_connections.length === 0) {
         console.log("Ready check not run - no peers are connected")
@@ -49,7 +51,6 @@ export function p2p_send_ready_check() {
     temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)
     console.log("broadcasting start ready check")
 }
-
 export function p2p_send_ready() {
     broadcast({ type: "send_ready", peer_id: perma_state.global_settings.peer_id })
     temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)

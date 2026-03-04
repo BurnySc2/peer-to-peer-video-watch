@@ -36,7 +36,7 @@ let {
 
 let current_time_formatted = $derived(format_time(temp_state.video_current_time))
 let current_remaining_time = $derived(
-    format_time((temp_state.video_duration - temp_state.video_current_time) / temp_state.video_playback_speed),
+    format_time((temp_state.video_duration - temp_state.video_current_time) / temp_state.video_target_playback_speed),
 )
 let total_time = $derived(format_time(temp_state.video_duration))
 

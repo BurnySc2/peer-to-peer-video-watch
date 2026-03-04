@@ -4,6 +4,7 @@ import { onMount } from "svelte"
 import { page } from "$app/state"
 import PlaybackControls from "$lib/components/ui/PlaybackControls.svelte"
 import VideoPlayer from "$lib/components/ui/VideoPlayer.svelte"
+import { broadcast_current_time_for_sync, VIDEO_SYNC_INTERVAL_MS } from "$lib/peer_handling/peer_catchup.svelte"
 import { handle_peer_on_connection } from "$lib/peer_handling/peer_on_connection.svelte"
 import { handle_peer_on_assign_id, handle_peer_on_open } from "$lib/peer_handling/peer_on_open.svelte"
 import {
@@ -47,6 +48,12 @@ onMount(() => {
 
     handle_peer_on_open(peer, room_id)
     handle_peer_on_connection(peer)
+
+    // Broadcast current time to keep peers in sync (this may adjust playback rate)
+    const timer = setInterval(broadcast_current_time_for_sync, VIDEO_SYNC_INTERVAL_MS)
+    return () => {
+        clearInterval(timer)
+    }
 })
 </script>
 

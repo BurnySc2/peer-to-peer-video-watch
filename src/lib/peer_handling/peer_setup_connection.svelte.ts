@@ -4,6 +4,7 @@ import { APP_CONFIG } from "$lib/config"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { Message, type TMessage, type TSetupOptions } from "$lib/types/peer_to_peer"
+import { get_speedup_factor, requires_catch_up } from "./peer_catchup.svelte"
 import { connection_send_validated } from "./peer_send.svelte"
 
 let last_seek_toast_time = 0
@@ -15,8 +16,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 peer_ids: temp_state.peer_connections.map((c) => c.peer),
                 playlist: temp_state.playlist,
                 playlist_index: temp_state.playlist_index,
-                // TODO Use video_target_playback_speed when catch-up is implemented
-                video_target_playback_speed: temp_state.video_playback_speed,
+                video_target_playback_speed: temp_state.video_target_playback_speed,
                 video_current_time: temp_state.video_current_time,
                 video_state_paused: temp_state.video_state_paused,
             })
@@ -39,7 +39,6 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 // Sync local data
                 temp_state.playlist = data_validated.playlist
                 temp_state.playlist_index = data_validated.playlist_index
-                temp_state.video_playback_speed = data_validated.video_target_playback_speed
                 temp_state.video_target_playback_speed = data_validated.video_target_playback_speed
                 temp_state.video_current_time = data_validated.video_current_time
                 temp_state.video_state_paused = data_validated.video_state_paused
@@ -47,6 +46,10 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
             }
             case "playlist_set":
                 temp_state.playlist = data_validated.playlist
+                if (temp_state.playlist_index !== data_validated.playlist_index) {
+                    // Reset catch-up on new video
+                    temp_state.video_p2p_max_time = 0
+                }
                 temp_state.playlist_index = data_validated.playlist_index
                 console.log("Receiving playlist set")
                 break
@@ -63,7 +66,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 break
             case "video_seek_to":
                 temp_state.video_current_time = data_validated.time
-                // temp_state.video_element?.pause()
+                temp_state.video_p2p_max_time = data_validated.time
                 console.log("Receiving seek to")
                 if (Date.now() - last_seek_toast_time > 500) {
                     toast(`Seeking`, { icon: "⏩", position: APP_CONFIG.toast_location })
@@ -72,7 +75,6 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 break
             case "video_set_playback_rate":
                 temp_state.video_target_playback_speed = data_validated.value
-                temp_state.video_playback_speed = data_validated.value
                 console.log("Receiving playback speed")
                 toast(`Playback rate change to ${data_validated.value}`, {
                     icon: "⏫",
@@ -80,10 +82,24 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                     position: APP_CONFIG.toast_location,
                 })
                 break
-            case "video_current_time_sync":
-                // TODO: If far away, catch up by increasing playback speed to:
-                // 1.1 * temp_state.video_target_playback_speed
-                temp_state.video_p2p_max_time = Math.max(temp_state.video_p2p_max_time, data_validated.value)
+            case "video_current_time_interval":
+                {
+                    const peer_arrive_delay_ms = Date.now() - data_validated.timestamp_now // Package delay
+                    const new_max_time = Math.max(temp_state.video_p2p_max_time, data_validated.time) // Peer max time of the video
+                    temp_state.video_p2p_max_time = new_max_time + peer_arrive_delay_ms / 1000
+                    const time_behind_ms = (temp_state.video_p2p_max_time - temp_state.video_current_time) * 1000
+                    if (requires_catch_up(time_behind_ms)) {
+                        // Catch up to the peer that is furthest into the video
+                        const speedup_factor = get_speedup_factor(time_behind_ms)
+                        temp_state.video_playback_speed = temp_state.video_target_playback_speed * speedup_factor
+                        console.log(
+                            `Catching up, behind by ${(temp_state.video_p2p_max_time - temp_state.video_current_time).toFixed(3)} seconds, calculated speedup_factor: ${speedup_factor.toFixed(3)}`,
+                        )
+                    } else {
+                        // Restore playback speed to normal
+                        temp_state.video_playback_speed = temp_state.video_target_playback_speed
+                    }
+                }
                 break
             case "start_ready_check":
                 console.log("Receiving start ready check from ", data_validated.peer_id)

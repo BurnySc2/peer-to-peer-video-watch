@@ -102,7 +102,7 @@ function handle_volume_hover(event: PointerEvent) {
 
 $effect(() => {
     send_video_set_playback_rate({
-        value: temp_state.video_playback_speed,
+        value: temp_state.video_target_playback_speed,
         time: untrack(() => temp_state.video_current_time),
     })
 })
@@ -113,7 +113,7 @@ $effect(() => {
     <select
         class="border m-2"
         id="playback_speed"
-        bind:value={temp_state.video_playback_speed}
+        bind:value={temp_state.video_target_playback_speed}
     >
         {#each PLAYBACK_SPEED_VALUES as ps}
             <option
