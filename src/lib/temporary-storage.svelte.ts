@@ -3,7 +3,6 @@ import * as z from "zod"
 
 // Zod
 const TempState = z.object({
-    catching_up: z.boolean(),
     playlist: z.array(
         z.object({
             url: z.string(),
@@ -35,7 +34,6 @@ const TempState = z.object({
 export type TTempState = z.infer<typeof TempState>
 
 export const temp_state: TTempState = $state({
-    catching_up: false,
     playlist: [],
     playlist_index: 0,
     ready_peers: new Set<string>(),
