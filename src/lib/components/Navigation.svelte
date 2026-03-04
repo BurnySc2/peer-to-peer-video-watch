@@ -2,7 +2,9 @@
 import { resolve } from "$app/paths"
 import { page } from "$app/state"
 
-const is_active = (path: string) => page.url.pathname.includes(path)
+const is_active = (path: string) => {
+    return page.url.pathname === path
+}
 </script>
 
 <nav class="bg-gray-800 p-4 text-white">
@@ -55,7 +57,7 @@ const is_active = (path: string) => page.url.pathname.includes(path)
         <a
             href={resolve('/rooms')}
             class="transition-colors hover:text-gray-300 {is_active('/rooms') ? 'font-bold' : ''}"
-            >Room</a
+            >Rooms</a
         >
     </div>
 </nav>
