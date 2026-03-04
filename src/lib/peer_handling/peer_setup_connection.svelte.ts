@@ -105,7 +105,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                             const speedup_factor = get_speedup_factor(time_behind_ms)
                             temp_state.video_playback_speed = temp_state.video_target_playback_speed * speedup_factor
                             console.log(
-                                `Final catch up ${caught_up(time_behind_ms)}, behind by ${(temp_state.video_p2p_max_time - temp_state.video_current_time).toFixed(3)} seconds, calculated speedup_factor: ${speedup_factor.toFixed(3)}`,
+                                `Final catch up, behind by ${(temp_state.video_p2p_max_time - temp_state.video_current_time).toFixed(3)} seconds, calculated speedup_factor: ${speedup_factor.toFixed(3)}`,
                             )
                         }
                     }
