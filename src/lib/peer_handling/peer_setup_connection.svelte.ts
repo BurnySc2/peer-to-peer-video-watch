@@ -4,7 +4,7 @@ import { APP_CONFIG } from "$lib/config"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { Message, type TMessage, type TSetupOptions } from "$lib/types/peer_to_peer"
-import { get_speedup_factor, requires_catch_up } from "./peer_catchup.svelte"
+import { caught_up, get_speedup_factor, requires_catch_up } from "./peer_catchup.svelte"
 import { connection_send_validated } from "./peer_send.svelte"
 
 let last_seek_toast_time = 0
@@ -92,12 +92,22 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                         // Catch up to the peer that is furthest into the video
                         const speedup_factor = get_speedup_factor(time_behind_ms)
                         temp_state.video_playback_speed = temp_state.video_target_playback_speed * speedup_factor
+                        temp_state.catching_up = true
                         console.log(
                             `Catching up, behind by ${(temp_state.video_p2p_max_time - temp_state.video_current_time).toFixed(3)} seconds, calculated speedup_factor: ${speedup_factor.toFixed(3)}`,
                         )
-                    } else {
-                        // Restore playback speed to normal
-                        temp_state.video_playback_speed = temp_state.video_target_playback_speed
+                    } else if (temp_state.catching_up) {
+                        temp_state.catching_up = !caught_up(time_behind_ms)
+                        if (!temp_state.catching_up) {
+                            temp_state.video_playback_speed = temp_state.video_target_playback_speed
+                            console.log(`Caught up.`)
+                        } else {
+                            const speedup_factor = get_speedup_factor(time_behind_ms)
+                            temp_state.video_playback_speed = temp_state.video_target_playback_speed * speedup_factor
+                            console.log(
+                                `Final catch up ${caught_up(time_behind_ms)}, behind by ${(temp_state.video_p2p_max_time - temp_state.video_current_time).toFixed(3)} seconds, calculated speedup_factor: ${speedup_factor.toFixed(3)}`,
+                            )
+                        }
                     }
                 }
                 break
