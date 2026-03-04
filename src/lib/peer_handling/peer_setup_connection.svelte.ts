@@ -91,13 +91,13 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 
                     const is_catching_up = temp_state.video_target_playback_speed !== temp_state.video_playback_speed
 
-                    const speedup_factor = get_speedup_factor(time_behind_ms)
                     if (is_catching_up && should_stop_catching_up(time_behind_ms)) {
                         // Stop catching up
                         temp_state.video_playback_speed = temp_state.video_target_playback_speed
                         console.log(`Caught up.`)
                     } else if (is_catching_up || should_start_catching_up(time_behind_ms)) {
                         // Catch up to the peer that is furthest into the video
+                        const speedup_factor = get_speedup_factor(time_behind_ms)
                         temp_state.video_playback_speed = temp_state.video_target_playback_speed * speedup_factor
                         console.log(
                             `Adjusting catch up, behind by ${(temp_state.video_p2p_max_time - temp_state.video_current_time).toFixed(3)} seconds, calculated speedup_factor: ${speedup_factor.toFixed(3)}`,
