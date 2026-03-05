@@ -1,3 +1,4 @@
+import { tick } from "svelte"
 import { APP_CONFIG } from "$lib/config"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
@@ -31,7 +32,7 @@ function extract_subtitle_path(data: JellyfinItem) {
     return url
 }
 
-export async function load_subtitles(real_url: string) {
+export async function build_subtitles_blob(real_url: string) {
     if (!real_url) return
 
     try {
@@ -42,9 +43,9 @@ export async function load_subtitles(real_url: string) {
         const text = await res.text()
 
         // Ensure it's proper VTT
-        const vtt_text = text.startsWith("WEBVTT") ? text : "WEBVTT\n\n" + text
+        // const vtt_text = text.startsWith("WEBVTT") ? text : "WEBVTT\n\n" + text
 
-        const blob = new Blob([vtt_text], { type: "text/vtt" })
+        const blob = new Blob([text], { type: "text/srt" })
         const blob_url = URL.createObjectURL(blob)
 
         if (temp_state.subtitles_blob_url) URL.revokeObjectURL(temp_state.subtitles_blob_url)
@@ -56,6 +57,24 @@ export async function load_subtitles(real_url: string) {
         if (temp_state.subtitles_blob_url) URL.revokeObjectURL(temp_state.subtitles_blob_url)
         temp_state.subtitles_blob_url = ""
     }
+}
+
+export async function load_subtitles_from_blob() {
+    if (temp_state.subtitles_blob_url) {
+        URL.revokeObjectURL(temp_state.subtitles_blob_url)
+    }
+    temp_state.subtitles_blob_url = ""
+    console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
+
+    const subtitles_original_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
+    if (!subtitles_original_url) {
+        console.log("No subtitles_original_url found")
+        return
+    }
+
+    console.log("Subtitle load attempt - ", subtitles_original_url)
+    await build_subtitles_blob(subtitles_original_url)
+    await tick()
 }
 
 export function enable_subtitles() {
