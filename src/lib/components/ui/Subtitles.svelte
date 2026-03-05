@@ -81,7 +81,7 @@ onMount(() => {
     // Update subtitles every 250ms (adjust as needed)
     interval = setInterval(() => {
         update_current_subtitle()
-    }, 1000)
+    }, 250)
 })
 
 onDestroy(() => {
