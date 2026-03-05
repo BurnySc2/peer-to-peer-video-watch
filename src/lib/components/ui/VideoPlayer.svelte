@@ -4,7 +4,7 @@ import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
 import { load_subtitles_from_blob } from "$lib/utils/build_subtitles"
-import { parse_srt, update_current_subtitle } from "$lib/utils/custom_subtitles"
+import { fetch_srt_from_url, parse_srt, update_current_subtitle } from "$lib/utils/custom_subtitles"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
 import Subtitles from "./Subtitles.svelte"
@@ -66,7 +66,8 @@ async function handle_load_subtitles() {
     subtitles = []
     await load_subtitles_from_blob()
     if (temp_state.subtitles_blob_url) {
-        subtitles = await parse_srt(temp_state.subtitles_blob_url)
+        const raw_srt_text = await fetch_srt_from_url(temp_state.subtitles_blob_url)
+        subtitles = parse_srt(raw_srt_text)
         console.log("Subtitles loaded ", temp_state.subtitles_blob_url)
     } else console.log("Subtitles not loaded")
 }
