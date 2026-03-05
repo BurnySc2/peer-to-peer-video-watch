@@ -62,11 +62,13 @@ function debounce_mouse_move(_event: Event) {
     }, 1000) as unknown as number
 }
 
+let subtitles = $state<SubtitleItem[]>([])
 async function handle_load_subtitles() {
     if (temp_state.subtitles_blob_url) {
         URL.revokeObjectURL(temp_state.subtitles_blob_url)
     }
     temp_state.subtitles_blob_url = ""
+    subtitles = []
     console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
 
     const subtitles_original_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
@@ -80,7 +82,7 @@ async function handle_load_subtitles() {
     await tick()
     if (temp_state.subtitles_blob_url) {
         // enable_subtitles();
-        parse_srt(temp_state.subtitles_blob_url)
+        subtitles = await parse_srt(temp_state.subtitles_blob_url)
         console.log("Subtitles loaded ", temp_state.subtitles_blob_url)
     } else console.log("Subtitles not loaded")
 }
@@ -95,10 +97,9 @@ $effect(() => {
     handle_load_subtitles()
 })
 
-let subtitles = $state<SubtitleItem[]>([])
-async function handle_custom_subtitles() {
-    subtitles = await parse_srt("/subtitles/subtitles_example.srt")
-}
+// async function handle_custom_subtitles() {
+//     subtitles = await parse_srt("/subtitles/subtitles_example.srt")
+// }
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -150,4 +151,4 @@ async function handle_custom_subtitles() {
         />
     {/if}
 </div>
-<button onclick={handle_custom_subtitles}>Subs</button>
+<!-- <button onclick={handle_custom_subtitles}>Subs</button> -->
