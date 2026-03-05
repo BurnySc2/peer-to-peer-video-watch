@@ -9,6 +9,7 @@ import { extract_title, fetch_file_data } from "$lib/utils/fetch_jelly_data"
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
     send_video_set_playback_rate?: (message: { time: number; value: number }) => void
+    send_subtitle_offset?: (message: { subtitle_offset: number }) => void
 }
 let {
     send_playlist_set = (message: { playlist: TPlayListItem[]; playlist_index: number }) => {
@@ -16,6 +17,9 @@ let {
     },
     send_video_set_playback_rate = (message: { time: number; value: number }) => {
         console.log("Sending video_set_playback_rate", message.value)
+    },
+    send_subtitle_offset = (message: { subtitle_offset: number }) => {
+        console.log("Sending subtitle_offset", message.subtitle_offset)
     },
 }: MyProps = $props()
 
@@ -100,6 +104,11 @@ function handle_volume_hover(event: PointerEvent) {
     volume_hover_value = percent
 }
 
+function set_subtitle_offset(value: number) {
+    temp_state.subtitles_offset = value
+    send_subtitle_offset({ subtitle_offset: value })
+}
+
 $effect(() => {
     send_video_set_playback_rate({
         value: temp_state.video_target_playback_speed,
@@ -165,7 +174,10 @@ $effect(() => {
             type="number"
             class="border rounded m-2 p-2 w-24"
             id="subtitle_offset"
-            bind:value={temp_state.subtitles_offset}
+            value={temp_state.subtitles_offset}
+            oninput={(e) => {
+                set_subtitle_offset(Number((e.target as HTMLInputElement).value))
+            }}
         >
     </div>
 </div>

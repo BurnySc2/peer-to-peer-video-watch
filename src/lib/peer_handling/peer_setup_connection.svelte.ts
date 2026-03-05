@@ -114,6 +114,11 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 console.log("Received ready from ", data_validated.peer_id)
                 temp_state.ready_peers = new Set(temp_state.ready_peers).add(data_validated.peer_id)
                 break
+            case "send_subtitle_offset":
+                console.log("Receiving subtitle_offset", data_validated.subtitle_offset)
+                if (temp_state.subtitles_offset !== data_validated.subtitle_offset) {
+                    temp_state.subtitles_offset = data_validated.subtitle_offset
+                }
             default:
                 break
         }

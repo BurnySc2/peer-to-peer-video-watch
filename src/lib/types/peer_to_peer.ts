@@ -57,6 +57,10 @@ export const Message = z.union([
         type: z.literal("send_ready"),
         peer_id: z.string(),
     }),
+    z.object({
+        type: z.literal("send_subtitle_offset"),
+        subtitle_offset: z.number(),
+    }),
 ])
 
 export type TPlayListItem = z.infer<typeof PlayListItem>

@@ -56,3 +56,7 @@ export function p2p_send_ready() {
     temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)
     console.log("broadcasting send_ready")
 }
+export function p2p_send_subtitle_offset() {
+    broadcast({ type: "send_subtitle_offset", subtitle_offset: temp_state.subtitles_offset })
+    console.log("broadcasting subtitle_offset")
+}

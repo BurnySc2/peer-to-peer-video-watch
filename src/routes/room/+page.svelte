@@ -9,6 +9,7 @@ import { handle_peer_on_connection } from "$lib/peer_handling/peer_on_connection
 import { handle_peer_on_assign_id, handle_peer_on_open } from "$lib/peer_handling/peer_on_open.svelte"
 import {
     p2p_send_playlist_set,
+    p2p_send_subtitle_offset,
     p2p_send_video_pause,
     p2p_send_video_play,
     p2p_send_video_seek_to,
@@ -66,5 +67,6 @@ onMount(() => {
     <PlaybackControls
         send_playlist_set={p2p_send_playlist_set}
         send_video_set_playback_rate={p2p_send_video_set_playback_rate}
+        send_subtitle_offset={p2p_send_subtitle_offset}
     />
 </div>
