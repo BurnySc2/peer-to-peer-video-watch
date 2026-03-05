@@ -30,7 +30,7 @@ export function get_speedup_factor(time_behind_ms: number): number {
     // Delta time is small, but still need to catch up, increase playback only a little
     const factor1 = (time_behind_ms / CATCH_UP_MIN_TIME_MS - 1) / APPROACH_FACTOR
     const factor2 = 1 + (PLAYBACK_CATCH_UP_FACTOR - 1) * factor1
-    return Math.max(PLAYBACK_CATCH_UP_FACTOR / 10, factor2)
+    return Math.max(1 + (PLAYBACK_CATCH_UP_FACTOR / 20), factor2)
 }
 
 export function broadcast_current_time_for_sync() {
