@@ -14,6 +14,7 @@ const TempState = z.object({
     ready_peers: z.set(z.string()),
     subtitles_enabled: z.boolean(),
     subtitles_blob_url: z.string(),
+    subtitles_offset: z.number(),
     // May be different when catching up to other clients
     video_playback_speed: z.number(),
     // TODO: Use 'video_target_playback_speed' as goal, but use 'video_playback_speed' to catch up
@@ -39,6 +40,7 @@ export const temp_state: TTempState = $state({
     ready_peers: new Set<string>(),
     subtitles_enabled: false,
     subtitles_blob_url: "",
+    subtitles_offset: 0,
     video_playback_speed: 1,
     video_target_playback_speed: 1,
     video_current_time: 0,

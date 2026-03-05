@@ -27,7 +27,7 @@ function extract_subtitle_path(data: JellyfinItem) {
     const subs_stream = media_source.MediaStreams?.find((stream) => stream.IsTextSubtitleStream === true)
     if (!subs_stream) return null
 
-    const url = `/Videos/${data.Id}/${data.MediaSources?.[0].Id}/Subtitles/${subs_stream.Index}/Stream.vtt`
+    const url = `/Videos/${data.Id}/${data.MediaSources?.[0].Id}/Subtitles/${subs_stream.Index}/Stream.srt`
     return url
 }
 

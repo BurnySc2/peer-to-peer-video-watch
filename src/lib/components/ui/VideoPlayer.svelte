@@ -1,95 +1,112 @@
 <script lang="ts">
-import { tick } from "svelte"
-import { Toaster } from "svelte-5-french-toast"
-import { perma_state } from "$lib/persistent-storage.svelte"
-import { temp_state } from "$lib/temporary-storage.svelte"
-import { enable_subtitles, load_subtitles } from "$lib/utils/build_subtitles"
-import NewControls from "./NewControls.svelte"
-import ReadyCheck from "./ReadyCheck.svelte"
+    import { tick } from "svelte";
+    import { Toaster } from "svelte-5-french-toast";
+    import { perma_state } from "$lib/persistent-storage.svelte";
+    import { temp_state } from "$lib/temporary-storage.svelte";
+    import {
+        enable_subtitles,
+        load_subtitles,
+    } from "$lib/utils/build_subtitles";
+    import NewControls from "./NewControls.svelte";
+    import ReadyCheck from "./ReadyCheck.svelte";
+    import { parse_srt } from "$lib/utils/custom_subtitles";
+    import Subtitles from "./Subtitles.svelte";
+    import type { SubtitleItem } from "$lib/types/subtitle_item";
 
-interface MyProps {
-    send_video_play?: (time: number) => void
-    send_video_pause?: (time: number) => void
-    send_video_seek_to?: (time: number) => void
-}
-
-let {
-    send_video_play = (time: number) => {
-        console.log("Sending video_play", time)
-    },
-    send_video_pause = (time: number) => {
-        console.log("Sending video_pause", time)
-    },
-    send_video_seek_to = (time: number) => {
-        console.log("Sending video_seek_to", time)
-    },
-}: MyProps = $props()
-
-let player_container: HTMLDivElement | null = null
-let controls_opacity = $state(1)
-let hide_timeout: number | null = null
-
-function toggle_fullscreen() {
-    if (!document.fullscreenElement) {
-        player_container?.requestFullscreen()
-    } else {
-        document.exitFullscreen()
-    }
-}
-
-function local_can_play(_event: Event) {
-    temp_state.video_can_play = true
-    console.log("canplay event fired")
-}
-
-let mouse_in_controls = false
-function debounce_mouse_move(_event: Event) {
-    // Clear any existing timeout
-    if (hide_timeout) {
-        clearTimeout(hide_timeout)
-        hide_timeout = null
+    interface MyProps {
+        send_video_play?: (time: number) => void;
+        send_video_pause?: (time: number) => void;
+        send_video_seek_to?: (time: number) => void;
     }
 
-    // Show controls immediately
-    controls_opacity = 1
+    let {
+        send_video_play = (time: number) => {
+            console.log("Sending video_play", time);
+        },
+        send_video_pause = (time: number) => {
+            console.log("Sending video_pause", time);
+        },
+        send_video_seek_to = (time: number) => {
+            console.log("Sending video_seek_to", time);
+        },
+    }: MyProps = $props();
 
-    // Set a timeout to hide controls after 3 seconds
-    hide_timeout = setTimeout(() => {
-        if (!mouse_in_controls) controls_opacity = 0
-    }, 1000) as unknown as number
+    let player_container: HTMLDivElement | null = null;
+    let controls_opacity = $state(1);
+    let hide_timeout: number | null = null;
+
+    function toggle_fullscreen() {
+        if (!document.fullscreenElement) {
+            player_container?.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    function local_can_play(_event: Event) {
+        temp_state.video_can_play = true;
+        console.log("canplay event fired");
+    }
+
+    let mouse_in_controls = false;
+    function debounce_mouse_move(_event: Event) {
+        // Clear any existing timeout
+        if (hide_timeout) {
+            clearTimeout(hide_timeout);
+            hide_timeout = null;
+        }
+
+        // Show controls immediately
+        controls_opacity = 1;
+
+        // Set a timeout to hide controls after 3 seconds
+        hide_timeout = setTimeout(() => {
+            if (!mouse_in_controls) controls_opacity = 0;
+        }, 1000) as unknown as number;
+    }
+
+    async function handle_load_subtitles() {
+        if (temp_state.subtitles_blob_url) {
+            URL.revokeObjectURL(temp_state.subtitles_blob_url);
+        }
+        temp_state.subtitles_blob_url = "";
+        console.log("Sub blob cleared ", temp_state.subtitles_blob_url);
+
+        const subtitles_original_url =
+            temp_state.playlist[temp_state.playlist_index]
+                ?.subtitles_original_url;
+        if (!subtitles_original_url) {
+            console.log("No subtitles_original_url found");
+            return;
+        }
+
+        console.log("Subtitle load attempt - ", subtitles_original_url);
+        await load_subtitles(subtitles_original_url);
+        await tick();
+        if (temp_state.subtitles_blob_url) {
+            // enable_subtitles();
+            parse_srt(temp_state.subtitles_blob_url)
+            console.log("Subtitles loaded ", temp_state.subtitles_blob_url);
+        } else console.log("Subtitles not loaded");
+    }
+
+    let last_sub_url = "";
+
+    $effect(() => {
+        const url =
+            temp_state.playlist[temp_state.playlist_index]
+                ?.subtitles_original_url;
+        if (url === last_sub_url) return;
+
+        last_sub_url = url;
+        handle_load_subtitles();
+    });
+
+let subtitles = $state<SubtitleItem[]>([])
+async function handle_custom_subtitles() {
+    subtitles = await parse_srt("/subtitles/subtitles_example.srt")
 }
 
-async function handle_load_subtitles() {
-    if (temp_state.subtitles_blob_url) {
-        URL.revokeObjectURL(temp_state.subtitles_blob_url)
-    }
-    temp_state.subtitles_blob_url = ""
-    console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
-
-    const subtitles_original_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
-    if (!subtitles_original_url) {
-        console.log("No subtitles_original_url found")
-        return
-    }
-
-    console.log("Subtitle load attempt - ", subtitles_original_url)
-    await load_subtitles(subtitles_original_url)
-    await tick()
-    if (temp_state.subtitles_blob_url) {
-        enable_subtitles()
-        console.log("Subtitles loaded ", temp_state.subtitles_blob_url)
-    } else console.log("Subtitles not loaded")
-}
-
-let last_sub_url = ""
-
-$effect(() => {
-    const url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
-    if (url === last_sub_url) return
-
-    last_sub_url = url
-    handle_load_subtitles()
-})
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -100,7 +117,9 @@ $effect(() => {
     onpointerdown={debounce_mouse_move}
 >
     {#if temp_state.playlist[temp_state.playlist_index] === undefined}
-        <div class="p-6 w-full text-center text-xl">Enter a link below to begin...</div>
+        <div class="p-6 w-full text-center text-xl">
+            Enter a link below to begin...
+        </div>
     {:else}
         <Toaster />
         <video
@@ -116,19 +135,20 @@ $effect(() => {
             src={temp_state.playlist[temp_state.playlist_index].url}
             oncanplay={local_can_play}
         >
-            {#if temp_state.subtitles_blob_url}
+            <!-- {#if temp_state.subtitles_blob_url}
                 {#key temp_state.subtitles_blob_url}
                     <track
                         kind="subtitles"
                         src={temp_state.subtitles_blob_url}
                         srclang="en"
                         label="English"
-                    >
+                    />
                 {/key}
-            {/if}
+            {/if} -->
             Your browser does not support the video tag.
         </video>
         <ReadyCheck {send_video_play} />
+        <Subtitles {subtitles}/>
         <NewControls
             {send_video_play}
             {send_video_pause}
@@ -140,3 +160,4 @@ $effect(() => {
         />
     {/if}
 </div>
+<button onclick={handle_custom_subtitles}> Subs </button>
