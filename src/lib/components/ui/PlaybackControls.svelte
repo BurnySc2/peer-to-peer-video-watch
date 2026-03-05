@@ -175,7 +175,10 @@ $effect(() => {
             type="number"
             class="border rounded p-2 w-24"
             id="subtitle_offset"
-            bind:value={perma_state.global_settings.subtitles_font_size_rem}
+            value={temp_state.subtitles_offset}
+            oninput={(e) => {
+                set_subtitle_offset(Number((e.target as HTMLInputElement).value))
+            }}
         >
     </div>
     <div class="m-2">
@@ -185,10 +188,7 @@ $effect(() => {
             class="border rounded p-2 w-24"
             id="subtitle_font_size"
             step="0.25"
-            value={temp_state.subtitles_offset}
-            oninput={(e) => {
-                set_subtitle_offset(Number((e.target as HTMLInputElement).value))
-            }}
+            bind:value={perma_state.global_settings.subtitles_font_size_rem}
         >
     </div>
 </div>
