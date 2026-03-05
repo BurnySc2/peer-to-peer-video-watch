@@ -159,6 +159,15 @@ $effect(() => {
             </div>
         {/if}
     </div>
+    <div>
+        <label for="subtitle_offset">Subtitle offset</label>
+        <input
+            type="number"
+            class="border rounded m-2 p-2 w-24"
+            id="subtitle_offset"
+            bind:value={temp_state.subtitles_offset}
+        >
+    </div>
 </div>
 <div class="flex items-center space-x-2">
     <label for="autoplay">Autoplay</label>

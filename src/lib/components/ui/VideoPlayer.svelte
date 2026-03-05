@@ -3,9 +3,12 @@ import { tick } from "svelte"
 import { Toaster } from "svelte-5-french-toast"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
+import type { SubtitleItem } from "$lib/types/subtitle_item"
 import { enable_subtitles, load_subtitles } from "$lib/utils/build_subtitles"
+import { parse_srt } from "$lib/utils/custom_subtitles"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
+import Subtitles from "./Subtitles.svelte"
 
 interface MyProps {
     send_video_play?: (time: number) => void
@@ -59,11 +62,13 @@ function debounce_mouse_move(_event: Event) {
     }, 1000) as unknown as number
 }
 
+let subtitles = $state<SubtitleItem[]>([])
 async function handle_load_subtitles() {
     if (temp_state.subtitles_blob_url) {
         URL.revokeObjectURL(temp_state.subtitles_blob_url)
     }
     temp_state.subtitles_blob_url = ""
+    subtitles = []
     console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
 
     const subtitles_original_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
@@ -76,7 +81,8 @@ async function handle_load_subtitles() {
     await load_subtitles(subtitles_original_url)
     await tick()
     if (temp_state.subtitles_blob_url) {
-        enable_subtitles()
+        // enable_subtitles();
+        subtitles = await parse_srt(temp_state.subtitles_blob_url)
         console.log("Subtitles loaded ", temp_state.subtitles_blob_url)
     } else console.log("Subtitles not loaded")
 }
@@ -90,6 +96,10 @@ $effect(() => {
     last_sub_url = url
     handle_load_subtitles()
 })
+
+// async function handle_custom_subtitles() {
+//     subtitles = await parse_srt("/subtitles/subtitles_example.srt")
+// }
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -116,19 +126,20 @@ $effect(() => {
             src={temp_state.playlist[temp_state.playlist_index].url}
             oncanplay={local_can_play}
         >
-            {#if temp_state.subtitles_blob_url}
+            <!-- {#if temp_state.subtitles_blob_url}
                 {#key temp_state.subtitles_blob_url}
                     <track
                         kind="subtitles"
                         src={temp_state.subtitles_blob_url}
                         srclang="en"
                         label="English"
-                    >
+                    />
                 {/key}
-            {/if}
+            {/if} -->
             Your browser does not support the video tag.
         </video>
         <ReadyCheck {send_video_play} />
+        <Subtitles {subtitles} />
         <NewControls
             {send_video_play}
             {send_video_pause}
@@ -140,3 +151,4 @@ $effect(() => {
         />
     {/if}
 </div>
+<!-- <button onclick={handle_custom_subtitles}>Subs</button> -->

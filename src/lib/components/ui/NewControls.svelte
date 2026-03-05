@@ -84,6 +84,10 @@ function toggle_subtitles() {
 
     tracks[0].mode = temp_state.subtitles_enabled ? "showing" : "disabled"
 }
+
+function toggle_custom_subtitles() {
+    temp_state.subtitles_enabled = !temp_state.subtitles_enabled
+}
 </script>
 
 {#if temp_state.playlist[temp_state.playlist_index]?.video_title}
@@ -175,7 +179,7 @@ function toggle_subtitles() {
     </div>
     <button
         class={`ml-auto ${temp_state.subtitles_enabled ? "text-blue-400": "text-white"} hover:scale-130 transition`}
-        onclick={toggle_subtitles}
+        onclick={toggle_custom_subtitles}
     >
         CC
     </button>
