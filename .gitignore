@@ -1,6 +1,7 @@
 test-results
 node_modules
 data_return_example.json
+subtitles_example.srt
 
 # Output
 .output
