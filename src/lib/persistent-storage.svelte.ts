@@ -6,10 +6,12 @@ const GlobalSettings = z
     .object({
         peer_id: z.string(),
         volume: z.number(),
+        subtitles_font_size_rem: z.number(),
     })
     .catch({
         peer_id: "",
         volume: 0.5,
+        subtitles_font_size_rem: 1.25,
     })
 const RoomData = z.object({}).catch({})
 
@@ -39,6 +41,7 @@ export const perma_state = $state<TPermaState>({
     global_settings: {
         peer_id: "",
         volume: 0.5,
+        subtitles_font_size_rem: 1.25,
     },
     room_data: {},
 })

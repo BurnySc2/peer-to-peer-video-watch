@@ -1,5 +1,6 @@
 <script lang="ts">
 import { untrack } from "svelte"
+import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { TPlayListItem } from "$lib/types/peer_to_peer"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
@@ -168,12 +169,22 @@ $effect(() => {
             </div>
         {/if}
     </div>
-    <div>
-        <label for="subtitle_offset">Subtitle offset</label>
+    <div class="m-2">
+        <label for="subtitle_offset">Subs offset</label>
         <input
             type="number"
-            class="border rounded m-2 p-2 w-24"
+            class="border rounded p-2 w-24"
             id="subtitle_offset"
+            bind:value={perma_state.global_settings.subtitles_font_size_rem}
+        >
+    </div>
+    <div class="m-2">
+        <label for="subtitle_font_size">Subs size</label>
+        <input
+            type="number"
+            class="border rounded p-2 w-24"
+            id="subtitle_font_size"
+            step="0.25"
             value={temp_state.subtitles_offset}
             oninput={(e) => {
                 set_subtitle_offset(Number((e.target as HTMLInputElement).value))
