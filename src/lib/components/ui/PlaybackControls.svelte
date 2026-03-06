@@ -158,10 +158,7 @@ $effect(() => {
                 min="0"
                 max="1"
                 step="0.01"
-                value={perma_state.global_settings.volume}
-                oninput={(e) => {
-                    perma_state.global_settings.volume = (e.target as HTMLInputElement).valueAsNumber
-            }}
+                bind:value={perma_state.global_settings.volume}
             >
             {#if volume_hover_value !== null}
                 <div
