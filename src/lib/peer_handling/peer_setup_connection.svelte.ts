@@ -135,11 +135,26 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
         toast("Peer disconnected", { position: APP_CONFIG.toast_location })
         console.log("Peer disconnected")
         temp_state.peer_connections = temp_state.peer_connections.filter((c) => c !== conn)
+        if (
+            !temp_state.peer_connections.length &&
+            temp_state.video_playback_speed !== temp_state.video_target_playback_speed
+        ) {
+            console.log("No peers remaining, stopping catch up")
+            temp_state.video_playback_speed = Number.isNaN(temp_state.video_target_playback_speed)
+                ? 1
+                : temp_state.video_target_playback_speed
+        }
     })
 
     conn.on("error", (err) => {
         toast("Peer connection closed/error", { position: APP_CONFIG.toast_location })
-        console.error("Connection error:", err)
+        console.error("Connection error, resetting playback_speed:", err)
+        if (temp_state.video_playback_speed !== temp_state.video_target_playback_speed) {
+            console.log("Peer connection error, stopping catch up")
+            temp_state.video_playback_speed = Number.isNaN(temp_state.video_target_playback_speed)
+                ? 1
+                : temp_state.video_target_playback_speed
+        }
     })
 
     // // Add to our list of active connections
