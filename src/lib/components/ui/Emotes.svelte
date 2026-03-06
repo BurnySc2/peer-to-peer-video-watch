@@ -54,34 +54,33 @@ $effect(() => {
         onpointerleave={onMouseLeaveControls}
     >
 {/each}
-{#if show_emote_list}
-    <div
-        class="absolute bottom-10 right-0 max-h-24 overflow-y-auto grid grid-cols-3 gap-2 justify-items-center"
-        onpointerenter={onMouseEnterControls}
-        onpointerleave={onMouseLeaveControls}
-    >
-        {#each emotes as emote}
-            <button onclick={() => {display_emote(emote)}}>
-                <img
-                    class="w-12"
-                    src={emote}
-                    alt=""
-                    title={emote.split("/").pop()}
-                >
-            </button>
-        {/each}
-    </div>
-{:else}
-    <button
-        class="absolute top-1/2 right-0 bg-black/60 text-white hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
-        style="opacity: {controls_opacity};"
-        onpointerenter={onMouseEnterControls}
-        onpointerleave={onMouseLeaveControls}
-        onclick={() => {show_emote_list = !show_emote_list}}
-    >
-        <SmileyIcon />
-    </button>
-{/if}
+<div
+    onpointerenter={onMouseEnterControls}
+    onpointerleave={onMouseLeaveControls}
+>
+    {#if show_emote_list}
+        <div class="absolute bottom-10 right-0 max-h-24 overflow-y-auto grid grid-cols-3 gap-2 justify-items-center">
+            {#each emotes as emote}
+                <button onclick={() => {display_emote(emote)}}>
+                    <img
+                        class="w-12"
+                        src={emote}
+                        alt=""
+                        title={emote.split("/").pop()}
+                    >
+                </button>
+            {/each}
+        </div>
+    {:else}
+        <button
+            class="absolute top-1/2 right-0 bg-black/60 text-white hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
+            style="opacity: {controls_opacity};"
+            onclick={() => {show_emote_list = !show_emote_list}}
+        >
+            <SmileyIcon />
+        </button>
+    {/if}
+</div>
 
 <style>
 @keyframes emote-rise {
