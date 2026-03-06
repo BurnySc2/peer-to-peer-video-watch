@@ -1,6 +1,8 @@
 <script lang="ts">
 import SmileyIcon from "$lib/icons/SmileyIcon.svelte"
 import { p2p_send_emote } from "$lib/peer_handling/peer_send.svelte"
+import { perma_state } from "$lib/persistent-storage.svelte"
+    import { temp_state } from "$lib/temporary-storage.svelte";
 import { emote_state, emotes } from "$lib/utils/emotes.svelte"
 
 const SEND_EMOTE_COOLDOWN_MS = 2000
@@ -60,23 +62,48 @@ $effect(() => {
     onpointerleave={onMouseLeaveControls}
 >
     {#if show_emote_list}
-        <div class="absolute bottom-10 right-0 max-h-24 overflow-y-auto grid grid-cols-3 gap-2 justify-items-center">
-            {#each emotes as emote}
-                <button onclick={() => {display_emote(emote)}}>
-                    <div class="w-12 h-12 flex items-center justify-center">
-                        <img
-                            class="max-w-full max-h-full object-contain"
-                            src={emote}
-                            alt=""
-                            title={emote.split("/").pop()}
-                        >
-                    </div>
-                </button>
-            {/each}
+        <div class="absolute bottom-10 right-0 max-h-24 overflow-y-auto ">
+            <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
+                <div class="flex-grow h-px bg-gray-600"></div>
+                <span>Your emotes</span>
+                <div class="flex-grow h-px bg-gray-600"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 justify-items-center">
+                {#each perma_state.global_settings.personal_emotes as emote}
+                    <button onclick={() => {display_emote(emote)}}>
+                        <div class="w-12 h-12 flex items-center justify-center">
+                            <img
+                                class="max-w-full max-h-full object-contain"
+                                src={emote}
+                                alt=""
+                            >
+                        </div>
+                    </button>
+                {/each}
+            </div>
+            <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
+                <div class="flex-grow h-px bg-gray-600"></div>
+                <span>Global emotes</span>
+                <div class="flex-grow h-px bg-gray-600"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 justify-items-center">
+                {#each emotes as emote}
+                    <button onclick={() => {display_emote(emote)}}>
+                        <div class="w-12 h-12 flex items-center justify-center">
+                            <img
+                                class="max-w-full max-h-full object-contain"
+                                src={emote}
+                                alt=""
+                                title={emote.split("/").pop()}
+                            >
+                        </div>
+                    </button>
+                {/each}
+            </div>
         </div>
     {:else}
         <button
-            class="absolute top-1/2 right-0 bg-black/60 text-white hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
+            class="absolute top-1/2 right-0 mr-1 bg-black/60 text-white hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
             style="opacity: {controls_opacity};"
             onclick={() => {show_emote_list = !show_emote_list}}
         >

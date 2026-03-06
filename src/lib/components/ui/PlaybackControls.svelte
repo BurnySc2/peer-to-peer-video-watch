@@ -110,6 +110,28 @@ function set_subtitle_offset(value: number) {
     send_subtitle_offset({ subtitle_offset: value })
 }
 
+let emote_input = $state("")
+function handle_emote_submit() {
+    if (perma_state.global_settings.personal_emotes.includes(emote_input)) {
+        emote_input = ""
+        return
+    }
+
+    const split_emotes = emote_input.split(",")
+    emote_input = ""
+
+    split_emotes.forEach((emote) => {
+        const emote_url = new URL(emote.trim())
+        if (perma_state.global_settings.personal_emotes.includes(emote_url.toString())) return
+
+        perma_state.global_settings.personal_emotes.push(emote_url.toString())
+    })
+}
+
+function delete_local_emotes() {
+    perma_state.global_settings.personal_emotes = []
+}
+
 $effect(() => {
     send_video_set_playback_rate({
         value: temp_state.video_target_playback_speed,
@@ -201,12 +223,27 @@ $effect(() => {
         >
     </div>
 </div>
-<div class="flex flex-col items-center space-x-2 border border-gray-600 rounded p-2">
-    <label for="autoplay">Autoplay</label>
-    <input
-        type="checkbox"
-        id="autoplay"
-    >
+<div class="flex items-center space-x-2">
+    <div class="flex flex-col items-center space-x-2 border border-gray-600 rounded p-2">
+        <label for="autoplay">Autoplay</label>
+        <input
+            type="checkbox"
+            id="autoplay"
+        >
+    </div>
+    <div class="flex flex-col items-center space-x-2 border border-gray-600 rounded p-2">
+        <label for="add_emote">Add emote</label>
+        <input
+            type="text"
+            id="add_emote"
+            class="border border-gray-600 rounded"
+            onkeydown={(e) => {
+                if (e.key === "Enter") handle_emote_submit()
+            }}
+            bind:value={emote_input}
+        >
+    </div>
+    <button class="border border-gray-600 rounded m-2 p-2 hover:bg-blue-400" onclick={delete_local_emotes}>Delete local emotes</button>
 </div>
 <div class="flex items-center space-x-2">
     <input
