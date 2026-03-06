@@ -16,6 +16,7 @@ import {
     p2p_send_video_set_playback_rate,
 } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
+import { temp_state } from "$lib/temporary-storage.svelte"
 
 // Parse query parameters from URL
 let query_params = $derived.by(() => {
@@ -51,9 +52,16 @@ onMount(() => {
     handle_peer_on_connection(peer)
 
     // Broadcast current time to keep peers in sync (this may adjust playback rate)
-    const timer = setInterval(broadcast_current_time_for_sync, VIDEO_SYNC_INTERVAL_MS)
+    const timer_sync_time = setInterval(broadcast_current_time_for_sync, VIDEO_SYNC_INTERVAL_MS)
+    const timer_fix_playback_speed = setInterval(() => {
+        // Temp fix for solo watching
+        if (temp_state.peer_connections.length === 0) {
+            temp_state.video_playback_speed = temp_state.video_target_playback_speed
+        }
+    }, VIDEO_SYNC_INTERVAL_MS)
     return () => {
-        clearInterval(timer)
+        clearInterval(timer_sync_time)
+        clearInterval(timer_fix_playback_speed)
     }
 })
 </script>
