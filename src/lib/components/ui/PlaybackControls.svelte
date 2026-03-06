@@ -128,7 +128,16 @@ $effect(() => {
         <select
             class="border border-gray-600 rounded"
             id="playback_speed"
-            bind:value={temp_state.video_target_playback_speed}
+            bind:value={() => temp_state.video_target_playback_speed,
+            (v) => {                
+                if (!Number.isNaN(v)) {
+                    temp_state.video_target_playback_speed = v
+                    // Temp fix for solo watching
+                    if (temp_state.peer_connections.length === 0) {
+                        temp_state.video_playback_speed = v
+                    }
+                }
+            }}
         >
             {#each PLAYBACK_SPEED_VALUES as ps}
                 <option
