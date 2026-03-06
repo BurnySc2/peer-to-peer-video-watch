@@ -3,6 +3,8 @@ import SmileyIcon from "$lib/icons/SmileyIcon.svelte"
 import { p2p_send_emote } from "$lib/peer_handling/peer_send.svelte"
 import { emote_state, emotes } from "$lib/utils/emotes.svelte"
 
+const SEND_EMOTE_COOLDOWN_MS = 2000
+
 interface Props {
     controls_opacity: number
     onMouseEnterControls?: () => void
@@ -29,10 +31,10 @@ function display_emote(emote: string) {
     setTimeout(() => {
         const index = emote_state.findIndex((i) => i.id === id)
         if (index !== -1) emote_state.splice(index, 1)
-    }, 4000)
+    }, 6000)
     setTimeout(() => {
         allow_emote_push = true
-    }, 2000)
+    }, SEND_EMOTE_COOLDOWN_MS)
 }
 
 function generate_emote_id() {
