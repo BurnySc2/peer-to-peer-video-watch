@@ -7,6 +7,7 @@ import PlayIcon from "$lib/icons/PlayIcon.svelte"
 import { p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { format_time } from "$lib/utils/format_time"
+import Emotes from "./Emotes.svelte"
 
 interface Props {
     send_video_play?: (time: number) => void
@@ -98,6 +99,11 @@ function toggle_custom_subtitles() {
         {temp_state.playlist[temp_state.playlist_index].video_title}
     </div>
 {/if}
+<Emotes
+    {controls_opacity}
+    {onMouseEnterControls}
+    {onMouseLeaveControls}
+/>
 <div
     class="absolute bottom-0 left-0 right-0 bg-black/60 p-2 flex gap-2 w-full transition-opacity duration-500"
     style="opacity: {controls_opacity};"

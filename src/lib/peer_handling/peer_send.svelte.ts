@@ -60,3 +60,7 @@ export function p2p_send_subtitle_offset() {
     broadcast({ type: "send_subtitle_offset", subtitle_offset: temp_state.subtitles_offset })
     console.log("broadcasting subtitle_offset")
 }
+export function p2p_send_emote(id: string, emote: string) {
+    broadcast({ type: "send_emote", id, emote })
+    console.log("broadcasting emote", emote)
+}

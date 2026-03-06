@@ -95,6 +95,7 @@ function handle_subtitle_update() {
     bind:this={player_container}
     class="relative w-10/12 h-10/12"
     onmousemove={debounce_mouse_move}
+    onscroll={debounce_mouse_move}
     onpointerdown={debounce_mouse_move}
 >
     {#if temp_state.playlist[temp_state.playlist_index] === undefined}

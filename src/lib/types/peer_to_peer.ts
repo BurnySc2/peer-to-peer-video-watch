@@ -61,6 +61,11 @@ export const Message = z.union([
         type: z.literal("send_subtitle_offset"),
         subtitle_offset: z.number(),
     }),
+    z.object({
+        type: z.literal("send_emote"),
+        id: z.string(),
+        emote: z.string(),
+    }),
 ])
 
 export type TPlayListItem = z.infer<typeof PlayListItem>

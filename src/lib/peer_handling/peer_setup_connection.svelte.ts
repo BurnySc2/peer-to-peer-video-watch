@@ -4,6 +4,7 @@ import { APP_CONFIG } from "$lib/config"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { Message, type TMessage, type TSetupOptions } from "$lib/types/peer_to_peer"
+import { emote_state } from "$lib/utils/emotes.svelte"
 import { get_speedup_factor, should_start_catching_up, should_stop_catching_up } from "./peer_catchup.svelte"
 import { connection_send_validated } from "./peer_send.svelte"
 
@@ -119,6 +120,11 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 if (temp_state.subtitles_offset !== data_validated.subtitle_offset) {
                     temp_state.subtitles_offset = data_validated.subtitle_offset
                 }
+                break
+            case "send_emote":
+                console.log("Receiving emote", data_validated.emote)
+                emote_state.push({ id: data_validated.id, src: data_validated.emote })
+                break
             default:
                 break
         }
