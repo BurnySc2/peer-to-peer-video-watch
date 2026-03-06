@@ -51,6 +51,7 @@ $effect(() => {
         src={emote.src}
         class="absolute bottom-0 right-0 w-20 pointer-events-none emote-rise"
         alt=""
+        onpointerleave={onMouseLeaveControls}
     >
 {/each}
 {#if show_emote_list}
