@@ -158,11 +158,9 @@ $effect(() => {
                 min="0"
                 max="1"
                 step="0.01"
-                value={temp_state.video_element?.volume || 0}
+                value={perma_state.global_settings.volume}
                 oninput={(e) => {
-                temp_state.video_element!.volume = (
-                    e.target as HTMLInputElement
-                ).valueAsNumber;
+                    perma_state.global_settings.volume = (e.target as HTMLInputElement).valueAsNumber
             }}
             >
             {#if volume_hover_value !== null}
