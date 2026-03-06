@@ -119,61 +119,71 @@ $effect(() => {
 </script>
 
 <div class="flex items-center space-x-2">
-    <label for="playback_speed">Playback rate</label>
-    <select
-        class="border m-2"
-        id="playback_speed"
-        bind:value={temp_state.video_target_playback_speed}
-    >
-        {#each PLAYBACK_SPEED_VALUES as ps}
-            <option
-                class="bg-gray-900"
-                value={ps}
-            >
-                {ps}
-            </option>
-        {/each}
-    </select>
-    <div class="mx-2">|</div>
-    <label
-        class="mx-2"
-        for="volume_control"
-        >Volume</label
-    >
-    <div
-        class="relative w-full mx-2"
-        role="presentation"
-        onpointermove={handle_volume_hover}
-        onpointerleave={() => (volume_hover_value = null)}
-    >
-        <input
-            type="range"
-            class="w-full"
-            min="0"
-            max="1"
-            step="0.01"
-            value={temp_state.video_element?.volume || 0}
-            oninput={(e) => {
+    <div class="flex flex-col border border-gray-600 rounded">
+        <label
+            class="text-center"
+            for="playback_speed"
+            >Playback rate</label
+        >
+        <select
+            class="border border-gray-600 rounded"
+            id="playback_speed"
+            bind:value={temp_state.video_target_playback_speed}
+        >
+            {#each PLAYBACK_SPEED_VALUES as ps}
+                <option
+                    class="bg-gray-900"
+                    value={ps}
+                >
+                    {ps}
+                </option>
+            {/each}
+        </select>
+    </div>
+    <div class="flex flex-col border border-gray-600 rounded w-64">
+        <label
+            class="text-center"
+            for="volume_control"
+            >Volume</label
+        >
+        <div
+            class="relative px-2"
+            role="presentation"
+            onpointermove={handle_volume_hover}
+            onpointerleave={() => (volume_hover_value = null)}
+        >
+            <input
+                class="w-full"
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={temp_state.video_element?.volume || 0}
+                oninput={(e) => {
                 temp_state.video_element!.volume = (
                     e.target as HTMLInputElement
                 ).valueAsNumber;
             }}
-        >
-
-        {#if volume_hover_value !== null}
-            <div
-                class="absolute -top-6 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded pointer-events-none"
-                style="left: {volume_hover_percent}%"
             >
-                {Math.round(volume_hover_value * 100)}%
-            </div>
-        {/if}
+            {#if volume_hover_value !== null}
+                <div
+                    class="absolute -top-6 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded pointer-events-none"
+                    style="left: {volume_hover_percent}%"
+                >
+                    {Math.round(volume_hover_value * 100)}%
+                </div>
+            {/if}
+        </div>
     </div>
-    <div class="m-2">
-        <label for="subtitle_offset">Subs offset</label>
+    <div class="flex flex-col border border-gray-600 rounded">
+        <label
+            class="text-center"
+            for="subtitle_offset"
+            >Subs offset</label
+        >
         <input
             type="number"
-            class="border rounded p-2 w-24"
+            class="border border-gray-600 rounded p-2 w-24"
             id="subtitle_offset"
             value={temp_state.subtitles_offset}
             oninput={(e) => {
@@ -181,18 +191,22 @@ $effect(() => {
             }}
         >
     </div>
-    <div class="m-2">
-        <label for="subtitle_font_size">Subs size</label>
+    <div class="flex flex-col border border-gray-600 rounded mx-2">
+        <label
+            class="text-center"
+            for="subtitle_font_size"
+            >Subs size</label
+        >
         <input
             type="number"
-            class="border rounded p-2 w-24"
+            class="border border-gray-600 rounded p-2 w-24"
             id="subtitle_font_size"
             step="0.25"
             bind:value={perma_state.global_settings.subtitles_font_size_rem}
         >
     </div>
 </div>
-<div class="flex items-center space-x-2">
+<div class="flex flex-col items-center space-x-2 border border-gray-600 rounded p-2">
     <label for="autoplay">Autoplay</label>
     <input
         type="checkbox"
@@ -201,21 +215,22 @@ $effect(() => {
 </div>
 <div class="flex items-center space-x-2">
     <input
-        class="border rounded m-2 p-2"
+        class="border border-gray-600 rounded m-2 p-2"
         type="url"
         placeholder="New playlist item"
         bind:value={input_new_playlist_url}
     >
     <button
-        class="p-2 border hover:bg-blue-400"
+        class="p-2 border border-gray-600 rounded hover:bg-blue-400"
         onclick={add_playlist_item}
     >
         Add to playlist
     </button>
 </div>
-<div class="flex items-center space-x-2">
+<div class="flex items-center space-x-2 border border-gray-600 rounded p-2 select-none">
     <label for="select-playlist">Current playlist</label>
     <select
+        class="border border-gray-600 rounded"
         id="select-playlist"
         multiple
         bind:value={select_playlist_items}
@@ -225,7 +240,7 @@ $effect(() => {
         {/each}
     </select>
     <button
-        class="p-2 border hover:bg-blue-400"
+        class="p-2 border border-gray-600 rounded hover:bg-blue-400"
         class:opacity-0={select_playlist_items.length !== 1}
         disabled={select_playlist_items.length < 1}
         onclick={set_playlist_index}
@@ -233,7 +248,7 @@ $effect(() => {
         Play
     </button>
     <button
-        class="p-2 border hover:bg-blue-400"
+        class="p-2 border border-gray-600 rounded hover:bg-blue-400"
         class:opacity-0={select_playlist_items.length < 1}
         disabled={select_playlist_items.length < 1}
         onclick={delete_playlist_item}
