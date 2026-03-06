@@ -49,12 +49,16 @@ $effect(() => {
 {#each emote_state as emote (emote.id)}
     <img
         src={emote.src}
-        class="absolute bottom-0 right-0 w-16 pointer-events-none emote-rise"
+        class="absolute bottom-0 right-0 w-20 pointer-events-none emote-rise"
         alt=""
     >
 {/each}
 {#if show_emote_list}
-    <div class="absolute bottom-10 right-0 max-h-24 overflow-y-auto grid grid-cols-3 gap-2 justify-items-center">
+    <div
+        class="absolute bottom-10 right-0 max-h-24 overflow-y-auto grid grid-cols-3 gap-2 justify-items-center"
+        onpointerenter={onMouseEnterControls}
+        onpointerleave={onMouseLeaveControls}
+    >
         {#each emotes as emote}
             <button onclick={() => {display_emote(emote)}}>
                 <img
