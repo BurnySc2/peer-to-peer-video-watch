@@ -121,12 +121,12 @@ $effect(() => {
 <div class="flex items-center space-x-2">
     <div class="flex flex-col border border-gray-600 rounded">
         <label
-            class="text-center"
+            class="text-center p-1"
             for="playback_speed"
             >Playback rate</label
         >
         <select
-            class="border border-gray-600 rounded"
+            class="border-t border-gray-600 p-1"
             id="playback_speed"
             bind:value={temp_state.video_target_playback_speed}
         >
@@ -140,7 +140,7 @@ $effect(() => {
             {/each}
         </select>
     </div>
-    <div class="flex flex-col border border-gray-600 rounded w-64">
+    <div class="flex flex-col border border-gray-600 rounded p-1 w-64">
         <label
             class="text-center"
             for="volume_control"
@@ -178,7 +178,7 @@ $effect(() => {
         >
         <input
             type="number"
-            class="border border-gray-600 rounded p-2 w-24"
+            class="border-t border-gray-600 p-1 w-24"
             id="subtitle_offset"
             value={temp_state.subtitles_offset}
             oninput={(e) => {
@@ -194,7 +194,7 @@ $effect(() => {
         >
         <input
             type="number"
-            class="border border-gray-600 rounded p-2 w-24"
+            class="border-t border-gray-600 p-1 w-24"
             id="subtitle_font_size"
             step="0.25"
             bind:value={perma_state.global_settings.subtitles_font_size_rem}
