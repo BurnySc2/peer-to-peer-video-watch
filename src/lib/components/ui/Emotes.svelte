@@ -2,7 +2,7 @@
 import SmileyIcon from "$lib/icons/SmileyIcon.svelte"
 import { p2p_send_emote } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
-    import { temp_state } from "$lib/temporary-storage.svelte";
+import { temp_state } from "$lib/temporary-storage.svelte"
 import { emote_state, emotes } from "$lib/utils/emotes.svelte"
 
 const SEND_EMOTE_COOLDOWN_MS = 2000

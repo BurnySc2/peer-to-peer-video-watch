@@ -121,10 +121,14 @@ function handle_emote_submit() {
     emote_input = ""
 
     split_emotes.forEach((emote) => {
-        const emote_url = new URL(emote.trim())
-        if (perma_state.global_settings.personal_emotes.includes(emote_url.toString())) return
-
-        perma_state.global_settings.personal_emotes.push(emote_url.toString())
+        try {
+            const emote_url = new URL(emote.trim())
+            if (perma_state.global_settings.personal_emotes.includes(emote_url.toString())) return
+            perma_state.global_settings.personal_emotes.push(emote_url.toString())
+        } catch {
+            console.log(`Invalid url ${emote.trim()}`)
+            return
+        }
     })
 }
 
@@ -223,15 +227,16 @@ $effect(() => {
         >
     </div>
 </div>
-<div class="flex items-center space-x-2">
-    <div class="flex flex-col items-center space-x-2 border border-gray-600 rounded p-2">
+<div class="flex space-x-2">
+    <div class="flex flex-col items-center space-y-1 border border-gray-600 rounded p-2">
         <label for="autoplay">Autoplay</label>
         <input
             type="checkbox"
             id="autoplay"
+            class=""
         >
     </div>
-    <div class="flex flex-col items-center space-x-2 border border-gray-600 rounded p-2">
+    <div class="flex flex-col items-center border border-gray-600 rounded p-2">
         <label for="add_emote">Add emote</label>
         <input
             type="text"
@@ -243,7 +248,12 @@ $effect(() => {
             bind:value={emote_input}
         >
     </div>
-    <button class="border border-gray-600 rounded m-2 p-2 hover:bg-blue-400" onclick={delete_local_emotes}>Delete local emotes</button>
+    <button
+        class="border border-gray-600 rounded m-2 p-2 hover:bg-blue-400"
+        onclick={delete_local_emotes}
+    >
+        Delete local emotes
+    </button>
 </div>
 <div class="flex items-center space-x-2">
     <input
@@ -262,7 +272,7 @@ $effect(() => {
 <div class="flex items-center space-x-2 border border-gray-600 rounded p-2 select-none">
     <label for="select-playlist">Current playlist</label>
     <select
-        class="border border-gray-600 rounded"
+        class="border border-gray-600 rounded p-1"
         id="select-playlist"
         multiple
         bind:value={select_playlist_items}
