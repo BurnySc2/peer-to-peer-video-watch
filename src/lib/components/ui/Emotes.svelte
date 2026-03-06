@@ -47,11 +47,13 @@ $effect(() => {
 </script>
 
 {#each emote_state as emote (emote.id)}
+<div class="w-16 h-16 flex items-center justify-center">
     <img
-        src={emote.src}
-        class="absolute bottom-0 right-0 w-20 pointer-events-none emote-rise"
-        alt=""
+    src={emote.src}
+    class="absolute bottom-0 right-0 max-w-full max-h-full object-contain pointer-events-none emote-rise"
+    alt=""
     >
+</div>
 {/each}
 <div
     onpointerenter={onMouseEnterControls}
@@ -61,12 +63,14 @@ $effect(() => {
         <div class="absolute bottom-10 right-0 max-h-24 overflow-y-auto grid grid-cols-3 gap-2 justify-items-center">
             {#each emotes as emote}
                 <button onclick={() => {display_emote(emote)}}>
+                <div class="w-12 h-12 flex items-center justify-center">
                     <img
-                        class="w-12"
-                        src={emote}
-                        alt=""
-                        title={emote.split("/").pop()}
+                    class="max-w-full max-h-full object-contain"
+                    src={emote}
+                    alt=""
+                    title={emote.split("/").pop()}
                     >
+                </div>
                 </button>
             {/each}
         </div>
