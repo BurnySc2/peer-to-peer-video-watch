@@ -155,7 +155,7 @@ function delete_local_emotes() {
 }
 
 let remaining = $state(0)
-let timer: ReturnType<typeof setInterval> | null = null
+let timer: ReturnType<typeof setInterval> | undefined
 // Sleep timer - does not broadcast pause
 function set_sleep_timer(sleep_time: number) {
     if (timer) clearInterval(timer)
@@ -166,8 +166,8 @@ function set_sleep_timer(sleep_time: number) {
     timer = setInterval(() => {
         remaining -= 1
         if (remaining <= 0) {
-            clearInterval(timer!)
-            timer = null
+            clearInterval(timer)
+            timer = undefined
             temp_state.video_state_paused = true
             console.log("Sleep timer triggered")
             return
