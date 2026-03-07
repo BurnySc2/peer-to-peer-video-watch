@@ -116,8 +116,11 @@ function set_subtitle_offset(value: number) {
     send_subtitle_offset({ subtitle_offset: value })
 }
 
+let flash = $state(false)
 let emote_input = $state("")
 function handle_emote_submit() {
+    flash = true
+    setTimeout(() => (flash = false), 300)
     if (perma_state.global_settings.personal_emotes.includes(emote_input)) {
         emote_input = ""
         return
@@ -275,16 +278,18 @@ $effect(() => {
                 class=""
             >
         </div>
-        <div class="flex flex-col items-center border border-gray-600 rounded">
+        <div
+            class="flex flex-col items-center border border-gray-600 rounded"
+            title="Accepts multiple urls. Middle mouse click emote to delete."
+        >
             <label for="add_emote">Add emote</label>
             <input
                 type="text"
                 id="add_emote"
-                class="border border-gray-600 rounded max-w-full"
-                onkeydown={(e) => {
-            if (e.key === "Enter") handle_emote_submit()
-        }}
+                class="border border-gray-600 rounded max-w-full transition-colors duration-300
+           {flash ? 'bg-blue-200' : ''}"
                 bind:value={emote_input}
+                oninput={handle_emote_submit}
             >
         </div>
         <div class="flex flex-col border border-gray-600 rounded">
