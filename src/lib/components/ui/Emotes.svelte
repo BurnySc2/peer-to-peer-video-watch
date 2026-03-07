@@ -5,7 +5,7 @@ import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import { emote_state, emotes } from "$lib/utils/emotes.svelte"
 
-const SEND_EMOTE_COOLDOWN_MS = 100
+const SEND_EMOTE_COOLDOWN_MS = 1000
 
 interface Props {
     controls_opacity: number
@@ -25,7 +25,7 @@ function display_emote(emote: string) {
     console.log(emote)
     if (!allow_emote_push) return
     allow_emote_push = false
-    // show_emote_list = false
+    show_emote_list = false
     const id = generate_emote_id()
 
     emote_state.push({ id, src: emote })
@@ -75,16 +75,16 @@ $effect(() => {
     onpointerleave={onMouseLeaveControls}
 >
     {#if show_emote_list}
-        <div class="absolute bottom-10 right-0 max-h-24 overflow-y-auto ">
+        <div class="absolute bottom-10 right-0 bg-gray-900/75 rounded-t-lg p-1 max-h-36 overflow-y-auto ">
             <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
                 <div class="flex-grow h-px bg-gray-600"></div>
                 <span>Your emotes</span>
                 <div class="flex-grow h-px bg-gray-600"></div>
             </div>
-            <div class="grid grid-cols-3 gap-2 justify-items-center">
+            <div class="grid grid-cols-4 gap-2 justify-items-center">
                 {#each perma_state.global_settings.personal_emotes as emote}
                     <button onclick={() => {display_emote(emote)}}>
-                        <div class="w-12 h-12 flex items-center justify-center">
+                        <div class="w-12 h-12 flex items-center justify-center cursor-pointer hover:outline">
                             <img
                                 class="max-w-full max-h-full object-contain"
                                 src={emote}
@@ -100,10 +100,10 @@ $effect(() => {
                 <span>Global emotes</span>
                 <div class="flex-grow h-px bg-gray-600"></div>
             </div>
-            <div class="grid grid-cols-3 gap-2 justify-items-center">
+            <div class="grid grid-cols-4 gap-2 justify-items-center">
                 {#each emotes as emote}
                     <button onclick={() => {display_emote(emote)}}>
-                        <div class="w-12 h-12 flex items-center justify-center">
+                        <div class="w-12 h-12 flex items-center justify-center cursor-pointer hover:outline">
                             <img
                                 class="max-w-full max-h-full object-contain"
                                 src={emote}
