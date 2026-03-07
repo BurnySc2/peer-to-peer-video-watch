@@ -131,6 +131,8 @@ function handle_emote_submit() {
         split_emotes = emote_input.split(",")
     } else if (emote_input.includes(" ")) {
         split_emotes = emote_input.split(" ")
+    } else {
+        split_emotes = [emote_input]
     }
     emote_input = ""
 
