@@ -102,11 +102,11 @@ function handle_video_end() {
     temp_state.playlist_index += 1
     p2p_send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
 
-    if (!temp_state.peer_connections.length) {
-        setTimeout(() => {
+    setTimeout(() => {
+        if (!temp_state.peer_connections.length) {
             temp_state.video_state_paused = false
-        }, 1000)
-    }
+        }
+    }, 1000)
 }
 </script>
 
