@@ -145,114 +145,116 @@ $effect(() => {
 </script>
 
 <div class="grid grid-cols-5 gap-4 max-w-10/12">
-    <div class="flex flex-col border border-gray-600 rounded">
-        <label
-            class="text-center p-1"
-            for="playback_speed"
-            >Playback rate</label
-        >
-        <select
-            class="border-t border-gray-600 p-1 text-center"
-            id="playback_speed"
-            bind:value={temp_state.video_target_playback_speed}
-        >
-            {#each PLAYBACK_SPEED_VALUES as ps}
-                <option
-                    class="bg-gray-900"
-                    value={ps}
-                >
-                    {ps}
-                </option>
-            {/each}
-        </select>
-    </div>
-    <div class="flex flex-col col-span-2 border border-gray-600 rounded p-1 w-full">
-        <label
-            class="text-center"
-            for="volume_control"
-            >Volume</label
-        >
-        <div
-            class="relative px-2"
-            role="presentation"
-            onpointermove={handle_volume_hover}
-            onpointerleave={() => (volume_hover_value = null)}
-        >
-            <input
-                class="w-full"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                bind:value={perma_state.global_settings.volume}
+    {#if temp_state.playlist.length}
+        <div class="flex flex-col border border-gray-600 rounded">
+            <label
+                class="text-center p-1"
+                for="playback_speed"
+                >Playback rate</label
             >
-            {#if volume_hover_value !== null}
-                <div
-                    class="absolute -top-6 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded pointer-events-none"
-                    style="left: {volume_hover_percent}%"
-                >
-                    {Math.round(volume_hover_value * 100)}%
-                </div>
-            {/if}
+            <select
+                class="border-t border-gray-600 p-1 text-center"
+                id="playback_speed"
+                bind:value={temp_state.video_target_playback_speed}
+            >
+                {#each PLAYBACK_SPEED_VALUES as ps}
+                    <option
+                        class="bg-gray-900"
+                        value={ps}
+                    >
+                        {ps}
+                    </option>
+                {/each}
+            </select>
         </div>
-    </div>
-    <div class="flex flex-col border border-gray-600 rounded">
-        <label
-            class="text-center"
-            for="subtitle_offset"
-            >Subs offset</label
-        >
-        <input
-            type="number"
-            class="border-t border-gray-600 p-1 text-center"
-            id="subtitle_offset"
-            value={temp_state.subtitles.offset}
-            oninput={(e) => {
+        <div class="flex flex-col col-span-2 border border-gray-600 rounded p-1 w-full">
+            <label
+                class="text-center"
+                for="volume_control"
+                >Volume</label
+            >
+            <div
+                class="relative px-2"
+                role="presentation"
+                onpointermove={handle_volume_hover}
+                onpointerleave={() => (volume_hover_value = null)}
+            >
+                <input
+                    class="w-full"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    bind:value={perma_state.global_settings.volume}
+                >
+                {#if volume_hover_value !== null}
+                    <div
+                        class="absolute -top-6 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded pointer-events-none"
+                        style="left: {volume_hover_percent}%"
+                    >
+                        {Math.round(volume_hover_value * 100)}%
+                    </div>
+                {/if}
+            </div>
+        </div>
+        <div class="flex flex-col border border-gray-600 rounded">
+            <label
+                class="text-center"
+                for="subtitle_offset"
+                >Subs offset</label
+            >
+            <input
+                type="number"
+                class="border-t border-gray-600 p-1 text-center"
+                id="subtitle_offset"
+                value={temp_state.subtitles.offset}
+                oninput={(e) => {
                 set_subtitle_offset(Number((e.target as HTMLInputElement).value))
             }}
-        >
-    </div>
-    <div class="flex flex-col border border-gray-600 rounded">
-        <label
-            class="text-center"
-            for="subtitle_font_size"
-            >Subs size</label
-        >
-        <input
-            type="number"
-            class="border-t border-gray-600 p-1 text-center"
-            id="subtitle_font_size"
-            step="0.25"
-            bind:value={perma_state.global_settings.subtitles_font_size_rem}
-        >
-    </div>
+            >
+        </div>
+        <div class="flex flex-col border border-gray-600 rounded">
+            <label
+                class="text-center"
+                for="subtitle_font_size"
+                >Subs size</label
+            >
+            <input
+                type="number"
+                class="border-t border-gray-600 p-1 text-center"
+                id="subtitle_font_size"
+                step="0.25"
+                bind:value={perma_state.global_settings.subtitles_font_size_rem}
+            >
+        </div>
 
-    <div class="col-start-2 flex flex-col items-center space-y-1 border border-gray-600 rounded p-2">
-        <label for="autoplay">Autoplay</label>
-        <input
-            type="checkbox"
-            id="autoplay"
-            class=""
-        >
-    </div>
-    <div class="flex flex-col items-center border border-gray-600 rounded">
-        <label for="add_emote">Add emote</label>
-        <input
-            type="text"
-            id="add_emote"
-            class="border border-gray-600 rounded max-w-full"
-            onkeydown={(e) => {
+        <div class="col-start-2 flex flex-col items-center space-y-1 border border-gray-600 rounded p-2">
+            <label for="autoplay">Autoplay</label>
+            <input
+                type="checkbox"
+                id="autoplay"
+                class=""
+            >
+        </div>
+        <div class="flex flex-col items-center border border-gray-600 rounded">
+            <label for="add_emote">Add emote</label>
+            <input
+                type="text"
+                id="add_emote"
+                class="border border-gray-600 rounded max-w-full"
+                onkeydown={(e) => {
             if (e.key === "Enter") handle_emote_submit()
         }}
-            bind:value={emote_input}
+                bind:value={emote_input}
+            >
+        </div>
+        <button
+            class="border border-gray-600 rounded p-2 hover:bg-blue-400"
+            onclick={delete_local_emotes}
         >
-    </div>
-    <button
-        class="border border-gray-600 rounded p-2 hover:bg-blue-400"
-        onclick={delete_local_emotes}
-    >
-        Delete local emotes
-    </button>
+            Delete local emotes
+        </button>
+    {/if}
 
     <input
         class="col-start-2 col-span-2 border border-gray-600 rounded p-2 text-center"
@@ -266,11 +268,9 @@ $effect(() => {
     >
         Add to playlist
     </button>
-    <div
-        class="col-start-2 col-span-2 items-center border border-gray-600 rounded p-2 text-center overflow-x-auto "
-    >
+    <div class="col-start-2 col-span-2 items-center border border-gray-600 rounded p-2 text-center overflow-x-auto ">
         {#if temp_state.playlist.length}
-        <label for="select-playlist">Current playlist</label>
+            <label for="select-playlist">Current playlist</label>
             <select
                 class="border border-gray-600 rounded p-1"
                 id="select-playlist"
