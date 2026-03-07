@@ -49,10 +49,10 @@ $effect(() => {
 </script>
 
 {#each emote_state as emote (emote.id)}
-    <div class="w-16 h-16 flex items-center justify-center">
+    <div class="absolute bottom-0 right-0 w-20 h-20 flex items-center justify-center">
         <img
             src={emote.src}
-            class="absolute bottom-0 right-0 max-w-full max-h-full object-contain pointer-events-none emote-rise"
+            class="max-w-full max-h-full object-contain pointer-events-none emote-rise"
             alt=""
         >
     </div>
