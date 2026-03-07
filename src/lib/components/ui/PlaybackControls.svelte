@@ -267,10 +267,10 @@ $effect(() => {
         Add to playlist
     </button>
     <div
-        class="col-start-2 col-span-2 items-center border border-gray-600 rounded p-2 select-none text-center  overflow-x-auto "
+        class="col-start-2 col-span-2 items-center border border-gray-600 rounded p-2 text-center overflow-x-auto "
     >
-        <label for="select-playlist">Current playlist</label>
         {#if temp_state.playlist.length}
+        <label for="select-playlist">Current playlist</label>
             <select
                 class="border border-gray-600 rounded p-1"
                 id="select-playlist"
@@ -282,7 +282,7 @@ $effect(() => {
                 {/each}
             </select>
         {:else}
-            empty
+            <span>Current playlist empty</span>
         {/if}
     </div>
     <div class="flex h-12 gap-x-2">
