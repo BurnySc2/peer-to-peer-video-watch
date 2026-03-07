@@ -65,10 +65,10 @@ let subtitles = $state<SubtitleItem[]>([])
 async function handle_load_subtitles() {
     subtitles = []
     await load_subtitles_from_blob()
-    if (temp_state.subtitles_blob_url) {
-        const raw_srt_text = await fetch_srt_from_url(temp_state.subtitles_blob_url)
+    if (temp_state.subtitles.blob_url) {
+        const raw_srt_text = await fetch_srt_from_url(temp_state.subtitles.blob_url)
         subtitles = parse_srt(raw_srt_text)
-        console.log("Subtitles loaded ", temp_state.subtitles_blob_url)
+        console.log("Subtitles loaded ", temp_state.subtitles.blob_url)
     } else console.log("Subtitles not loaded")
 }
 
@@ -121,7 +121,7 @@ function handle_subtitle_update() {
         <ReadyCheck {send_video_play} />
         <Subtitles
             {subtitle_text}
-            enabled={temp_state.subtitles_enabled}
+            enabled={temp_state.subtitles.enabled}
         />
         <NewControls
             {send_video_play}

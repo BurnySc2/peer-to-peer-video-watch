@@ -57,7 +57,7 @@ export function p2p_send_ready() {
     console.log("broadcasting send_ready")
 }
 export function p2p_send_subtitle_offset() {
-    broadcast({ type: "send_subtitle_offset", subtitle_offset: temp_state.subtitles_offset })
+    broadcast({ type: "send_subtitle_offset", subtitle_offset: temp_state.subtitles.offset })
     console.log("broadcasting subtitle_offset")
 }
 export function p2p_send_emote(id: string, emote: string) {

@@ -51,7 +51,7 @@ async function add_playlist_item(_event: Event) {
             video_title: video_title || "",
             subtitles_original_url: subs_original_url || "",
         }
-        console.log("Added to playlist ", temp_state.playlist)
+        console.log("Added to playlist ", $state.snapshot(temp_state.playlist))
     }
 
     input_new_playlist_url = ""
@@ -106,7 +106,7 @@ function handle_volume_hover(event: PointerEvent) {
 }
 
 function set_subtitle_offset(value: number) {
-    temp_state.subtitles_offset = value
+    temp_state.subtitles.offset = value
     send_subtitle_offset({ subtitle_offset: value })
 }
 
@@ -206,7 +206,7 @@ $effect(() => {
             type="number"
             class="border-t border-gray-600 p-1 w-24"
             id="subtitle_offset"
-            value={temp_state.subtitles_offset}
+            value={temp_state.subtitles.offset}
             oninput={(e) => {
                 set_subtitle_offset(Number((e.target as HTMLInputElement).value))
             }}

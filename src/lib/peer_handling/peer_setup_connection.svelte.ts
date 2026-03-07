@@ -117,8 +117,8 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 break
             case "send_subtitle_offset":
                 console.log("Receiving subtitle_offset", data_validated.subtitle_offset)
-                if (temp_state.subtitles_offset !== data_validated.subtitle_offset) {
-                    temp_state.subtitles_offset = data_validated.subtitle_offset
+                if (temp_state.subtitles.offset !== data_validated.subtitle_offset) {
+                    temp_state.subtitles.offset = data_validated.subtitle_offset
                 }
                 break
             case "send_emote":

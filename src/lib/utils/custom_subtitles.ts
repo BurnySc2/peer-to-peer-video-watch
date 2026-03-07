@@ -63,7 +63,7 @@ let next_subtitle_end: number | null = null
 function initialise_subtitles(subtitles: SubtitleItem[]) {
     for (let i = 0; i <= subtitles.length; i++) {
         const sub = subtitles[i]
-        if (temp_state.video_current_time + temp_state.subtitles_offset <= sub.end_s) {
+        if (temp_state.video_current_time + temp_state.subtitles.offset <= sub.end_s) {
             current_subtitle_id = i
             break
         }
@@ -97,8 +97,8 @@ export function update_current_subtitle(subtitles: null | SubtitleItem[] = null)
     }
     prev_vid_time = temp_state.video_current_time
 
-    const current_time_with_offset = temp_state.video_current_time + temp_state.subtitles_offset
-    // console.log(`offset: ${temp_state.subtitles_offset}, curr_offset_time: ${current_time_with_offset}, ends at ${curr_subtitle_end}`)
+    const current_time_with_offset = temp_state.video_current_time + temp_state.subtitles.offset
+    // console.log(`offset: ${temp_state.subtitles.offset}, curr_offset_time: ${current_time_with_offset}, ends at ${curr_subtitle_end}`)
 
     if (current_time_with_offset > curr_subtitle_end) {
         // console.log("Next sub triggered")

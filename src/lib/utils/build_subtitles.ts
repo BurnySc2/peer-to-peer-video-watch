@@ -48,23 +48,23 @@ export async function build_subtitles_blob(real_url: string) {
         const blob = new Blob([text], { type: "text/srt" })
         const blob_url = URL.createObjectURL(blob)
 
-        if (temp_state.subtitles_blob_url) URL.revokeObjectURL(temp_state.subtitles_blob_url)
+        if (temp_state.subtitles.blob_url) URL.revokeObjectURL(temp_state.subtitles.blob_url)
 
-        temp_state.subtitles_blob_url = blob_url
+        temp_state.subtitles.blob_url = blob_url
         console.log("load_subtitles success")
     } catch (err) {
         console.error(err)
-        if (temp_state.subtitles_blob_url) URL.revokeObjectURL(temp_state.subtitles_blob_url)
-        temp_state.subtitles_blob_url = ""
+        if (temp_state.subtitles.blob_url) URL.revokeObjectURL(temp_state.subtitles.blob_url)
+        temp_state.subtitles.blob_url = ""
     }
 }
 
 export async function load_subtitles_from_blob() {
-    if (temp_state.subtitles_blob_url) {
-        URL.revokeObjectURL(temp_state.subtitles_blob_url)
+    if (temp_state.subtitles.blob_url) {
+        URL.revokeObjectURL(temp_state.subtitles.blob_url)
     }
-    temp_state.subtitles_blob_url = ""
-    console.log("Sub blob cleared ", temp_state.subtitles_blob_url)
+    temp_state.subtitles.blob_url = ""
+    console.log("Sub blob cleared ", temp_state.subtitles.blob_url)
 
     const subtitles_original_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
     if (!subtitles_original_url) {
