@@ -76,6 +76,7 @@ $effect(() => {
                                 class="max-w-full max-h-full object-contain"
                                 src={emote}
                                 alt=""
+                                loading="lazy"
                             >
                         </div>
                     </button>
@@ -95,6 +96,7 @@ $effect(() => {
                                 src={emote}
                                 alt=""
                                 title={emote.split("/").pop()}
+                                loading="lazy"
                             >
                         </div>
                     </button>
