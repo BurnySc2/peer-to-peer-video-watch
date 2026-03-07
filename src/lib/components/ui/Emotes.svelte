@@ -49,6 +49,10 @@ function random_helper(a: number, b: number): number {
     return Math.random() * (max - min) + min
 }
 
+function delete_local_emote(emote: string) {
+    perma_state.global_settings.personal_emotes = perma_state.global_settings.personal_emotes.filter(item => item !== emote)
+}
+
 $effect(() => {
     if (controls_opacity === 0) show_emote_list = false
 })
@@ -83,7 +87,7 @@ $effect(() => {
             </div>
             <div class="grid grid-cols-4 gap-2 justify-items-center">
                 {#each perma_state.global_settings.personal_emotes as emote}
-                    <button onclick={() => {display_emote(emote)}}>
+                    <button onclick={() => {display_emote(emote)}} onauxclick={() => {delete_local_emote(emote)}}>
                         <div class="w-12 h-12 flex items-center justify-center cursor-pointer hover:outline">
                             <img
                                 class="max-w-full max-h-full object-contain"
