@@ -1,5 +1,6 @@
 <script lang="ts">
 import { untrack } from "svelte"
+import { APP_CONFIG } from "$lib/config"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { TPlayListItem } from "$lib/types/peer_to_peer"
@@ -117,13 +118,25 @@ function handle_emote_submit() {
         return
     }
 
-    const split_emotes = emote_input.split(",")
+    let split_emotes: string[] = []
+    if (emote_input.includes(",")) {
+        split_emotes = emote_input.split(",")
+    } else if (emote_input.includes(" ")) {
+        split_emotes = emote_input.split(" ")
+    }
     emote_input = ""
 
     split_emotes.forEach((emote) => {
         try {
             const emote_url = new URL(emote.trim())
-            if (perma_state.global_settings.personal_emotes.includes(emote_url.toString())) return
+            if (!APP_CONFIG.allowed_emote_origins.includes(emote_url.origin)) {
+                console.log(`Rejecting. invalid origin: ${emote}`)
+                return
+            }
+            if (perma_state.global_settings.personal_emotes.includes(emote_url.toString())) {
+                console.log(`Rejecting, duplicate: ${emote}`)
+                return
+            }
             perma_state.global_settings.personal_emotes.push(emote_url.toString())
         } catch {
             console.log(`Invalid url ${emote.trim()}`)
