@@ -8,6 +8,8 @@ import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 import { get_subs_url } from "$lib/utils/build_subtitles"
 import { extract_title, fetch_file_data } from "$lib/utils/fetch_jelly_data"
 import { is_valid_url } from "$lib/utils/url_utils"
+    import TrashIcon from "$lib/icons/TrashIcon.svelte";
+    import PlayIcon from "$lib/icons/PlayIcon.svelte";
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
@@ -348,17 +350,19 @@ $effect(() => {
             class="p-2 border border-gray-600 rounded hover:bg-blue-400"
             class:opacity-0={select_playlist_items.length !== 1}
             disabled={select_playlist_items.length < 1}
+            title="Play selected item"
             onclick={set_playlist_index}
         >
-            Play
+            <PlayIcon />
         </button>
         <button
             class="p-2 border border-gray-600 rounded hover:bg-blue-400"
             class:opacity-0={select_playlist_items.length < 1}
             disabled={select_playlist_items.length < 1}
+            title="Delete selected item"
             onclick={delete_playlist_item}
         >
-            Delete
+            <TrashIcon />
         </button>
     </div>
 </div>
