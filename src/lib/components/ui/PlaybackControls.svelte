@@ -149,6 +149,27 @@ function delete_local_emotes() {
     perma_state.global_settings.personal_emotes = []
 }
 
+let remaining = $state(0)
+let timer: ReturnType<typeof setInterval> | null = null
+// Sleep timer - does not broadcast pause
+function set_sleep_timer(sleep_time: number) {
+    if (timer) clearInterval(timer)
+    if (sleep_time <= 0) return
+
+    console.log("Starting sleep timer")
+    remaining = sleep_time
+    timer = setInterval(() => {
+        remaining -= 1
+        if (remaining <= 0) {
+            clearInterval(timer!)
+            timer = null
+            temp_state.video_state_paused = true
+            console.log("Sleep timer triggered")
+            return
+        }
+    }, 60000)
+}
+
 $effect(() => {
     send_video_set_playback_rate({
         value: temp_state.video_target_playback_speed,
@@ -261,12 +282,23 @@ $effect(() => {
                 bind:value={emote_input}
             >
         </div>
-        <button
-            class="border border-gray-600 rounded p-2 hover:bg-blue-400"
-            onclick={delete_local_emotes}
-        >
-            Delete local emotes
-        </button>
+        <div class="flex flex-col border border-gray-600 rounded">
+            <label
+                class="text-center"
+                for="sleep_timer"
+                >{remaining ? `Sleep timer active`: "Sleep timer (mins)"}</label
+            >
+            <input
+                type="number"
+                class="border-t border-gray-600 p-1 text-center"
+                id="sleep_timer"
+                step="5"
+                value={remaining}
+                oninput={(e) => {
+                set_sleep_timer(Number((e.target as HTMLInputElement).value))
+            }}
+            >
+        </div>
     {/if}
 
     <input
