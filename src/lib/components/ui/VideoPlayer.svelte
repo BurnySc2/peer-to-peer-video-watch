@@ -1,5 +1,6 @@
 <script lang="ts">
 import { Toaster } from "svelte-5-french-toast"
+import { p2p_send_playlist_set } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
@@ -88,6 +89,25 @@ function handle_subtitle_update() {
         subtitle_text = new_text
     }
 }
+
+function handle_video_end() {
+    if (!temp_state.autoplay) {
+        return
+    }
+
+    if (temp_state.playlist_index + 1 >= temp_state.playlist.length) {
+        return
+    }
+
+    temp_state.playlist_index += 1
+    p2p_send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
+
+    if (!temp_state.peer_connections.length) {
+        setTimeout(() => {
+            temp_state.video_state_paused = false
+        }, 1000)
+    }
+}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -115,6 +135,7 @@ function handle_subtitle_update() {
             bind:duration={temp_state.video_duration}
             src={temp_state.playlist[temp_state.playlist_index].url}
             oncanplay={local_can_play}
+            onended={handle_video_end}
         >
             Your browser does not support the video tag.
         </video>

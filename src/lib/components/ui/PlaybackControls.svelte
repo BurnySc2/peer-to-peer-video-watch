@@ -276,6 +276,7 @@ $effect(() => {
                 type="checkbox"
                 id="autoplay"
                 class=""
+                bind:checked={temp_state.autoplay}
             >
         </div>
         <div

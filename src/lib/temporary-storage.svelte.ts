@@ -11,6 +11,7 @@ const TempState = z.object({
         }),
     ),
     playlist_index: z.number(),
+    autoplay: z.boolean(),
     ready_peers: z.set(z.string()),
     peer_connections: z.array(z.custom<DataConnection>()),
     subtitles: z.object({
@@ -40,6 +41,7 @@ export type TTempState = z.infer<typeof TempState>
 export const temp_state: TTempState = $state({
     playlist: [],
     playlist_index: 0,
+    autoplay: false,
     ready_peers: new Set<string>(),
     peer_connections: [],
     subtitles: {
