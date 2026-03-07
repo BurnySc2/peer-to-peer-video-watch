@@ -144,7 +144,7 @@ $effect(() => {
 })
 </script>
 
-<div class="flex items-center space-x-2">
+<div class="grid grid-cols-5 gap-4 max-w-10/12">
     <div class="flex flex-col border border-gray-600 rounded">
         <label
             class="text-center p-1"
@@ -152,7 +152,7 @@ $effect(() => {
             >Playback rate</label
         >
         <select
-            class="border-t border-gray-600 p-1"
+            class="border-t border-gray-600 p-1 text-center"
             id="playback_speed"
             bind:value={temp_state.video_target_playback_speed}
         >
@@ -166,7 +166,7 @@ $effect(() => {
             {/each}
         </select>
     </div>
-    <div class="flex flex-col border border-gray-600 rounded p-1 w-64">
+    <div class="flex flex-col col-span-2 border border-gray-600 rounded p-1 w-full">
         <label
             class="text-center"
             for="volume_control"
@@ -204,7 +204,7 @@ $effect(() => {
         >
         <input
             type="number"
-            class="border-t border-gray-600 p-1 w-24"
+            class="border-t border-gray-600 p-1 text-center"
             id="subtitle_offset"
             value={temp_state.subtitles.offset}
             oninput={(e) => {
@@ -212,7 +212,7 @@ $effect(() => {
             }}
         >
     </div>
-    <div class="flex flex-col border border-gray-600 rounded mx-2">
+    <div class="flex flex-col border border-gray-600 rounded">
         <label
             class="text-center"
             for="subtitle_font_size"
@@ -220,15 +220,14 @@ $effect(() => {
         >
         <input
             type="number"
-            class="border-t border-gray-600 p-1 w-24"
+            class="border-t border-gray-600 p-1 text-center"
             id="subtitle_font_size"
             step="0.25"
             bind:value={perma_state.global_settings.subtitles_font_size_rem}
         >
     </div>
-</div>
-<div class="flex space-x-2">
-    <div class="flex flex-col items-center space-y-1 border border-gray-600 rounded p-2">
+
+    <div class="col-start-2 flex flex-col items-center space-y-1 border border-gray-600 rounded p-2">
         <label for="autoplay">Autoplay</label>
         <input
             type="checkbox"
@@ -236,65 +235,72 @@ $effect(() => {
             class=""
         >
     </div>
-    <div class="flex flex-col items-center border border-gray-600 rounded p-2">
+    <div class="flex flex-col items-center border border-gray-600 rounded">
         <label for="add_emote">Add emote</label>
         <input
             type="text"
             id="add_emote"
-            class="border border-gray-600 rounded"
+            class="border border-gray-600 rounded max-w-full"
             onkeydown={(e) => {
-                if (e.key === "Enter") handle_emote_submit()
-            }}
+            if (e.key === "Enter") handle_emote_submit()
+        }}
             bind:value={emote_input}
         >
     </div>
     <button
-        class="border border-gray-600 rounded m-2 p-2 hover:bg-blue-400"
+        class="border border-gray-600 rounded p-2 hover:bg-blue-400"
         onclick={delete_local_emotes}
     >
         Delete local emotes
     </button>
-</div>
-<div class="flex items-center space-x-2">
+
     <input
-        class="border border-gray-600 rounded m-2 p-2"
+        class="col-start-2 col-span-2 border border-gray-600 rounded p-2 text-center"
         type="url"
         placeholder="New playlist item"
         bind:value={input_new_playlist_url}
     >
     <button
-        class="p-2 border border-gray-600 rounded hover:bg-blue-400"
+        class="border border-gray-600 rounded hover:bg-blue-400"
         onclick={add_playlist_item}
     >
         Add to playlist
     </button>
-</div>
-<div class="flex items-center space-x-2 border border-gray-600 rounded p-2 select-none">
-    <label for="select-playlist">Current playlist</label>
-    <select
-        class="border border-gray-600 rounded p-1"
-        id="select-playlist"
-        multiple
-        bind:value={select_playlist_items}
+    <div
+        class="col-start-2 col-span-2 items-center border border-gray-600 rounded p-2 select-none text-center  overflow-x-auto "
     >
-        {#each temp_state.playlist as item}
-            <option value={item.url}>{item.video_title || item.url}</option>
-        {/each}
-    </select>
-    <button
-        class="p-2 border border-gray-600 rounded hover:bg-blue-400"
-        class:opacity-0={select_playlist_items.length !== 1}
-        disabled={select_playlist_items.length < 1}
-        onclick={set_playlist_index}
-    >
-        Play
-    </button>
-    <button
-        class="p-2 border border-gray-600 rounded hover:bg-blue-400"
-        class:opacity-0={select_playlist_items.length < 1}
-        disabled={select_playlist_items.length < 1}
-        onclick={delete_playlist_item}
-    >
-        Delete
-    </button>
+        <label for="select-playlist">Current playlist</label>
+        {#if temp_state.playlist.length}
+            <select
+                class="border border-gray-600 rounded p-1"
+                id="select-playlist"
+                multiple
+                bind:value={select_playlist_items}
+            >
+                {#each temp_state.playlist as item}
+                    <option value={item.url}>{item.video_title || item.url}</option>
+                {/each}
+            </select>
+        {:else}
+            empty
+        {/if}
+    </div>
+    <div class="flex h-12 gap-x-2">
+        <button
+            class="p-2 border border-gray-600 rounded hover:bg-blue-400"
+            class:opacity-0={select_playlist_items.length !== 1}
+            disabled={select_playlist_items.length < 1}
+            onclick={set_playlist_index}
+        >
+            Play
+        </button>
+        <button
+            class="p-2 border border-gray-600 rounded hover:bg-blue-400"
+            class:opacity-0={select_playlist_items.length < 1}
+            disabled={select_playlist_items.length < 1}
+            onclick={delete_playlist_item}
+        >
+            Delete
+        </button>
+    </div>
 </div>
