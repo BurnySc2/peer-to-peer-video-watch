@@ -7,6 +7,7 @@ import type { TPlayListItem } from "$lib/types/peer_to_peer"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 import { get_subs_url } from "$lib/utils/build_subtitles"
 import { extract_title, fetch_file_data } from "$lib/utils/fetch_jelly_data"
+import { is_valid_url } from "$lib/utils/url_utils"
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
@@ -31,6 +32,10 @@ let select_playlist_items = $state<string[]>([])
 
 async function add_playlist_item(_event: Event) {
     if (!input_new_playlist_url) {
+        return
+    }
+
+    if (!is_valid_url(input_new_playlist_url)) {
         return
     }
 
