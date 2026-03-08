@@ -42,14 +42,15 @@ export async function fetch_file_data(url: string) {
 
 export async function fetch_season_data(url: string, series_id: string, season_id: string | null) {
     const [url_data, params] = get_search_params(url)
-    const season_param = season_id !== null ? `season_Id=${season_id}&` : ""
-    const api_url = `${url_data.origin}/Shows/${series_id}/Episodes?${season_param}sortBy=IndexNumber&api_key=${params.api_key}`
+    const api_url = `${url_data.origin}/Shows/${series_id}/Episodes?sortBy=IndexNumber&api_key=${params.api_key}`
 
     try {
         const res = await fetch(api_url)
         // TODO: Add types
         const data = await res.json()
-        const data_mapped: TPlayListItem[] = data.Items.map((item) => {
+        const data_mapped: TPlayListItem[] = data.Items.filter(
+            (item) => season_id === null || season_id === item.SeasonId,
+        ).map((item) => {
             return {
                 url: `${url_data.origin}/Items/${item.Id}/Download?api_key=${params.api_key}`,
                 video_title: "",
