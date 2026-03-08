@@ -218,7 +218,7 @@ $effect(() => {
     {#if temp_state.playlist.length}
         <div class="flex flex-col border border-gray-600 rounded">
             <label
-                class="text-center p-1"
+                class="text-center p-1 select-none"
                 for="playback_speed"
                 >Playback rate</label
             >
@@ -245,7 +245,7 @@ $effect(() => {
         </div>
         <div class="flex flex-col col-span-2 border border-gray-600 rounded p-1 w-full">
             <label
-                class="text-center"
+                class="text-center select-none"
                 for="volume_control"
                 >Volume</label
             >
@@ -275,7 +275,7 @@ $effect(() => {
         </div>
         <div class="flex flex-col border border-gray-600 rounded">
             <label
-                class="text-center"
+                class="text-center select-none"
                 for="subtitle_offset"
                 >Subs offset</label
             >
@@ -291,7 +291,7 @@ $effect(() => {
         </div>
         <div class="flex flex-col border border-gray-600 rounded">
             <label
-                class="text-center"
+                class="text-center select-none"
                 for="subtitle_font_size"
                 >Subs size</label
             >
@@ -305,7 +305,7 @@ $effect(() => {
         </div>
 
         <div class="col-start-2 flex flex-col items-center space-y-1 border border-gray-600 rounded p-2">
-            <label for="autoplay">Autoplay</label>
+            <label class="select-none" for="autoplay">Autoplay</label>
             <input
                 type="checkbox"
                 id="autoplay"
@@ -317,7 +317,7 @@ $effect(() => {
             class="flex flex-col items-center border border-gray-600 rounded"
             title="Accepts multiple urls. Middle mouse click emote to delete."
         >
-            <label for="add_emote">Add emote</label>
+            <label class="select-none" for="add_emote">Add emote</label>
             <input
                 type="text"
                 id="add_emote"
@@ -335,7 +335,7 @@ $effect(() => {
             >
             <input
                 type="number"
-                class="border-t border-gray-600 p-1 text-center"
+                class="border-t border-gray-600 p-1 text-center select-none"
                 id="sleep_timer"
                 step="5"
                 value={remaining}
@@ -346,7 +346,7 @@ $effect(() => {
         </div>
     {/if}
 
-    <div class="flex flex-col h-full justify-between space-y-2  col-span-2">
+    <div class="flex flex-col h-full justify-between space-y-2 col-span-2">
         <input
             class="col-start-2 col-span-2 border border-gray-600 rounded p-2 text-center grow"
             type="url"
@@ -355,19 +355,19 @@ $effect(() => {
         >
         <div class="flex space-x-2">
             <button
-                class="border border-gray-600 rounded hover:bg-blue-400 p-1"
+                class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none"
                 onclick={add_playlist_item}
             >
                 Add to playlist
             </button>
             <button
-                class="border border-gray-600 rounded hover:bg-blue-400 p-1"
+                class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none"
                 onclick={add_playlist_item}
             >
                 Add entire season
             </button>
             <button
-                class="border border-gray-600 rounded hover:bg-blue-400 p-1"
+                class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none"
                 onclick={add_playlist_item}
             >
                 Add entire series
