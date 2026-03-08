@@ -113,13 +113,17 @@ function handle_video_end() {
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
     bind:this={player_container}
-    class="relative w-10/12 h-10/12"
+    class="relative flex w-10/12 h-10/12"
     onmousemove={debounce_mouse_move}
     onscroll={debounce_mouse_move}
     onpointerdown={debounce_mouse_move}
 >
-    {#if temp_state.playlist[temp_state.playlist_index] === undefined}
+    {#if temp_state.playlist_index === -1}
         <div class="p-6 w-full text-center text-xl">Enter a link below to begin...</div>
+    {:else if temp_state.playlist_index === -2}
+        <div class="w-full h-[85vh] bg-black flex text-center items-center justify-center text-2xl text-gray-600">
+            Sleeping
+        </div>
     {:else}
         <Toaster />
         <video

@@ -40,7 +40,7 @@ export type TTempState = z.infer<typeof TempState>
 
 export const temp_state: TTempState = $state({
     playlist: [],
-    playlist_index: 0,
+    playlist_index: -1,
     autoplay: false,
     ready_peers: new Set<string>(),
     peer_connections: [],

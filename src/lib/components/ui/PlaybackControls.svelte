@@ -59,6 +59,11 @@ async function add_playlist_item(_event: Event) {
             video_title: video_title || "",
             subtitles_original_url: subs_original_url || "",
         }
+
+        // If video player is inactive, activate it with latest video
+        if (temp_state.playlist_index === -1) {
+            temp_state.playlist_index = index
+        }
         console.log("Added to playlist ", $state.snapshot(temp_state.playlist))
     }
 
@@ -176,10 +181,11 @@ function set_sleep_timer(sleep_time: number) {
             clearInterval(timer)
             timer = undefined
             temp_state.video_state_paused = true
+            temp_state.playlist_index = -2
             console.log("Sleep timer triggered")
             return
         }
-    }, 60000)
+    }, 1000)
 }
 
 $effect(() => {
