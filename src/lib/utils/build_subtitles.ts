@@ -6,6 +6,7 @@ import type { JellyfinItem } from "$lib/types/jellyfin_item"
 // Returns the external url of a subtitle file
 export function get_subs_url(data: JellyfinItem | null) {
     if (!data) return ""
+    if (!temp_state.playlist[temp_state.playlist_index]) return ""
     const url = new URL(temp_state.playlist[temp_state.playlist_index].url)
     if (!url.toString().includes("vodching")) return null
 
