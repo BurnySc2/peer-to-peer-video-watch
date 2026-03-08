@@ -2,14 +2,13 @@ import type { DataConnection } from "peerjs"
 import * as z from "zod"
 
 // Zod
+export const PlayListItem = z.object({
+    url: z.string(),
+    video_title: z.string(),
+    subtitles_original_url: z.string(),
+})
 const TempState = z.object({
-    playlist: z.array(
-        z.object({
-            url: z.string(),
-            video_title: z.string(),
-            subtitles_original_url: z.string(),
-        }),
-    ),
+    playlist: z.array(PlayListItem),
     playlist_index: z.number(),
     autoplay: z.boolean(),
     ready_peers: z.set(z.string()),
@@ -37,6 +36,7 @@ const TempState = z.object({
 
 // Types
 export type TTempState = z.infer<typeof TempState>
+export type TPlayListItem = z.infer<typeof PlayListItem>
 
 export const temp_state: TTempState = $state({
     playlist: [],

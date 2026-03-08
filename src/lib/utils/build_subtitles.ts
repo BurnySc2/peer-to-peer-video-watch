@@ -4,24 +4,20 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
 
 // Returns the external url of a subtitle file
-export function get_subs_url(data: JellyfinItem | null) {
+export function get_subs_url(url: string, data: JellyfinItem | null) {
     if (!data) {
-        return ""
-    }
-    if (!temp_state.playlist[temp_state.playlist_index]) {
-        return ""
-    }
-    const url = new URL(temp_state.playlist[temp_state.playlist_index].url)
-    if (!url.toString().includes("vodching")) {
         return null
     }
-
+    if (!data.HasSubtitles) {
+        return null
+    }
     const subs_path = extract_subtitle_path(data)
     if (!subs_path) {
         console.log("No subs path found")
         return null
     }
-    const real_url = url.origin + subs_path
+    const base_url = new URL(url)
+    const real_url = base_url.origin + subs_path
     return real_url
 }
 
@@ -87,6 +83,7 @@ export async function load_subtitles_from_blob() {
     temp_state.subtitles.blob_url = ""
     console.log("Sub blob cleared ", temp_state.subtitles.blob_url)
 
+    // TODO: Pass url as parameter to this function, see 'get_subs_url'
     const subtitles_original_url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
     if (!subtitles_original_url) {
         console.log("No subtitles_original_url found")

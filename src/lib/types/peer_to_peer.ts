@@ -1,13 +1,8 @@
 import * as z from "zod"
+import { PlayListItem } from "$lib/temporary-storage.svelte"
 
 export const SetupOptions = z.object({
     send_init: z.boolean(),
-})
-
-export const PlayListItem = z.object({
-    url: z.string(),
-    video_title: z.string(),
-    subtitles_original_url: z.string(),
 })
 
 export const Message = z.union([
@@ -68,6 +63,5 @@ export const Message = z.union([
     }),
 ])
 
-export type TPlayListItem = z.infer<typeof PlayListItem>
 export type TSetupOptions = z.infer<typeof SetupOptions>
 export type TMessage = z.infer<typeof Message>
