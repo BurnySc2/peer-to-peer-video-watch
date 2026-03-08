@@ -138,8 +138,8 @@ async function add_jellyfin_season(_event: Event) {
         return
     }
     const series_id = metadata.SeriesId
-    const season_id = metadata.SeasonId
-    if (!series_id || !season_id) {
+    const season_id = metadata.SeasonId ?? null
+    if (!series_id) {
         // No data available, invalid url or is movie
         return
     }
@@ -429,7 +429,7 @@ $effect(() => {
         </div>
     {/if}
 
-    <div class="flex flex-col h-full justify-between space-y-2 col-span-2">
+    <div class="flex flex-col h-full justify-between space-y-2 col-start-1 col-span-1">
         <input
             class="col-start-2 col-span-2 border border-gray-600 rounded p-2 text-center grow"
             type="url"
@@ -452,7 +452,7 @@ $effect(() => {
             <!-- TODO Add entire series? -->
         </div>
     </div>
-    <div class="col-span-2 items-center border border-gray-600 rounded p-2 text-center overflow-x-auto ">
+    <div class="col-span-3 items-center border border-gray-600 rounded p-2 text-center overflow-x-auto ">
         {#if temp_state.playlist.length}
             <div class="flex flex-col">
                 <label

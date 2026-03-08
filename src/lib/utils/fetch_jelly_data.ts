@@ -35,12 +35,10 @@ export async function fetch_file_data(url: string) {
     return null
 }
 
-export async function fetch_season_data(url: string, series_id: string, season_id: string) {
+export async function fetch_season_data(url: string, series_id: string, season_id: string | null) {
     const [url_data, params] = get_search_params(url)
-    console.log(url_data)
-
-    const api_url = `${url_data.origin}/Shows/${series_id}/Episodes?seasonId=${season_id}&sortBy=IndexNumber&api_key=${params.api_key}`
-    console.log(api_url)
+    const season_param = season_id !== null ? `season_Id=${season_id}&` : ""
+    const api_url = `${url_data.origin}/Shows/${series_id}/Episodes?${season_param}sortBy=IndexNumber&api_key=${params.api_key}`
 
     try {
         const res = await fetch(api_url)
