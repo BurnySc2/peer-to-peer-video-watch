@@ -4,11 +4,11 @@ import { APP_CONFIG } from "$lib/config"
 import PlayIcon from "$lib/icons/PlayIcon.svelte"
 import TrashIcon from "$lib/icons/TrashIcon.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
-import { temp_state, type TPlayListItem } from "$lib/temporary-storage.svelte"
+import { type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
+import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 import { get_subs_url } from "$lib/utils/build_subtitles"
 import { extract_title, fetch_file_data, fetch_season_data } from "$lib/utils/fetch_jelly_data"
 import { is_valid_url } from "$lib/utils/url_utils"
-import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
