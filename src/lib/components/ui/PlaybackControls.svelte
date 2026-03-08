@@ -31,22 +31,58 @@ let {
 let input_new_playlist_url = $state("")
 let select_playlist_items = $state<string[]>([])
 
-async function fetch_metadata(new_playlist_url: string) {
+async function fetch_metadata(jellyfin_item_url: string): Promise<{
+    video_title: string | null
+    subtitles_original_url: string | null
+}> {
     // TODO: Refactor to external file
     // Fetches title and subtitles
-    const metadata = await fetch_file_data(new_playlist_url)
+    const metadata = await fetch_file_data(jellyfin_item_url)
     const video_title = extract_title(metadata)
-    const subtitles_original_url = get_subs_url(new_playlist_url, metadata)
-    // Update entry
-    const item = temp_state.playlist.find((item) => item.url === new_playlist_url)
-    if (item) {
-        if (video_title) {
-            item.video_title = video_title
+    const subtitles_original_url = get_subs_url(jellyfin_item_url, metadata)
+    return { video_title, subtitles_original_url }
+}
+
+async function fetch_metadata_for_playlist() {
+    // Fetches titles and subtitles for all playlist items, then syncs them with peers
+    const playlist = $state.snapshot(temp_state.playlist) // Deepcopy
+
+    for (const item of playlist) {
+        if (item.video_title !== "" && item.subtitles_original_url !== "") {
+            // Already have all info, skip
+            return
         }
-        if (subtitles_original_url) {
-            item.subtitles_original_url = subtitles_original_url
+        const data = await fetch_metadata(item.url)
+        if (data.video_title !== null) {
+            // Set title
+            item.video_title = data.video_title
+        }
+
+        if (data.subtitles_original_url !== null) {
+            // Set subtitle url
+            item.subtitles_original_url = data.subtitles_original_url
         }
     }
+    // Verify active playlist has same urls and order
+    const current_playlist = $state.snapshot(temp_state.playlist).map((i) => i.url)
+    const arrays_equal = (a: string[], b: string[]) =>
+        a.length === b.length && a.every((v: string, i: number) => v === b[i])
+    if (
+        !arrays_equal(
+            current_playlist,
+            playlist.map((i) => i.url),
+        )
+    ) {
+        return
+    }
+
+    // Update title and subtitle url locally
+    temp_state.playlist = playlist
+    // Sync with peers
+    send_playlist_set({
+        playlist: temp_state.playlist,
+        playlist_index: temp_state.playlist_index,
+    })
 }
 
 async function add_playlist_item(_event: Event) {
@@ -72,19 +108,18 @@ async function add_playlist_item(_event: Event) {
         video_title: new_playlist_url,
         subtitles_original_url: "",
     })
-    // Fetch asynchroniously
-    fetch_metadata(new_playlist_url)
-
     // If video player is inactive, activate it with first video
     if (temp_state.playlist_index === -1) {
         temp_state.playlist_index = 0
     }
-    console.log("Added to playlist ", $state.snapshot(temp_state.playlist))
 
     send_playlist_set({
         playlist: temp_state.playlist,
         playlist_index: temp_state.playlist_index,
     })
+
+    // Fetch titles and subs, sync after all have been fetched
+    fetch_metadata_for_playlist()
 }
 
 async function add_jellyfin_season(_event: Event) {
@@ -105,26 +140,26 @@ async function add_jellyfin_season(_event: Event) {
     const series_id = metadata.SeriesId
     const season_id = metadata.SeasonId
     if (!series_id || !season_id) {
+        // No data available, invalid url or is movie
         return
     }
     const episodes = await fetch_season_data(new_playlist_url, series_id, season_id)
-    console.log(episodes)
 
-    temp_state.playlist = [...temp_state.playlist, ...episodes]
-    // TODO Fetch titles and subs
-    episodes.forEach((item) => {
-        fetch_metadata(item.url)
-    })
-
+    // Update playlist and index locally
+    const urls_in_playlist = new Set(temp_state.playlist.map((i) => i.url))
+    temp_state.playlist = [...temp_state.playlist, ...episodes.filter((i) => !urls_in_playlist.has(i.url))]
+    // If video player is inactive, activate it with first video
     if (temp_state.playlist_index === -1) {
         temp_state.playlist_index = 0
     }
-    console.log("Added to playlist ", $state.snapshot(temp_state.playlist))
 
     send_playlist_set({
         playlist: temp_state.playlist,
         playlist_index: temp_state.playlist_index,
     })
+
+    // Fetch titles and subs, sync after all have been fetched
+    fetch_metadata_for_playlist()
 }
 
 function delete_playlist_item(_event: Event) {
