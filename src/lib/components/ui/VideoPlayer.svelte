@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Toaster } from "svelte-5-french-toast"
-import { p2p_send_playlist_set } from "$lib/peer_handling/peer_send.svelte"
+import { p2p_send_playlist_set, p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
@@ -90,6 +90,7 @@ function handle_subtitle_update() {
     }
 }
 
+// Autoplay handling
 function handle_video_end() {
     if (!temp_state.autoplay) {
         return
@@ -102,11 +103,19 @@ function handle_video_end() {
     temp_state.playlist_index += 1
     p2p_send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
 
-    setTimeout(() => {
-        if (!temp_state.peer_connections.length) {
-            temp_state.video_state_paused = false
+    // When video is loaded, if in group send ready check, if solo just play
+    let interval: number | undefined
+    interval = setInterval(() => {
+        if (temp_state.video_can_play) {
+            if (temp_state.peer_connections.length) {
+                p2p_send_ready_check()
+            } else {
+                temp_state.video_state_paused = false
+            }
+            clearInterval(interval)
+            interval = undefined
         }
-    }, 1000)
+    }, 500)
 }
 </script>
 
