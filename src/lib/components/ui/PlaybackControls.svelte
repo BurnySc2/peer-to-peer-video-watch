@@ -401,25 +401,20 @@ $effect(() => {
             placeholder="New playlist item"
             bind:value={input_new_playlist_url}
         >
-        <div class="flex space-x-2">
+        <div class="flex justify-center space-x-2">
             <button
-                class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none"
+                class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none grow"
                 onclick={add_playlist_item}
             >
                 Add to playlist
             </button>
             <button
-                class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none"
+                class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none grow"
                 onclick={add_jellyfin_season}
             >
-                Add entire season
+                Add jellyfin season
             </button>
-            <button
-                class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none"
-                onclick={add_playlist_item}
-            >
-                Add entire series
-            </button>
+            <!-- TODO Add entire series? -->
         </div>
     </div>
     <div class="col-span-2 items-center border border-gray-600 rounded p-2 text-center overflow-x-auto ">
