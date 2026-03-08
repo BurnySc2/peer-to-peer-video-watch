@@ -4,12 +4,11 @@ import { APP_CONFIG } from "$lib/config"
 import PlayIcon from "$lib/icons/PlayIcon.svelte"
 import TrashIcon from "$lib/icons/TrashIcon.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
-import { temp_state } from "$lib/temporary-storage.svelte"
-import type { TPlayListItem } from "$lib/types/peer_to_peer"
-import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
+import { temp_state, type TPlayListItem } from "$lib/temporary-storage.svelte"
 import { get_subs_url } from "$lib/utils/build_subtitles"
-import { extract_title, fetch_file_data } from "$lib/utils/fetch_jelly_data"
+import { extract_title, fetch_file_data, fetch_season_data } from "$lib/utils/fetch_jelly_data"
 import { is_valid_url } from "$lib/utils/url_utils"
+import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
@@ -37,7 +36,7 @@ async function fetch_metadata(new_playlist_url: string) {
     // Fetches title and subtitles
     const metadata = await fetch_file_data(new_playlist_url)
     const video_title = extract_title(metadata)
-    const subtitles_original_url = get_subs_url(metadata)
+    const subtitles_original_url = get_subs_url(new_playlist_url, metadata)
     // Update entry
     const item = temp_state.playlist.find((item) => item.url === new_playlist_url)
     if (item) {
@@ -87,6 +86,47 @@ async function add_playlist_item(_event: Event) {
         playlist_index: temp_state.playlist_index,
     })
 }
+
+async function add_jellyfin_season(_event: Event) {
+    if (!input_new_playlist_url) {
+        return
+    }
+    if (!is_valid_url(input_new_playlist_url)) {
+        return
+    }
+    // Reset input value
+    const new_playlist_url = input_new_playlist_url
+    input_new_playlist_url = ""
+
+    const metadata = await fetch_file_data(new_playlist_url)
+    if (!metadata) {
+        return
+    }
+    const series_id = metadata.SeriesId
+    const season_id = metadata.SeasonId
+    if (!series_id || !season_id) {
+        return
+    }
+    const episodes = await fetch_season_data(new_playlist_url, series_id, season_id)
+    console.log(episodes)
+
+    temp_state.playlist = [...temp_state.playlist, ...episodes]
+    // TODO Fetch titles and subs
+    episodes.forEach((item) => {
+        fetch_metadata(item.url)
+    })
+
+    if (temp_state.playlist_index === -1) {
+        temp_state.playlist_index = 0
+    }
+    console.log("Added to playlist ", $state.snapshot(temp_state.playlist))
+
+    send_playlist_set({
+        playlist: temp_state.playlist,
+        playlist_index: temp_state.playlist_index,
+    })
+}
+
 function delete_playlist_item(_event: Event) {
     // Delete items, set new index
     const current_playing = temp_state.playlist[temp_state.playlist_index]
@@ -305,7 +345,11 @@ $effect(() => {
         </div>
 
         <div class="col-start-2 flex flex-col items-center space-y-1 border border-gray-600 rounded p-2">
-            <label class="select-none" for="autoplay">Autoplay</label>
+            <label
+                class="select-none"
+                for="autoplay"
+                >Autoplay</label
+            >
             <input
                 type="checkbox"
                 id="autoplay"
@@ -317,7 +361,11 @@ $effect(() => {
             class="flex flex-col items-center border border-gray-600 rounded"
             title="Accepts multiple urls. Middle mouse click emote to delete."
         >
-            <label class="select-none" for="add_emote">Add emote</label>
+            <label
+                class="select-none"
+                for="add_emote"
+                >Add emote</label
+            >
             <input
                 type="text"
                 id="add_emote"
@@ -362,7 +410,7 @@ $effect(() => {
             </button>
             <button
                 class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none"
-                onclick={add_playlist_item}
+                onclick={add_jellyfin_season}
             >
                 Add entire season
             </button>
