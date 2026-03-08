@@ -41,33 +41,36 @@ async function add_playlist_item(_event: Event) {
         return
     }
 
+    // Reset input value
+    const new_playlist_url = input_new_playlist_url
+    input_new_playlist_url = ""
+    // Prevent adding duplicates
     const exists = temp_state.playlist.some((item) => item.url === input_new_playlist_url)
-    if (!exists) {
-        const index =
-            temp_state.playlist.push({
-                url: input_new_playlist_url,
-                video_title: input_new_playlist_url,
-                subtitles_original_url: "",
-            }) - 1
+    if (exists) return
 
-        const metadata = await fetch_file_data(input_new_playlist_url)
-        const video_title = extract_title(metadata)
-        const subs_original_url = get_subs_url(metadata)
+    const index =
+        temp_state.playlist.push({
+            url: new_playlist_url,
+            video_title: new_playlist_url,
+            subtitles_original_url: "",
+        }) - 1
 
-        temp_state.playlist[index] = {
-            ...temp_state.playlist[index],
-            video_title: video_title || "",
-            subtitles_original_url: subs_original_url || "",
-        }
+    const metadata = await fetch_file_data(new_playlist_url)
+    const video_title = extract_title(metadata)
+    const subs_original_url = get_subs_url(metadata)
 
-        // If video player is inactive, activate it with latest video
-        if (temp_state.playlist_index === -1) {
-            temp_state.playlist_index = index
-        }
-        console.log("Added to playlist ", $state.snapshot(temp_state.playlist))
+    temp_state.playlist[index] = {
+        ...temp_state.playlist[index],
+        video_title: video_title || "",
+        subtitles_original_url: subs_original_url || "",
     }
 
-    input_new_playlist_url = ""
+    // If video player is inactive, activate it with first video
+    if (temp_state.playlist_index === -1) {
+        temp_state.playlist_index = 0
+    }
+    console.log("Added to playlist ", $state.snapshot(temp_state.playlist))
+
     send_playlist_set({
         playlist: temp_state.playlist,
         playlist_index: temp_state.playlist_index,
