@@ -6,7 +6,7 @@ import PlaybackControls from "$lib/components/ui/PlaybackControls.svelte"
 import VideoPlayer from "$lib/components/ui/VideoPlayer.svelte"
 import { broadcast_current_time_for_sync, VIDEO_SYNC_INTERVAL_MS } from "$lib/peer_handling/peer_catchup.svelte"
 import { handle_peer_on_connection } from "$lib/peer_handling/peer_on_connection.svelte"
-import { handle_peer_on_assign_id, handle_peer_on_open } from "$lib/peer_handling/peer_on_open.svelte"
+import { handle_peer_on_assign_id, handle_peer_on_open, set_room_url } from "$lib/peer_handling/peer_on_open.svelte"
 import {
     p2p_send_playlist_set,
     p2p_send_subtitle_offset,
@@ -17,17 +17,10 @@ import {
 } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
+import { get_search_params } from "$lib/utils/url_utils"
 
 // Parse query parameters from URL
-let query_params = $derived.by(() => {
-    const url = new URL(page.url)
-    const params = new URLSearchParams(url.search)
-    const result: Record<string, string> = {}
-    for (const [key, value] of params) {
-        result[key] = value
-    }
-    return result
-})
+let query_params = $derived(get_search_params(page.url.href)[1])
 let room_id = $derived.by(() => {
     if ("room_id" in query_params) {
         return query_params.room_id
@@ -46,6 +39,9 @@ onMount(() => {
     } else {
         // Register with saved peer_id from localStorage
         peer = new Peer(my_peer_id)
+        if (room_id === null) {
+            set_room_url(perma_state.global_settings.peer_id)
+        }
     }
 
     handle_peer_on_open(peer, room_id)
