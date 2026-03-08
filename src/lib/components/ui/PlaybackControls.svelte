@@ -46,7 +46,9 @@ async function add_playlist_item(_event: Event) {
     input_new_playlist_url = ""
     // Prevent adding duplicates
     const exists = temp_state.playlist.some((item) => item.url === input_new_playlist_url)
-    if (exists) return
+    if (exists) {
+        return
+    }
 
     const index =
         temp_state.playlist.push({
@@ -173,8 +175,12 @@ let remaining = $state(0)
 let timer: ReturnType<typeof setInterval> | undefined
 // Sleep timer - does not broadcast pause
 function set_sleep_timer(sleep_time: number) {
-    if (timer) clearInterval(timer)
-    if (sleep_time <= 0) return
+    if (timer) {
+        clearInterval(timer)
+    }
+    if (sleep_time <= 0) {
+        return
+    }
 
     console.log("Starting sleep timer")
     remaining = sleep_time

@@ -5,7 +5,9 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 // This is unused, call ready check simply via p2p_send_ready_check()
 export const ready_check = $state({ active: false })
 export function handle_ready_check() {
-    if (ready_check.active) return
+    if (ready_check.active) {
+        return
+    }
 
     ready_check.active = true
 

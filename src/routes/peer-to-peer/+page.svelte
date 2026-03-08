@@ -66,7 +66,9 @@ onMount(() => {
 })
 
 function connect(remote_id: string) {
-    if (!remote_id || remote_id === my_id) return
+    if (!remote_id || remote_id === my_id) {
+        return
+    }
 
     console.log(`Connecting to ${remote_id}`)
 
@@ -75,7 +77,9 @@ function connect(remote_id: string) {
     setup_connection(conn) // same setup as incoming
 }
 function broadcast_message() {
-    if (!input_message.trim()) return
+    if (!input_message.trim()) {
+        return
+    }
 
     const message_to_send = input_message.trim() // or { text: message, from: myId, time: Date.now() }
 

@@ -79,7 +79,9 @@ function handle_seek_hover(event: MouseEvent) {
 
 function toggle_subtitles() {
     const tracks = temp_state.video_element?.textTracks
-    if (!tracks || tracks.length === 0) return
+    if (!tracks || tracks.length === 0) {
+        return
+    }
 
     temp_state.subtitles.enabled = !temp_state.subtitles.enabled
 

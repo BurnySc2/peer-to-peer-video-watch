@@ -25,7 +25,9 @@ function local_set_play() {
 let ready_check_active = $state(false)
 let ready_check_timer: ReturnType<typeof setTimeout> | null = null
 function handle_ready_check() {
-    if (ready_check_active) return
+    if (ready_check_active) {
+        return
+    }
 
     ready_check_active = true
 

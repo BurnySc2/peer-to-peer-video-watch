@@ -18,11 +18,15 @@ export function parse_srt(raw_text: string): SubtitleItem[] {
     blocks.forEach((item) => {
         const pieces = item.split("\n")
 
-        if (pieces.length < 2) return
+        if (pieces.length < 2) {
+            return
+        }
 
         const [start_time, end_time] = pieces[1].split("-->")
 
-        if (!start_time || !end_time) return
+        if (!start_time || !end_time) {
+            return
+        }
 
         subtitles.push({
             id: pieces[0].trim(),
@@ -68,7 +72,9 @@ function initialise_subtitles(subtitles: SubtitleItem[]) {
             break
         }
     }
-    if (current_subtitle_id === null) current_subtitle_id = 0
+    if (current_subtitle_id === null) {
+        current_subtitle_id = 0
+    }
     curr_subtitle_start = subtitles[current_subtitle_id].start_s
     curr_subtitle_end = subtitles[current_subtitle_id].end_s
 
@@ -78,16 +84,22 @@ function initialise_subtitles(subtitles: SubtitleItem[]) {
 
 let prev_vid_time: null | number = null
 export function update_current_subtitle(subtitles: null | SubtitleItem[] = null): string {
-    if (!subtitles || !subtitles.length) return ""
+    if (!subtitles || !subtitles.length) {
+        return ""
+    }
 
-    if (current_subtitle_id === null) initialise_subtitles(subtitles)
+    if (current_subtitle_id === null) {
+        initialise_subtitles(subtitles)
+    }
 
     if (current_subtitle_id === null || !curr_subtitle_end) {
         current_text = ""
         return ""
     }
 
-    if (prev_vid_time === null) prev_vid_time = temp_state.video_current_time
+    if (prev_vid_time === null) {
+        prev_vid_time = temp_state.video_current_time
+    }
 
     // We are at an unexpected playback point, possibly due to seeking, so reset.
     if (Math.abs(prev_vid_time - temp_state.video_current_time) > 5) {
@@ -116,6 +128,8 @@ export function update_current_subtitle(subtitles: null | SubtitleItem[] = null)
     }
     if (curr_subtitle_start <= current_time_with_offset && current_time_with_offset <= curr_subtitle_end) {
         current_text = subtitles[current_subtitle_id].text
-    } else current_text = ""
+    } else {
+        current_text = ""
+    }
     return current_text
 }

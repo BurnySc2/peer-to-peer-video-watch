@@ -23,7 +23,9 @@ let show_emote_list = $state(false)
 let allow_emote_push = true
 function display_emote(emote: string) {
     console.log(emote)
-    if (!allow_emote_push) return
+    if (!allow_emote_push) {
+        return
+    }
     allow_emote_push = false
     show_emote_list = false
     const id = generate_emote_id()
@@ -32,7 +34,9 @@ function display_emote(emote: string) {
     p2p_send_emote(id, emote)
     setTimeout(() => {
         const index = emote_state.findIndex((i) => i.id === id)
-        if (index !== -1) emote_state.splice(index, 1)
+        if (index !== -1) {
+            emote_state.splice(index, 1)
+        }
     }, 6000)
     setTimeout(() => {
         allow_emote_push = true
@@ -56,7 +60,9 @@ function delete_local_emote(emote: string) {
 }
 
 $effect(() => {
-    if (controls_opacity === 0) show_emote_list = false
+    if (controls_opacity === 0) {
+        show_emote_list = false
+    }
 })
 </script>
 

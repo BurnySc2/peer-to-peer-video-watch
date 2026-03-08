@@ -58,7 +58,9 @@ function debounce_mouse_move(_event: Event) {
 
     // Set a timeout to hide controls after 3 seconds
     hide_timeout = setTimeout(() => {
-        if (!mouse_in_controls) controls_opacity = 0
+        if (!mouse_in_controls) {
+            controls_opacity = 0
+        }
     }, 1000) as unknown as number
 }
 
@@ -70,13 +72,17 @@ async function handle_load_subtitles() {
         const raw_srt_text = await fetch_srt_from_url(temp_state.subtitles.blob_url)
         subtitles = parse_srt(raw_srt_text)
         console.log("Subtitles loaded ", temp_state.subtitles.blob_url)
-    } else console.log("Subtitles not loaded")
+    } else {
+        console.log("Subtitles not loaded")
+    }
 }
 
 let last_sub_url = ""
 $effect(() => {
     const url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
-    if (url === last_sub_url) return
+    if (url === last_sub_url) {
+        return
+    }
 
     last_sub_url = url
     handle_load_subtitles()
