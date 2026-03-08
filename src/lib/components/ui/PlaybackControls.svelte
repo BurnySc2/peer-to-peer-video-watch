@@ -32,6 +32,24 @@ let {
 let input_new_playlist_url = $state("")
 let select_playlist_items = $state<string[]>([])
 
+async function fetch_metadata(new_playlist_url: string) {
+    // TODO: Refactor to external file
+    // Fetches title and subtitles
+    const metadata = await fetch_file_data(new_playlist_url)
+    const video_title = extract_title(metadata)
+    const subtitles_original_url = get_subs_url(metadata)
+    // Update entry
+    const item = temp_state.playlist.find((item) => item.url === new_playlist_url)
+    if (item) {
+        if (video_title) {
+            item.video_title = video_title
+        }
+        if (subtitles_original_url) {
+            item.subtitles_original_url = subtitles_original_url
+        }
+    }
+}
+
 async function add_playlist_item(_event: Event) {
     if (!input_new_playlist_url) {
         return
@@ -50,22 +68,13 @@ async function add_playlist_item(_event: Event) {
         return
     }
 
-    const index =
-        temp_state.playlist.push({
-            url: new_playlist_url,
-            video_title: new_playlist_url,
-            subtitles_original_url: "",
-        }) - 1
-
-    const metadata = await fetch_file_data(new_playlist_url)
-    const video_title = extract_title(metadata)
-    const subs_original_url = get_subs_url(metadata)
-
-    temp_state.playlist[index] = {
-        ...temp_state.playlist[index],
-        video_title: video_title || "",
-        subtitles_original_url: subs_original_url || "",
-    }
+    temp_state.playlist.push({
+        url: new_playlist_url,
+        video_title: new_playlist_url,
+        subtitles_original_url: "",
+    })
+    // Fetch asynchroniously
+    fetch_metadata(new_playlist_url)
 
     // If video player is inactive, activate it with first video
     if (temp_state.playlist_index === -1) {
@@ -337,36 +346,58 @@ $effect(() => {
         </div>
     {/if}
 
-    <input
-        class="col-start-2 col-span-2 border border-gray-600 rounded p-2 text-center"
-        type="url"
-        placeholder="New playlist item"
-        bind:value={input_new_playlist_url}
-    >
-    <button
-        class="border border-gray-600 rounded hover:bg-blue-400"
-        onclick={add_playlist_item}
-    >
-        Add to playlist
-    </button>
-    <div class="col-start-2 col-span-2 items-center border border-gray-600 rounded p-2 text-center overflow-x-auto ">
-        {#if temp_state.playlist.length}
-            <label for="select-playlist">Current playlist</label>
-            <select
-                class="border border-gray-600 rounded p-1"
-                id="select-playlist"
-                multiple
-                bind:value={select_playlist_items}
+    <div class="flex flex-col h-full justify-between space-y-2  col-span-2">
+        <input
+            class="col-start-2 col-span-2 border border-gray-600 rounded p-2 text-center grow"
+            type="url"
+            placeholder="New playlist item"
+            bind:value={input_new_playlist_url}
+        >
+        <div class="flex space-x-2">
+            <button
+                class="border border-gray-600 rounded hover:bg-blue-400 p-1"
+                onclick={add_playlist_item}
             >
-                {#each temp_state.playlist as item}
-                    <option value={item.url}>{item.video_title || item.url}</option>
-                {/each}
-            </select>
+                Add to playlist
+            </button>
+            <button
+                class="border border-gray-600 rounded hover:bg-blue-400 p-1"
+                onclick={add_playlist_item}
+            >
+                Add entire season
+            </button>
+            <button
+                class="border border-gray-600 rounded hover:bg-blue-400 p-1"
+                onclick={add_playlist_item}
+            >
+                Add entire series
+            </button>
+        </div>
+    </div>
+    <div class="col-span-2 items-center border border-gray-600 rounded p-2 text-center overflow-x-auto ">
+        {#if temp_state.playlist.length}
+            <div class="flex flex-col">
+                <label
+                    class="select-none"
+                    for="select-playlist"
+                    >Current playlist</label
+                >
+                <select
+                    class="border border-gray-600 rounded p-1"
+                    id="select-playlist"
+                    multiple
+                    bind:value={select_playlist_items}
+                >
+                    {#each temp_state.playlist as item}
+                        <option value={item.url}>{item.video_title || item.url}</option>
+                    {/each}
+                </select>
+            </div>
         {:else}
             <span>Current playlist empty</span>
         {/if}
     </div>
-    <div class="flex h-12 gap-x-2">
+    <div class="flex h-full items-center gap-x-2">
         <button
             class="p-2 border border-gray-600 rounded hover:bg-blue-400"
             class:opacity-0={select_playlist_items.length !== 1}

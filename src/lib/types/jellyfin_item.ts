@@ -19,9 +19,10 @@ export interface JellyfinItem {
     ParentIndexNumber?: number
     ParentId?: string
     Type?: string
-    SeriesName?: string
     SeasonId?: string
     SeasonName?: string
+    SeriesId?: string
+    SeriesName?: string
     MediaStreams?: MediaStream[]
     Width?: number
     Height?: number
