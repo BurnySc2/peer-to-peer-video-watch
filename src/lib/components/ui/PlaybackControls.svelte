@@ -207,7 +207,13 @@ $effect(() => {
             <select
                 class="border-t border-gray-600 p-1 text-center"
                 id="playback_speed"
-                bind:value={temp_state.video_target_playback_speed}
+                bind:value={() => temp_state.video_target_playback_speed ,
+                    (v: number) => {
+                        temp_state.video_target_playback_speed = v
+                        if (!temp_state.peer_connections.length) {
+                            temp_state.video_playback_speed = v
+                        }
+                    }}
             >
                 {#each PLAYBACK_SPEED_VALUES as ps}
                     <option
