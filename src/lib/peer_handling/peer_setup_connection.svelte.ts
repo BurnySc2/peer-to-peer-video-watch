@@ -57,6 +57,10 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
             case "video_play":
                 console.log("Receiving play")
                 temp_state.video_state_paused = false
+                // Note - video cannot play until user has made some click/interaction on the video. Ready check counts.
+                // temp_state.video_element?.play().catch(() => {
+                //     console.warn("Autoplay blocked by browser")
+                // })
                 toast(`Resumed`, { icon: "⏯️", position: APP_CONFIG.toast_location })
                 break
             case "video_pause":
