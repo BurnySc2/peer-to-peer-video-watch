@@ -63,7 +63,7 @@ async function add_playlist_item(_event: Event) {
     const new_playlist_url = input_new_playlist_url
     input_new_playlist_url = ""
     // Prevent adding duplicates
-    const exists = temp_state.playlist.some((item) => item.url === input_new_playlist_url)
+    const exists = temp_state.playlist.some((item) => item.url === new_playlist_url)
     if (exists) {
         return
     }
