@@ -7,6 +7,11 @@ export function extract_title(data: JellyfinItem | null) {
         return null
     }
 
+    // A non-detected jellyfin series
+    if (data.SeriesName && !data.ParentIndexNumber && !data.IndexNumber && data.MediaSources?.length === 1) {
+        return data.MediaSources[0].Name
+    }
+
     let video_title = ""
     if (data.SeriesName) {
         video_title = `${data.SeriesName} - S${data.ParentIndexNumber ?? "?"}:E${data.IndexNumber ?? "?"} - ${data.Name ?? "Untitled"}`
