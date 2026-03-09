@@ -145,7 +145,7 @@ function toggle_custom_subtitles() {
     </div>
     <div
         id="time-separator"
-        class="text-white select-none mx-[-2px]"
+        class="text-white select-none -mx-0.5"
     >
         /
     </div>

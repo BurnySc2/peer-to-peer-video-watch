@@ -92,9 +92,9 @@ $effect(() => {
     {#if show_emote_list}
         <div class="absolute bottom-10 right-0 bg-gray-900/75 rounded-t-lg p-1 max-h-36 overflow-y-auto ">
             <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
-                <div class="flex-grow h-px bg-gray-600"></div>
+                <div class="grow h-px bg-gray-600"></div>
                 <span>Your emotes</span>
-                <div class="flex-grow h-px bg-gray-600"></div>
+                <div class="grow h-px bg-gray-600"></div>
             </div>
             <div class="grid grid-cols-4 gap-2 justify-items-center">
                 {#each perma_state.global_settings.personal_emotes as emote}
@@ -114,9 +114,9 @@ $effect(() => {
                 {/each}
             </div>
             <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
-                <div class="flex-grow h-px bg-gray-600"></div>
+                <div class="grow h-px bg-gray-600"></div>
                 <span>Global emotes</span>
-                <div class="flex-grow h-px bg-gray-600"></div>
+                <div class="grow h-px bg-gray-600"></div>
             </div>
             <div class="grid grid-cols-4 gap-2 justify-items-center">
                 {#each emotes as emote}
