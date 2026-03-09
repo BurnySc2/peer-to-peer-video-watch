@@ -9,7 +9,7 @@ export function extract_title(data: JellyfinItem | null) {
 
     // A non-detected jellyfin series
     if (data.SeriesName && !data.ParentIndexNumber && !data.IndexNumber && data.MediaSources?.length === 1) {
-        return data.MediaSources[0].Name
+        return data.MediaSources[0].Name ?? ""
     }
 
     let video_title = ""
@@ -49,8 +49,8 @@ export async function fetch_season_data(url: string, series_id: string, season_i
         // TODO: Add types
         const data = await res.json()
         const data_mapped: TPlayListItem[] = data.Items.filter(
-            (item) => season_id === null || season_id === item.SeasonId,
-        ).map((item) => {
+            (item: JellyfinItem) => season_id === null || season_id === item.SeasonId,
+        ).map((item: JellyfinItem) => {
             return {
                 url: `${url_data.origin}/Items/${item.Id}/Download?api_key=${params.api_key}`,
                 video_title: "",
