@@ -50,7 +50,7 @@ async function fetch_metadata_for_playlist() {
     for (const item of playlist) {
         if (item.video_title !== "" && item.subtitles_original_url !== "") {
             // Already have all info, skip
-            return
+            continue
         }
         const data = await fetch_metadata(item.url)
         if (data.video_title !== null) {
