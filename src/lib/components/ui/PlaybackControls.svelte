@@ -105,7 +105,7 @@ async function add_playlist_item(_event: Event) {
 
     temp_state.playlist.push({
         url: new_playlist_url,
-        video_title: new_playlist_url,
+        video_title: "",
         subtitles_original_url: "",
     })
     // If video player is inactive, activate it with first video
