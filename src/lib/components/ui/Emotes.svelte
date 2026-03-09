@@ -85,6 +85,7 @@ $effect(() => {
 <div
     role="toolbar"
     aria-label="Emoji controls"
+    tabindex="0"
     onpointerenter={onMouseEnterControls}
     onpointerleave={onMouseLeaveControls}
 >

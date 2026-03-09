@@ -109,6 +109,7 @@ function toggle_custom_subtitles() {
 <div
     role="toolbar"
     aria-label="Video playback controls"
+    tabindex="0"
     class="absolute bottom-0 left-0 right-0 bg-black/60 p-2 flex gap-2 w-full transition-opacity duration-500"
     style="opacity: {controls_opacity};"
     onpointerenter={onMouseEnterControls}
