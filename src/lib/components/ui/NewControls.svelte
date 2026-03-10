@@ -96,8 +96,8 @@ function toggle_custom_subtitles() {
 
 {#if temp_state.playlist[temp_state.playlist_index]?.video_title}
     <div
-        class="absolute top-0 left-0 p-2 text-white bg-gray-800 rounded-br-xl text-xl transition-opacity duration-500"
-        style="opacity: {controls_opacity / 2};"
+        class="absolute top-0 left-0 p-2 text-white bg-black/50 rounded-br-xl text-xl transition-opacity duration-500"
+        style="opacity: {controls_opacity};"
     >
         {temp_state.playlist[temp_state.playlist_index].video_title}
     </div>
