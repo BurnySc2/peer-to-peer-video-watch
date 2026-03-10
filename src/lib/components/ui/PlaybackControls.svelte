@@ -290,7 +290,7 @@ $effect(() => {
 })
 </script>
 
-<div class="grid grid-cols-5 gap-4 max-w-10/12">
+<div class="grid grid-cols-5 gap-4 max-w-1/2">
     {#if temp_state.playlist.length}
         <div class="flex flex-col border border-gray-600 rounded">
             <label

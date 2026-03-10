@@ -62,7 +62,7 @@ onMount(() => {
 })
 </script>
 
-<div class="flex flex-col items-center max-w-screen min-h-screen p-4 space-y-2 bg-gray-900 text-white">
+<div class="flex flex-col items-center max-w-screen min-h-screen space-y-2 bg-gray-900 text-white">
     <VideoPlayer
         send_video_play={p2p_send_video_play}
         send_video_pause={p2p_send_video_pause}

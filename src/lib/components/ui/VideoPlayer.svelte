@@ -129,7 +129,7 @@ function handle_video_end() {
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
     bind:this={player_container}
-    class="relative flex w-10/12 h-10/12"
+    class="relative flex w-full h-full"
     onmousemove={debounce_mouse_move}
     onscroll={debounce_mouse_move}
     onpointerdown={debounce_mouse_move}
@@ -143,7 +143,7 @@ function handle_video_end() {
             <Toaster />
             <video
                 bind:this={temp_state.video_element}
-                class="flex w-full h-full"
+                class="flex w-full min-h-full bg-black"
                 muted={false}
                 playsinline
                 ontimeupdate={handle_subtitle_update}
