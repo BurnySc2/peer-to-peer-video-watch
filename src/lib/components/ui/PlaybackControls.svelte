@@ -263,6 +263,7 @@ function set_sleep_timer(sleep_time: number) {
         clearInterval(timer)
     }
     if (sleep_time <= 0) {
+        remaining = 0
         return
     }
 
