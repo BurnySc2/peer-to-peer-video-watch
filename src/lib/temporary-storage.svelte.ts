@@ -18,6 +18,7 @@ const TempState = z.object({
         blob_url: z.string(),
         offset: z.number(),
     }),
+    is_sleeping: z.boolean(),
     // May be different when catching up to other clients
     video_playback_speed: z.number(),
     // Use 'video_target_playback_speed' as goal, but use 'video_playback_speed' to catch up
@@ -49,6 +50,7 @@ export const temp_state: TTempState = $state({
         blob_url: "",
         offset: 0,
     },
+    is_sleeping: false,
     video_playback_speed: 1,
     video_target_playback_speed: 1,
     video_p2p_max_time: 0,

@@ -44,6 +44,7 @@ let total_time = $derived(format_time(temp_state.video_duration))
 function local_set_play_pause() {
     if (temp_state.video_state_paused) {
         temp_state.video_state_paused = false
+        temp_state.is_sleeping = false
         send_video_play(temp_state.video_current_time)
     } else {
         temp_state.video_state_paused = true

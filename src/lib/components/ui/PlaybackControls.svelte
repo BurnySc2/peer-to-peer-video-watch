@@ -274,11 +274,11 @@ function set_sleep_timer(sleep_time: number) {
             clearInterval(timer)
             timer = undefined
             temp_state.video_state_paused = true
-            temp_state.playlist_index = -2
+            temp_state.is_sleeping = true
             console.log("Sleep timer triggered")
             return
         }
-    }, 1000)
+    }, 60000)
 }
 
 $effect(() => {

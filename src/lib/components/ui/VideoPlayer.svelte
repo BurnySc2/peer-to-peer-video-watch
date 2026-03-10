@@ -8,6 +8,7 @@ import { load_subtitles_from_blob } from "$lib/utils/build_subtitles"
 import { fetch_srt_from_url, parse_srt, update_current_subtitle } from "$lib/utils/custom_subtitles"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
+import Sleeping from "./Sleeping.svelte"
 import Subtitles from "./Subtitles.svelte"
 
 interface MyProps {
@@ -135,34 +136,34 @@ function handle_video_end() {
 >
     {#if temp_state.playlist_index === -1}
         <div class="p-6 w-full text-center text-xl">Enter a link below to begin...</div>
-    {:else if temp_state.playlist_index === -2}
-        <div class="w-full h-[85vh] bg-black flex text-center items-center justify-center text-2xl text-gray-600">
-            Sleeping
-        </div>
     {:else}
-        <Toaster />
-        <video
-            bind:this={temp_state.video_element}
-            class="flex w-full h-full"
-            muted={false}
-            playsinline
-            ontimeupdate={handle_subtitle_update}
-            bind:volume={perma_state.global_settings.volume}
-            bind:playbackRate={temp_state.video_playback_speed}
-            bind:paused={temp_state.video_state_paused}
-            bind:currentTime={temp_state.video_current_time}
-            bind:duration={temp_state.video_duration}
-            src={temp_state.playlist[temp_state.playlist_index].url}
-            oncanplay={local_can_play}
-            onended={handle_video_end}
-        >
-            Your browser does not support the video tag.
-        </video>
-        <ReadyCheck {send_video_play} />
-        <Subtitles
-            {subtitle_text}
-            enabled={temp_state.subtitles.enabled}
-        />
+        {#if temp_state.is_sleeping}
+            <Sleeping />
+        {:else}
+            <Toaster />
+            <video
+                bind:this={temp_state.video_element}
+                class="flex w-full h-full"
+                muted={false}
+                playsinline
+                ontimeupdate={handle_subtitle_update}
+                bind:volume={perma_state.global_settings.volume}
+                bind:playbackRate={temp_state.video_playback_speed}
+                bind:paused={temp_state.video_state_paused}
+                bind:currentTime={temp_state.video_current_time}
+                bind:duration={temp_state.video_duration}
+                src={temp_state.playlist[temp_state.playlist_index].url}
+                oncanplay={local_can_play}
+                onended={handle_video_end}
+            >
+                Your browser does not support the video tag.
+            </video>
+            <ReadyCheck {send_video_play} />
+            <Subtitles
+                {subtitle_text}
+                enabled={temp_state.subtitles.enabled}
+            />
+        {/if}
         <NewControls
             {send_video_play}
             {send_video_pause}
