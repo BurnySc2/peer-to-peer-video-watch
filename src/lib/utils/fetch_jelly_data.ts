@@ -31,7 +31,7 @@ export async function fetch_file_data(url: string) {
     }
     const [base_url, _params] = get_search_params(url)
     const item_id = extract_jellyfin_item_id(base_url)
-    const new_url = `${base_url.origin}/Items/${item_id}/${base_url.search}`
+    const new_url = `${base_url.origin}/Items/${item_id}${base_url.search}`
 
     try {
         const res = await fetch(new_url)

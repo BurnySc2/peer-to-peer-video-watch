@@ -50,13 +50,11 @@ onMount(() => {
 
     // Update progress to jellyfin if watching solo
     const timer_update_jellyfin_progress = setInterval(() => {
+        if (temp_state.video_element === null || temp_state.peer_connections.length) {
+            return
+        }
         const progress = temp_state.video_current_time / temp_state.video_duration
-        if (
-            !temp_state.peer_connections.length &&
-            temp_state.video_element !== null &&
-            progress < 0.9 &&
-            !temp_state.video_state_paused
-        ) {
+        if (progress < 0.9 && !temp_state.video_state_paused) {
             update_progress_for_item_id(temp_state.playlist[temp_state.playlist_index].url, progress)
         }
     }, 30_000)
