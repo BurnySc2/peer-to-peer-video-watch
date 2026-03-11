@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { get_search_params, is_valid_url } from "./url_utils"
+import { extract_jellyfin_item_id, get_search_params, is_valid_url } from "./url_utils"
 
 describe("is_valid_url", () => {
     it.each([
@@ -36,5 +36,14 @@ describe("get_search_params", () => {
         expect(url.origin).toBe(expected_origin)
         expect(url.pathname).toBe(expected_path)
         expect(params).toStrictEqual(expected_params)
+    })
+})
+
+describe("extract_jellyfin_item_id", () => {
+    it.each([
+        [new URL("https://sub.example.org/category/some_id/more_path"), "some_id"],
+        [new URL("https://sub.example.org/other"), undefined],
+    ])("parses %s", (input, expected_output) => {
+        expect(extract_jellyfin_item_id(input)).toStrictEqual(expected_output)
     })
 })
