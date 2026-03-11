@@ -6,6 +6,7 @@ import { temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
 import { load_subtitles_from_blob } from "$lib/utils/build_subtitles"
 import { fetch_srt_from_url, parse_srt, update_current_subtitle } from "$lib/utils/custom_subtitles"
+import { update_progress_for_item_id } from "$lib/utils/fetch_jelly_data"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
 import Sleeping from "./Sleeping.svelte"
@@ -99,6 +100,11 @@ function handle_subtitle_update() {
 
 // Autoplay handling
 function handle_video_end() {
+    // In jellyfin, mark the video as "watched" when watching solo
+    if (!temp_state.peer_connections.length) {
+        update_progress_for_item_id(temp_state.playlist[temp_state.playlist_index].url, 1)
+    }
+
     if (!temp_state.autoplay) {
         return
     }

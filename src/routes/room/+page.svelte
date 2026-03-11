@@ -17,6 +17,7 @@ import {
 } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
+import { update_progress_for_item_id } from "$lib/utils/fetch_jelly_data"
 import { get_search_params } from "$lib/utils/url_utils"
 
 // Parse query parameters from URL
@@ -47,6 +48,19 @@ onMount(() => {
     handle_peer_on_open(peer, room_id)
     handle_peer_on_connection(peer)
 
+    // Update progress to jellyfin if watching solo
+    const timer_update_jellyfin_progress = setInterval(() => {
+        const progress = temp_state.video_current_time / temp_state.video_duration
+        if (
+            !temp_state.peer_connections.length &&
+            temp_state.video_element !== null &&
+            progress < 0.9 &&
+            !temp_state.video_state_paused
+        ) {
+            update_progress_for_item_id(temp_state.playlist[temp_state.playlist_index].url, progress)
+        }
+    }, 30_000)
+
     // Broadcast current time to keep peers in sync (this may adjust playback rate)
     const timer_sync_time = setInterval(broadcast_current_time_for_sync, VIDEO_SYNC_INTERVAL_MS)
     const timer_fix_playback_speed = setInterval(() => {
@@ -58,6 +72,7 @@ onMount(() => {
     return () => {
         clearInterval(timer_sync_time)
         clearInterval(timer_fix_playback_speed)
+        clearInterval(timer_update_jellyfin_progress)
     }
 })
 </script>
