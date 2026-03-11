@@ -19,6 +19,7 @@ const TempState = z.object({
         offset: z.number(),
     }),
     is_sleeping: z.boolean(),
+    jellyfin_my_id: z.union([z.string(), z.null()]),
     // May be different when catching up to other clients
     video_playback_speed: z.number(),
     // Use 'video_target_playback_speed' as goal, but use 'video_playback_speed' to catch up
@@ -51,6 +52,7 @@ export const temp_state: TTempState = $state({
         offset: 0,
     },
     is_sleeping: false,
+    jellyfin_my_id: null,
     video_playback_speed: 1,
     video_target_playback_speed: 1,
     video_p2p_max_time: 0,

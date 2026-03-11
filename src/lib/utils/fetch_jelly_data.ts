@@ -1,6 +1,6 @@
-import type { TPlayListItem } from "$lib/temporary-storage.svelte"
+import { type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
-import { get_search_params } from "./url_utils"
+import { extract_jellyfin_item_id, get_search_params } from "./url_utils"
 
 export function extract_title(data: JellyfinItem | null) {
     if (!data) {
@@ -29,9 +29,12 @@ export async function fetch_file_data(url: string) {
     if (!url.includes("vodching")) {
         return null
     }
-    url = url.replace("/Download", "")
+    const [base_url, _params] = get_search_params(url)
+    const item_id = extract_jellyfin_item_id(base_url)
+    const new_url = `${base_url.origin}/Items/${item_id}${base_url.search}`
+
     try {
-        const res = await fetch(url)
+        const res = await fetch(new_url)
         const data: JellyfinItem = await res.json()
         return data
     } catch (err) {
@@ -62,4 +65,41 @@ export async function fetch_season_data(url: string, series_id: string, season_i
         console.warn("Metadata fetch failed:", err)
     }
     return []
+}
+
+export async function get_me(video_url: string) {
+    // Requests info about the user
+    const [base_url, params] = get_search_params(video_url)
+    // https://api.jellyfin.org/#tag/User/operation/GetCurrentUser
+    const target_url = `${base_url.origin}/Users/Me?api_key=${params.api_key}`
+    const response = await fetch(target_url)
+    if (response.ok) {
+        // TODO Add types
+        return await response.json()
+    }
+    return null
+}
+
+export async function update_progress_for_item_id(video_url: string, progress: number) {
+    console.assert(0 <= progress && progress <= 1, "Progress needs to be between 0 and 1")
+
+    const [base_url, params] = get_search_params(video_url)
+    const item_id = extract_jellyfin_item_id(base_url)
+    if (temp_state.jellyfin_my_id === null) {
+        const me = await get_me(video_url)
+        temp_state.jellyfin_my_id = me.Id
+    }
+
+    // https://api.jellyfin.org/#tag/Items/operation/UpdateItemUserData
+    const target_url = `${base_url.origin}/UserItems/${item_id}/UserData?userId=${temp_state.jellyfin_my_id}&api_key=${params.api_key}`
+    const _response = await fetch(target_url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            PlayedPercentage: progress !== 1 ? 100 * progress : null,
+            Played: progress === 1 ? true : null,
+        }),
+    })
 }

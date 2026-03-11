@@ -16,3 +16,7 @@ export function get_search_params(url_string: string): [URL, Record<string, stri
     }
     return [base_url, result]
 }
+
+export function extract_jellyfin_item_id(url: URL): string {
+    return url.pathname.split("/")[2]
+}
