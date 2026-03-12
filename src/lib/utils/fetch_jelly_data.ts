@@ -76,10 +76,14 @@ export async function get_me(video_url: string) {
     const [base_url, params] = get_search_params(video_url)
     // https://api.jellyfin.org/#tag/User/operation/GetCurrentUser
     const target_url = `${base_url.origin}/Users/Me?api_key=${params.api_key}`
-    const response = await fetch(target_url)
-    if (response.ok) {
-        // TODO Add types
-        return await response.json()
+    try {
+        const response = await fetch(target_url)
+        if (response.ok) {
+            // TODO Add types
+            return await response.json()
+        }
+    } catch (err) {
+        console.warn("get_me fetch failed:", err)
     }
     return null
 }
