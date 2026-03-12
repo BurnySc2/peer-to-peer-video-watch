@@ -1,6 +1,6 @@
 import { type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
-import { extract_jellyfin_item_id, get_search_params } from "./url_utils"
+import { extract_jellyfin_item_id, get_search_params, is_valid_url } from "./url_utils"
 
 export function extract_title(data: JellyfinItem | null) {
     if (!data) {
@@ -26,7 +26,7 @@ export function extract_title(data: JellyfinItem | null) {
 
 // Fetch video title (for Jellyfin links only)
 export async function fetch_file_data(url: string) {
-    if (!url.includes("vodching")) {
+    if (!url.includes("vodching") || !is_valid_url(url)) {
         return null
     }
     const [base_url, _params] = get_search_params(url)
