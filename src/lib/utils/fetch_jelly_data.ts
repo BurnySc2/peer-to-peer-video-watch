@@ -43,7 +43,7 @@ export async function fetch_file_data(url: string) {
     return null
 }
 
-export async function fetch_season_data(url: string, series_id: string, season_id: string | null) {
+export async function fetch_season_data(url: string, series_id: string, season_id: string | null): Promise<TPlayListItem[]> {
     const [url_data, params] = get_search_params(url)
     const api_url = `${url_data.origin}/Shows/${series_id}/Episodes?sortBy=IndexNumber&api_key=${params.api_key}`
 
