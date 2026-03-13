@@ -81,12 +81,62 @@ test("video-player load video into playlist", async ({ page }) => {
 
         // Play
         await page.getByTestId("player-play").click()
-        let paused = await video.evaluate((v: HTMLVideoElement) => v.paused)
+        const paused = await video.evaluate((v: HTMLVideoElement) => v.paused)
         expect(paused).toBe(false)
 
-        // Pause
+        // Pause, JSProperty version waits better, but evaluate allows more complex computations
         await page.getByTestId("player-pause").click()
-        paused = await video.evaluate((v: HTMLVideoElement) => v.paused)
-        expect(paused).toBe(true)
+        await expect(video).toHaveJSProperty("paused", true)
     })
+})
+
+test("p2p video sync", async ({ browser }) => {
+    // Define host as 1
+    const context1 = await browser.newContext()
+    const page1 = await context1.newPage()
+
+    // Define member as 2
+    const context2 = await browser.newContext()
+    const page2 = await context2.newPage()
+
+    // Host creates a room
+    await page1.goto("/rooms")
+    await page1.getByRole("button", { name: /create room/i }).click()
+
+    // Wait until room redirect happens
+    await page1.waitForFunction(() => window.location.href.includes("?room_id="))
+    const room_url = await page1.evaluate(() => window.location.href)
+
+    // Member joins room (NB Checking for toasts doesn't work well since playwright polling can miss it)
+    await page2.goto(room_url)
+    await expect(page2.getByText(/enter a link below to begin.../i)).toBeVisible()
+
+    // Host adds vid to playlist
+    await page1.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_URL)
+    await page1.getByRole("button", { name: /add to playlist/i }).click()
+
+    // Member sees vid in playlist
+    await expect(page2.getByRole("option", { name: TEST_VIDEO_URL })).toBeVisible()
+
+    // Video loads for both
+    await expect(page1.locator("video")).toBeVisible()
+    await expect(page2.locator("video")).toBeVisible()
+    const video1 = page1.locator("video")
+    const video2 = page2.locator("video")
+
+    // Host presses seek forward
+    await page1.getByTestId("seek-forward").click({ clickCount: 2 })
+    await expect(page2.getByTestId("current-time")).toHaveText(/0:20|0:21/)
+
+    // Host presses play, member video plays --- might break if browser autoplay disallowed
+    await page1.getByTestId("player-play").click()
+    await expect(video2).toHaveJSProperty("paused", false)
+
+    // Member presses pause, host pauses
+    await page2.getByTestId("player-pause").click()
+    await expect(video1).toHaveJSProperty("paused", true)
+
+    // Host presses seek back
+    await page1.getByTestId("seek-back").click({ clickCount: 3 })
+    await expect(page2.getByTestId("current-time")).toHaveText("0:00")
 })
