@@ -53,7 +53,9 @@ function local_set_play_pause() {
 }
 
 function seek_to_time(new_time: number) {
-    if (new_time < 0) new_time = 0
+    if (new_time < 0) {
+        new_time = 0
+    }
     temp_state.video_current_time = new_time
     send_video_seek_to(new_time)
 }
