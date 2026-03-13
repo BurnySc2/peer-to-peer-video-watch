@@ -120,6 +120,7 @@ function handle_video_end() {
     let interval: number | undefined
     interval = setInterval(() => {
         if (temp_state.video_can_play) {
+            temp_state.video_playback_speed = temp_state.video_target_playback_speed
             if (temp_state.peer_connections.length) {
                 p2p_send_ready_check()
             } else {
