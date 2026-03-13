@@ -120,6 +120,7 @@ function toggle_custom_subtitles() {
         class="text-white hover:text-blue-400 hover:scale-130 transition"
         onclick={local_set_play_pause}
         aria-label={temp_state.video_state_paused ? "Play" : "Pause"}
+        data-testid={temp_state.video_state_paused ? "player-play" : "player-pause"}
     >
         {#if temp_state.video_state_paused}
             <PlayIcon />
@@ -131,6 +132,7 @@ function toggle_custom_subtitles() {
         class="text-white hover:text-blue-400 hover:scale-130 transition"
         onclick={seek_back}
         aria-label="Seek back"
+        data-testid="seek-back"
     >
         <BackIcon />
     </button>
@@ -138,13 +140,14 @@ function toggle_custom_subtitles() {
         class="text-white hover:text-blue-400 hover:scale-130 transition"
         onclick={seek_forward}
         aria-label="Seek forward"
+        data-testid="seek-forward"
     >
         <ForwardIcon />
     </button>
     <div
         id="current-time"
         class="text-white select-none text-right min-w-14 max-w-14"
-        aria-label="Current time"
+        data-testid="current-time"
     >
         {current_time_formatted}
     </div>
@@ -157,7 +160,7 @@ function toggle_custom_subtitles() {
     <div
         id="total-time"
         class="text-white select-none min-w-14 max-w-14"
-        aria-label="Total time"
+        data-testid="total-time"
     >
         {total_time}
     </div>
@@ -190,6 +193,8 @@ function toggle_custom_subtitles() {
     <div
         id="remaining-time"
         class="text-white select-none mr-4 min-w-14 max-w-14 text-right"
+        aria-label="Remaining time"
+        data-testid="remaining-time"
     >
         ({current_remaining_time})
     </div>
@@ -197,6 +202,7 @@ function toggle_custom_subtitles() {
         class={`ml-auto ${temp_state.subtitles.enabled ? "text-blue-400": "text-white"} hover:scale-130 transition`}
         onclick={toggle_custom_subtitles}
         aria-label="Closed captions"
+        data-testid="closed-captions"
     >
         CC
     </button>
@@ -204,6 +210,7 @@ function toggle_custom_subtitles() {
         class="ml-auto text-white hover:text-blue-400 hover:scale-130 transition"
         onclick={p2p_send_ready_check}
         aria-label="Ready check"
+        data-testid="ready-check"
     >
         R
     </button>
@@ -211,6 +218,7 @@ function toggle_custom_subtitles() {
         class="ml-auto text-white hover:text-blue-400 hover:scale-130 transition"
         onclick={toggle_fullscreen}
         aria-label="Fullscreen"
+        data-testid="fullscreen"
     >
         <FullscreenIcon />
     </button>
