@@ -80,7 +80,7 @@ export async function get_me(video_url: string): Promise<JellyfinUser | null> {
     try {
         const response = await fetch(target_url)
         if (response.ok) {
-            const data = await response.json() as JellyfinUser
+            const data = (await response.json()) as JellyfinUser
             return data
         }
     } catch (err) {
