@@ -1,5 +1,6 @@
 import { type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
+import type { JellyfinUser } from "$lib/types/jellyfin_user"
 import { extract_jellyfin_item_id, get_search_params, is_valid_url } from "./url_utils"
 
 export function extract_title(data: JellyfinItem | null) {
@@ -71,7 +72,7 @@ export async function fetch_season_data(
     return []
 }
 
-export async function get_me(video_url: string) {
+export async function get_me(video_url: string): Promise<JellyfinUser | null> {
     // Requests info about the user
     const [base_url, params] = get_search_params(video_url)
     // https://api.jellyfin.org/#tag/User/operation/GetCurrentUser
@@ -79,8 +80,8 @@ export async function get_me(video_url: string) {
     try {
         const response = await fetch(target_url)
         if (response.ok) {
-            // TODO Add types
-            return await response.json()
+            const data: JellyfinUser = await response.json()
+            return data
         }
     } catch (err) {
         console.warn("get_me fetch failed:", err)
@@ -95,6 +96,9 @@ export async function update_progress_for_item_id(video_url: string, progress: n
     const item_id = extract_jellyfin_item_id(base_url)
     if (temp_state.jellyfin_my_id === null) {
         const me = await get_me(video_url)
+        if (!me) {
+            return
+        }
         temp_state.jellyfin_my_id = me.Id
     }
 
