@@ -75,6 +75,9 @@ export async function fetch_season_data(
 export async function get_me(video_url: string): Promise<JellyfinUser | null> {
     // Requests info about the user
     const [base_url, params] = get_search_params(video_url)
+    if (params.api_key === undefined) {
+        return null
+    }
     // https://api.jellyfin.org/#tag/User/operation/GetCurrentUser
     const target_url = `${base_url.origin}/Users/Me?api_key=${params.api_key}`
     try {
