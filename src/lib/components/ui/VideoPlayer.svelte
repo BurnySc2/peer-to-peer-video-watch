@@ -98,6 +98,21 @@ function handle_subtitle_update() {
     }
 }
 
+function handle_video_loaded() {
+    // Video change resets playbackspeed, which is bindable to temp_state.video_playback_speed
+    temp_state.video_playback_speed = temp_state.video_target_playback_speed
+
+    // Actions for autoplay
+    // When video is loaded, if in group send ready check, if solo just play
+    if (temp_state.autoplay) {
+        if (temp_state.peer_connections.length) {
+            p2p_send_ready_check()
+        } else {
+            temp_state.video_state_paused = false
+        }
+    }
+}
+
 // Autoplay handling
 function handle_video_end() {
     // In jellyfin, mark the video as "watched" when watching solo
@@ -115,22 +130,6 @@ function handle_video_end() {
 
     temp_state.playlist_index += 1
     p2p_send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
-
-    // When video is loaded, if in group send ready check, if solo just play
-    let interval: number | undefined
-    interval = setInterval(() => {
-        if (temp_state.video_can_play) {
-            // Video change resets playbackspeed, which is bindable to temp_state.video_playback_speed
-            temp_state.video_playback_speed = temp_state.video_target_playback_speed
-            if (temp_state.peer_connections.length) {
-                p2p_send_ready_check()
-            } else {
-                temp_state.video_state_paused = false
-            }
-            clearInterval(interval)
-            interval = undefined
-        }
-    }, 500)
 }
 </script>
 
@@ -155,6 +154,7 @@ function handle_video_end() {
                 muted={false}
                 playsinline
                 ontimeupdate={handle_subtitle_update}
+                onloadeddata={handle_video_loaded}
                 bind:volume={perma_state.global_settings.volume}
                 bind:playbackRate={temp_state.video_playback_speed}
                 bind:paused={temp_state.video_state_paused}
