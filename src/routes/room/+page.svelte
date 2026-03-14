@@ -16,8 +16,6 @@ import {
     p2p_send_video_set_playback_rate,
 } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
-import { temp_state } from "$lib/temporary-storage.svelte"
-import { update_progress_for_item_id } from "$lib/utils/fetch_jelly_data"
 import { get_search_params } from "$lib/utils/url_utils"
 
 // Parse query parameters from URL
