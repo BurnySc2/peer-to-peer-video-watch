@@ -79,16 +79,16 @@ async function handle_load_subtitles() {
     }
 }
 
-let last_sub_url = ""
-$effect(() => {
-    const url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
-    if (url === last_sub_url) {
-        return
-    }
+// let last_sub_url = ""
+// $effect(() => {
+//     const url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
+//     if (url === last_sub_url) {
+//         return
+//     }
 
-    last_sub_url = url
-    handle_load_subtitles()
-})
+//     last_sub_url = url
+//     handle_load_subtitles()
+// })
 
 let subtitle_text = $state("")
 function handle_subtitle_update() {
@@ -99,6 +99,7 @@ function handle_subtitle_update() {
 }
 
 function handle_video_loaded() {
+    handle_load_subtitles()
     // Video change resets playbackspeed, which is bindable to temp_state.video_playback_speed
     temp_state.video_playback_speed = temp_state.video_target_playback_speed
 
