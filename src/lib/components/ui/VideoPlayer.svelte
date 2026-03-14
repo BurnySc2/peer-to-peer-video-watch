@@ -1,4 +1,5 @@
 <script lang="ts">
+import { onMount } from "svelte"
 import { Toaster } from "svelte-5-french-toast"
 import { p2p_send_playlist_set, p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
@@ -117,6 +118,23 @@ function handle_video_end() {
     temp_state.playlist_index += 1
     p2p_send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
 }
+
+onMount(() => {
+    // Update progress to jellyfin if watching solo
+    const timer_update_jellyfin_progress = setInterval(() => {
+        if (temp_state.video_element === null || temp_state.peer_connections.length) {
+            return
+        }
+        const progress = temp_state.video_current_time / temp_state.video_duration
+        if (progress < 0.9 && !temp_state.video_state_paused) {
+            update_progress_for_item_id(temp_state.playlist[temp_state.playlist_index].url, progress)
+        }
+    }, 30_000)
+
+    return () => {
+        clearInterval(timer_update_jellyfin_progress)
+    }
+})
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
