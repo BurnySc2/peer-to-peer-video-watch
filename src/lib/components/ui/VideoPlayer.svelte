@@ -4,8 +4,8 @@ import { p2p_send_playlist_set, p2p_send_ready_check } from "$lib/peer_handling/
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
-import { fetch_srt_from_url, handle_load_subtitles, load_subtitles_from_blob } from "$lib/utils/build_subtitles"
-import { parse_srt, update_current_subtitle } from "$lib/utils/custom_subtitles"
+import { handle_load_subtitles } from "$lib/utils/build_subtitles"
+import { update_current_subtitle } from "$lib/utils/custom_subtitles"
 import { update_progress_for_item_id } from "$lib/utils/fetch_jelly_data"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
@@ -65,17 +65,6 @@ function debounce_mouse_move(_event: Event) {
         }
     }, 1000) as unknown as number
 }
-
-// let last_sub_url = ""
-// $effect(() => {
-//     const url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
-//     if (url === last_sub_url) {
-//         return
-//     }
-
-//     last_sub_url = url
-//     handle_load_subtitles()
-// })
 
 let subtitles = $state<SubtitleItem[]>([])
 let subtitle_text = $state("")
