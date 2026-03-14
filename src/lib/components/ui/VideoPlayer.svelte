@@ -115,6 +115,9 @@ function handle_video_end() {
         return
     }
 
+    // Autoplay below
+    // Reset catch up
+    temp_state.video_p2p_max_time = 0
     temp_state.playlist_index += 1
     p2p_send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
 }
