@@ -6,8 +6,8 @@ import TrashIcon from "$lib/icons/TrashIcon.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
-import { get_subs_url } from "$lib/utils/build_subtitles"
 import { extract_title, fetch_file_data, fetch_season_data } from "$lib/utils/fetch_jelly_data"
+import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
 
 interface MyProps {

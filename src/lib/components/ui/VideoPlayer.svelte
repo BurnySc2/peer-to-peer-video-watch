@@ -4,9 +4,9 @@ import { p2p_send_playlist_set, p2p_send_ready_check } from "$lib/peer_handling/
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
-import { handle_load_subtitles } from "$lib/utils/build_subtitles"
-import { update_current_subtitle } from "$lib/utils/custom_subtitles"
 import { update_progress_for_item_id } from "$lib/utils/fetch_jelly_data"
+import { handle_load_subtitles } from "$lib/utils/subtitles_fetching"
+import { update_current_subtitle } from "$lib/utils/subtitles_parsing"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
 import Sleeping from "./Sleeping.svelte"
@@ -74,7 +74,7 @@ async function handle_subtitle_update() {
         return
     }
     // Build blob url and parse subtitles, if not loaded already
-    if (!temp_state.subtitles.blob_url) {
+    if (!temp_state.subtitles.active_url) {
         subtitles = await handle_load_subtitles()
     }
     const new_text = update_current_subtitle(subtitles)

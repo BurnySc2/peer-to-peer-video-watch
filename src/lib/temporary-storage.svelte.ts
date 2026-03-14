@@ -15,7 +15,7 @@ const TempState = z.object({
     peer_connections: z.array(z.custom<DataConnection>()),
     subtitles: z.object({
         enabled: z.boolean(),
-        blob_url: z.string(),
+        active_url: z.string(),
         offset: z.number(),
     }),
     is_sleeping: z.boolean(),
@@ -48,7 +48,7 @@ export const temp_state: TTempState = $state({
     peer_connections: [],
     subtitles: {
         enabled: false,
-        blob_url: "",
+        active_url: "",
         offset: 0,
     },
     is_sleeping: false,
