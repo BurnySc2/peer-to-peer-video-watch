@@ -4,8 +4,8 @@ import { p2p_send_playlist_set, p2p_send_ready_check } from "$lib/peer_handling/
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
-import { load_subtitles_from_blob } from "$lib/utils/build_subtitles"
-import { fetch_srt_from_url, parse_srt, update_current_subtitle } from "$lib/utils/custom_subtitles"
+import { fetch_srt_from_url, handle_load_subtitles, load_subtitles_from_blob } from "$lib/utils/build_subtitles"
+import { parse_srt, update_current_subtitle } from "$lib/utils/custom_subtitles"
 import { update_progress_for_item_id } from "$lib/utils/fetch_jelly_data"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
@@ -66,19 +66,6 @@ function debounce_mouse_move(_event: Event) {
     }, 1000) as unknown as number
 }
 
-let subtitles = $state<SubtitleItem[]>([])
-async function handle_load_subtitles() {
-    subtitles = []
-    await load_subtitles_from_blob()
-    if (temp_state.subtitles.blob_url) {
-        const raw_srt_text = await fetch_srt_from_url(temp_state.subtitles.blob_url)
-        subtitles = parse_srt(raw_srt_text)
-        console.log("Subtitles loaded ", temp_state.subtitles.blob_url)
-    } else {
-        console.log("Subtitles not loaded")
-    }
-}
-
 // let last_sub_url = ""
 // $effect(() => {
 //     const url = temp_state.playlist[temp_state.playlist_index]?.subtitles_original_url
@@ -90,16 +77,24 @@ async function handle_load_subtitles() {
 //     handle_load_subtitles()
 // })
 
+let subtitles = $state<SubtitleItem[]>([])
 let subtitle_text = $state("")
-function handle_subtitle_update() {
+async function handle_subtitle_update() {
+    // No subtitle original url
+    if (!temp_state.playlist[temp_state.playlist_index].subtitles_original_url) {
+        return
+    }
+    // Build blob url and parse subtitles, if not loaded already
+    if (!temp_state.subtitles.blob_url) {
+        subtitles = await handle_load_subtitles()
+    }
     const new_text = update_current_subtitle(subtitles)
     if (new_text !== subtitle_text) {
         subtitle_text = new_text
     }
 }
 
-function handle_video_loaded() {
-    handle_load_subtitles()
+async function handle_video_loaded() {
     // Video change resets playbackspeed, which is bindable to temp_state.video_playback_speed
     temp_state.video_playback_speed = temp_state.video_target_playback_speed
 
@@ -112,6 +107,7 @@ function handle_video_loaded() {
             temp_state.video_state_paused = false
         }
     }
+    subtitles = await handle_load_subtitles()
 }
 
 // Autoplay handling

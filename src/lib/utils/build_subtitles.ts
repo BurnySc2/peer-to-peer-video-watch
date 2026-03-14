@@ -2,6 +2,8 @@ import { tick } from "svelte"
 import { APP_CONFIG } from "$lib/config"
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
+import type { SubtitleItem } from "$lib/types/subtitle_item"
+import { parse_srt } from "./custom_subtitles"
 
 // Returns the external url of a subtitle file
 export function get_subs_url(url: string, data: JellyfinItem | null) {
@@ -113,4 +115,22 @@ export function enable_subtitles() {
     if (APP_CONFIG.subtitles_default_on) {
         tracks[0].mode = "showing"
     }
+}
+
+export async function fetch_srt_from_url(url: string): Promise<string> {
+    const res = await fetch(url)
+    const raw_text = await res.text()
+    return raw_text || ""
+}
+
+export async function handle_load_subtitles(): Promise<SubtitleItem[]> {
+    await load_subtitles_from_blob()
+    if (temp_state.subtitles.blob_url) {
+        const raw_srt_text = await fetch_srt_from_url(temp_state.subtitles.blob_url)
+        console.log("Subtitles loaded ", temp_state.subtitles.blob_url)
+        return parse_srt(raw_srt_text)
+    } else {
+        console.log("Subtitles not loaded")
+    }
+    return []
 }

@@ -1,12 +1,6 @@
 import { temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
 
-export async function fetch_srt_from_url(url: string): Promise<string> {
-    const res = await fetch(url)
-    const raw_text = await res.text()
-    return raw_text || ""
-}
-
 export function parse_srt(raw_text: string): SubtitleItem[] {
     const normalised_text = raw_text
         .replace(/\r\n/g, "\n")
