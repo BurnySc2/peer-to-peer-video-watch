@@ -2,7 +2,7 @@
 // npx playwright test -g "video-player"
 // npx playwright test --ui
 
-import { expect, type Locator, test, type Page } from "@playwright/test"
+import { expect, type Locator, type Page, test } from "@playwright/test"
 
 const TEST_VIDEO_1 = {
     URL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
@@ -230,4 +230,36 @@ test("p2p sync controls", async ({ browser }) => {
     // Host presses seek back
     await page1.getByTestId("seek-back").click({ clickCount: 3 })
     await expect(page2.getByTestId("current-time")).toHaveText("0:00")
+
+    // Member increases playback rate, use poll to check all values at once
+    await page2.selectOption("#playback_speed", "2")
+    await expect
+        .poll(async () => ({
+            v1: await video1.evaluate((v: HTMLVideoElement) => v.playbackRate),
+            v2: await video2.evaluate((v: HTMLVideoElement) => v.playbackRate),
+            s1: await page1.locator("#playback_speed").inputValue(),
+            s2: await page2.locator("#playback_speed").inputValue(),
+        }))
+        .toEqual({
+            v1: 2,
+            v2: 2,
+            s1: "2",
+            s2: "2",
+        })
+
+    // Host decreases playback rate
+    await page1.selectOption("#playback_speed", "1")
+    await expect
+        .poll(async () => ({
+            v1: await video1.evaluate((v: HTMLVideoElement) => v.playbackRate),
+            v2: await video2.evaluate((v: HTMLVideoElement) => v.playbackRate),
+            s1: await page1.locator("#playback_speed").inputValue(),
+            s2: await page2.locator("#playback_speed").inputValue(),
+        }))
+        .toEqual({
+            v1: 1,
+            v2: 1,
+            s1: "1",
+            s2: "1",
+        })
 })
