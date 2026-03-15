@@ -175,6 +175,7 @@ function toggle_custom_subtitles() {
     >
         <input
             type="range"
+            data-testid="seek-slider"
             class="w-full"
             min="0"
             max={temp_state.video_duration}
