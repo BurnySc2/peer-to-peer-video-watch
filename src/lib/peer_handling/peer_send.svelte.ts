@@ -1,7 +1,8 @@
 import type { DataConnection } from "peerjs"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-import type { TMessage, TPlayListItem } from "$lib/types/peer_to_peer"
+import type { TMessage } from "$lib/types/peer_to_peer"
+import type { TPlayListItem } from "$lib/temporary-storage.svelte"
 
 export function broadcast(data: TMessage) {
     temp_state.peer_connections.forEach((conn) => {
