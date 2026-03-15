@@ -84,8 +84,12 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 }
                 break
             case "video_set_playback_rate":
-                temp_state.video_target_playback_speed = data_validated.value
                 console.log("Receiving playback speed ", data_validated.value)
+                temp_state.video_target_playback_speed = data_validated.value
+                // If we're not catching up, adjust playback speed immediately (instead of waiting for current_time_interval to do it)
+                if (!temp_state.is_catching_up) {
+                    temp_state.video_playback_speed = temp_state.video_target_playback_speed
+                }
                 toast(`Playback rate change to ${data_validated.value}`, {
                     icon: "⏫",
                     duration: 3000,
@@ -99,13 +103,15 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                     temp_state.video_p2p_max_time = new_max_time + peer_arrive_delay_ms / 1000
                     const time_behind_ms = (temp_state.video_p2p_max_time - temp_state.video_current_time) * 1000
 
-                    const is_catching_up = temp_state.video_target_playback_speed !== temp_state.video_playback_speed
+                    temp_state.is_catching_up =
+                        temp_state.video_target_playback_speed !== temp_state.video_playback_speed
 
-                    if (is_catching_up && should_stop_catching_up(time_behind_ms)) {
+                    if (temp_state.is_catching_up && should_stop_catching_up(time_behind_ms)) {
                         // Stop catching up
                         temp_state.video_playback_speed = temp_state.video_target_playback_speed
+                        temp_state.is_catching_up = false
                         console.log(`Caught up.`)
-                    } else if (is_catching_up || should_start_catching_up(time_behind_ms)) {
+                    } else if (temp_state.is_catching_up || should_start_catching_up(time_behind_ms)) {
                         // Catch up to the peer that is furthest into the video
                         const speedup_factor = get_speedup_factor(time_behind_ms)
                         temp_state.video_playback_speed = temp_state.video_target_playback_speed * speedup_factor

@@ -87,6 +87,9 @@ async function handle_subtitle_update() {
 async function handle_video_loaded() {
     // Video change resets playbackspeed, which is bindable to temp_state.video_playback_speed
     temp_state.video_playback_speed = temp_state.video_target_playback_speed
+    // Reset catch up
+    temp_state.video_p2p_max_time = 0
+    temp_state.is_catching_up = false
 
     // Actions for autoplay
     // When video is loaded, if in group send ready check, if solo just play
@@ -116,8 +119,6 @@ function handle_video_end() {
     }
 
     // Autoplay below
-    // Reset catch up
-    temp_state.video_p2p_max_time = 0
     temp_state.playlist_index += 1
     p2p_send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
 }

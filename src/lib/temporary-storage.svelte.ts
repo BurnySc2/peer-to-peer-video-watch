@@ -18,6 +18,7 @@ const TempState = z.object({
         active_url: z.string(),
         offset: z.number(),
     }),
+    is_catching_up: z.boolean(),
     is_sleeping: z.boolean(),
     jellyfin_my_id: z.union([z.string(), z.null()]),
     // May be different when catching up to other clients
@@ -51,6 +52,7 @@ export const temp_state: TTempState = $state({
         active_url: "",
         offset: 0,
     },
+    is_catching_up: false,
     is_sleeping: false,
     jellyfin_my_id: null,
     video_playback_speed: 1,
