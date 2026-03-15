@@ -2,7 +2,7 @@
 // npx playwright test -g "video-player"
 // npx playwright test --ui
 
-import { expect, type Locator, test } from "@playwright/test"
+import { expect, type Locator, test, type Page } from "@playwright/test"
 
 const TEST_VIDEO_1 = {
     URL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
@@ -18,6 +18,14 @@ const TEST_VIDEO_2 = {
 
 async function get_video_duration(video: Locator) {
     return video.evaluate((v: HTMLVideoElement) => v.duration)
+}
+
+async function add_video_to_playlist(page: Page, video_url: string) {
+    await page.getByPlaceholder(/new playlist item/i).fill(video_url)
+    await page.getByRole("button", { name: /add to playlist/i }).click()
+    await expect(page.getByPlaceholder(/new playlist item/i)).toHaveValue("")
+    await expect(page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+    await expect(page.locator("video")).toBeVisible()
 }
 
 test("initial page state", async ({ page }) => {
@@ -118,27 +126,19 @@ test("solo autoplay", async ({ page }) => {
     await page.goto("/video-player")
 
     await test.step("add video_1 to playlist", async () => {
-        // Adds url into playlist
-        await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.URL)
-        await page.getByRole("button", { name: /add to playlist/i }).click()
-        await expect(page.getByPlaceholder(/new playlist item/i)).toHaveValue("")
-        await expect(page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
-        await expect(page.locator("video")).toBeVisible()
+        await add_video_to_playlist(page, TEST_VIDEO_1.URL)
     })
+    // Adding first video to playlist loads the video element
     const video = page.locator("video")
 
     await test.step("add video_2 to playlist", async () => {
-        await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_2.URL)
-        await page.getByRole("button", { name: /add to playlist/i }).click()
-        await expect(page.getByPlaceholder(/new playlist item/i)).toHaveValue("")
-        await expect(page.getByRole("option", { name: TEST_VIDEO_2.URL })).toBeVisible()
-        await expect(page.locator("video")).toBeVisible()
+        await add_video_to_playlist(page, TEST_VIDEO_2.URL)
     })
 
     // Let video first frame load or autoplay will trigger for itself (not a problem for users)
     await page.waitForTimeout(1000)
 
-    await test.step("enable autoplay and seek close to end of first video", async () => {
+    await test.step("enable autoplay", async () => {
         await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_2.URL)
         await page.getByRole("checkbox", { name: /autoplay/i }).check()
         await expect(page.getByRole("checkbox", { name: /autoplay/i })).toBeChecked()
@@ -150,6 +150,7 @@ test("solo autoplay", async ({ page }) => {
         await expect(video).toHaveJSProperty("playbackRate", 1.5)
     })
 
+    // Seek towards end of video to test autoplay is working
     const target = (await get_video_duration(video)) - 2
     await test.step("seek close to end of first video", async () => {
         // Use slider to seek video, can use API though
