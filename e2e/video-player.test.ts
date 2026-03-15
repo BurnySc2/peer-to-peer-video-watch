@@ -33,7 +33,7 @@ test("video-player initial state", async ({ page }) => {
 })
 
 // npx playwright test -g "video-player load"
-test("video-player load video into playlist", async ({ page }) => {
+test("video-player solo tests", async ({ page }) => {
     await page.goto("/video-player")
 
     await test.step("add video to playlist", async () => {
@@ -74,10 +74,12 @@ test("video-player load video into playlist", async ({ page }) => {
         // Seek forward
         await page.getByTestId("seek-forward").click({ clickCount: 3 })
         await expect(page.getByTestId("current-time")).toHaveText("0:30")
+        await expect(video).toHaveJSProperty("currentTime", 30)
 
         // Seek back
         await page.getByTestId("seek-back").click({ clickCount: 3 })
         await expect(page.getByTestId("current-time")).toHaveText("0:00")
+        await expect(video).toHaveJSProperty("currentTime", 0)
 
         // Play
         await page.getByTestId("player-play").click()
@@ -88,9 +90,17 @@ test("video-player load video into playlist", async ({ page }) => {
         await page.getByTestId("player-pause").click()
         await expect(video).toHaveJSProperty("paused", true)
     })
+    await test.step("playback speed increase", async () => {
+        await page.selectOption("#playback_speed", "1.5")
+        await expect(video).toHaveJSProperty("playbackRate", 1.5)
+    })
+    await test.step("playback speed decrease", async () => {
+        await page.selectOption("#playback_speed", "1")
+        await expect(video).toHaveJSProperty("playbackRate", 1)
+    })
 })
 
-test("p2p video sync", async ({ browser }) => {
+test("video-player p2p sync", async ({ browser }) => {
     // Define host as 1
     const context1 = await browser.newContext()
     const page1 = await context1.newPage()
