@@ -2,12 +2,25 @@
 // npx playwright test -g "video-player"
 // npx playwright test --ui
 
-import { expect, test } from "@playwright/test"
+import { expect, type Locator, test } from "@playwright/test"
 
-const TEST_VIDEO_URL = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-const TEST_VIDEO_LENGTH = "9:56"
+const TEST_VIDEO_1 = {
+    URL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    LENGTH_FORMATTED: "9:56",
+    LENGTH_S: 596.474195,
+}
 
-test("video-player initial state", async ({ page }) => {
+const TEST_VIDEO_2 = {
+    URL: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    LENGTH_FORMATTED: "0:05",
+    LENGTH_S: 5.055,
+}
+
+async function get_video_duration(video: Locator) {
+    return video.evaluate((v: HTMLVideoElement) => v.duration)
+}
+
+test("initial page state", async ({ page }) => {
     await page.goto("/video-player")
 
     // Check visible items
@@ -33,23 +46,24 @@ test("video-player initial state", async ({ page }) => {
 })
 
 // npx playwright test -g "video-player load"
-test("video-player solo tests", async ({ page }) => {
+test("solo main controls", async ({ page }) => {
     await page.goto("/video-player")
 
     await test.step("add video to playlist", async () => {
         // Adds url into playlist
-        await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_URL)
+        await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.URL)
         await page.getByRole("button", { name: /add to playlist/i }).click()
         // Input box clears
         await expect(page.getByPlaceholder(/new playlist item/i)).toHaveValue("")
         // URL added to playlist
-        await expect(page.getByRole("option", { name: TEST_VIDEO_URL })).toBeVisible()
+        await expect(page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
 
         // Video element is now visible
         await expect(page.locator("video")).toBeVisible()
     })
 
     const video = page.locator("video")
+    await expect(video).toHaveJSProperty("duration", TEST_VIDEO_1.LENGTH_S)
     await test.step("lower video controls now visible", async () => {
         await expect(page.getByText(/playback rate/i)).toBeVisible()
         await expect(page.getByText(/volume/i)).toBeVisible()
@@ -67,7 +81,7 @@ test("video-player solo tests", async ({ page }) => {
         await expect(page.getByRole("button", { name: /seek forward/i })).toBeVisible()
         await expect(page.getByRole("button", { name: /fullscreen/i })).toBeVisible()
         await expect(page.getByTestId("current-time")).toHaveText("0:00")
-        await expect(page.getByTestId("total-time")).toHaveText(TEST_VIDEO_LENGTH)
+        await expect(page.getByTestId("total-time")).toHaveText(TEST_VIDEO_1.LENGTH_FORMATTED)
     })
 
     await test.step("in video controls work", async () => {
@@ -100,7 +114,73 @@ test("video-player solo tests", async ({ page }) => {
     })
 })
 
-test("video-player p2p sync", async ({ browser }) => {
+test("solo autoplay", async ({ page }) => {
+    await page.goto("/video-player")
+
+    await test.step("add video_1 to playlist", async () => {
+        // Adds url into playlist
+        await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.URL)
+        await page.getByRole("button", { name: /add to playlist/i }).click()
+        await expect(page.getByPlaceholder(/new playlist item/i)).toHaveValue("")
+        await expect(page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+        await expect(page.locator("video")).toBeVisible()
+    })
+    const video = page.locator("video")
+
+    await test.step("add video_2 to playlist", async () => {
+        await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_2.URL)
+        await page.getByRole("button", { name: /add to playlist/i }).click()
+        await expect(page.getByPlaceholder(/new playlist item/i)).toHaveValue("")
+        await expect(page.getByRole("option", { name: TEST_VIDEO_2.URL })).toBeVisible()
+        await expect(page.locator("video")).toBeVisible()
+    })
+
+    // Let video first frame load or autoplay will trigger for itself (not a problem for users)
+    await page.waitForTimeout(1000)
+
+    await test.step("enable autoplay and seek close to end of first video", async () => {
+        await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_2.URL)
+        await page.getByRole("checkbox", { name: /autoplay/i }).check()
+        await expect(page.getByRole("checkbox", { name: /autoplay/i })).toBeChecked()
+    })
+
+    // Increase video speed to test that playback speed continues after autoplay
+    await test.step("playback speed increase", async () => {
+        await page.selectOption("#playback_speed", "1.5")
+        await expect(video).toHaveJSProperty("playbackRate", 1.5)
+    })
+
+    const target = (await get_video_duration(video)) - 2
+    await test.step("seek close to end of first video", async () => {
+        // Use slider to seek video, can use API though
+        const slider = page.getByTestId("seek-slider")
+        await slider.evaluate((el, value) => {
+            const input = el as HTMLInputElement
+            input.valueAsNumber = value
+            input.dispatchEvent(new InputEvent("input", { bubbles: true }))
+        }, target)
+    })
+
+    await test.step("check seek success, play and next vid autoplays with correct speed", async () => {
+        // Play
+        await page.getByTestId("player-play").click()
+        const paused = await video.evaluate((v: HTMLVideoElement) => v.paused)
+        expect(paused).toBe(false)
+
+        // Check vid has actually seeked close to end
+        await expect
+            .poll(async () => await video.evaluate((v: HTMLVideoElement) => v.currentTime))
+            .toBeGreaterThanOrEqual(target)
+
+        // Check next vid in playlist plays
+        await expect.poll(async () => video.evaluate((v: HTMLVideoElement) => v.src)).toBe(TEST_VIDEO_2.URL)
+
+        // Check vid still has 1.5 playback rate
+        await expect(video).toHaveJSProperty("playbackRate", 1.5)
+    })
+})
+
+test("p2p sync controls", async ({ browser }) => {
     // Define host as 1
     const context1 = await browser.newContext()
     const page1 = await context1.newPage()
@@ -122,11 +202,11 @@ test("video-player p2p sync", async ({ browser }) => {
     await expect(page2.getByText(/enter a link below to begin.../i)).toBeVisible()
 
     // Host adds vid to playlist
-    await page1.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_URL)
+    await page1.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.URL)
     await page1.getByRole("button", { name: /add to playlist/i }).click()
 
     // Member sees vid in playlist
-    await expect(page2.getByRole("option", { name: TEST_VIDEO_URL })).toBeVisible()
+    await expect(page2.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
 
     // Video loads for both
     await expect(page1.locator("video")).toBeVisible()
