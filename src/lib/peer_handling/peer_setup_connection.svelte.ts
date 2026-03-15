@@ -85,7 +85,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 break
             case "video_set_playback_rate":
                 temp_state.video_target_playback_speed = data_validated.value
-                console.log("Receiving playback speed")
+                console.log("Receiving playback speed ", data_validated.value)
                 toast(`Playback rate change to ${data_validated.value}`, {
                     icon: "⏫",
                     duration: 3000,
