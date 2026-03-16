@@ -34,6 +34,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                     // Connect to missing peers
                     if (!peers_connected.includes(peer_id) && peer_id !== perma_state.global_settings.peer_id) {
                         peer.connect(peer_id)
+                        setup_connection(peer, conn, { send_init: false })
                     }
                 })
 
