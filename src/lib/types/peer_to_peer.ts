@@ -61,6 +61,10 @@ export const Message = z.union([
         id: z.string(),
         emote: z.string(),
     }),
+    z.object({
+        type: z.literal("send_ping"),
+        peer_id: z.string(),
+    }),
 ])
 
 export type TSetupOptions = z.infer<typeof SetupOptions>
