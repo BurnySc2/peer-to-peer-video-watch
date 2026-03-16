@@ -158,7 +158,7 @@ onMount(() => {
             <Toaster />
             <video
                 bind:this={temp_state.video_element}
-                class="flex w-full min-h-full bg-black"
+                class="flex w-full max-h-screen bg-black"
                 muted={false}
                 playsinline
                 ontimeupdate={handle_subtitle_update}
