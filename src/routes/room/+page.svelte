@@ -2,6 +2,7 @@
 import Peer from "peerjs"
 import { onMount } from "svelte"
 import { page } from "$app/state"
+import Navigation from "$lib/components/Navigation.svelte"
 import PlaybackControls from "$lib/components/ui/PlaybackControls.svelte"
 import VideoPlayer from "$lib/components/ui/VideoPlayer.svelte"
 import { broadcast_current_time_for_sync, VIDEO_SYNC_INTERVAL_MS } from "$lib/peer_handling/peer_catchup.svelte"
@@ -54,7 +55,7 @@ onMount(() => {
 })
 </script>
 
-<div class="flex flex-col items-center max-w-screen min-h-screen space-y-2 bg-gray-900 text-white">
+<div class="flex flex-col items-center max-w-screen space-y-2">
     <VideoPlayer
         send_video_play={p2p_send_video_play}
         send_video_pause={p2p_send_video_pause}
@@ -65,4 +66,5 @@ onMount(() => {
         send_video_set_playback_rate={p2p_send_video_set_playback_rate}
         send_subtitle_offset={p2p_send_subtitle_offset}
     />
+    <Navigation />
 </div>

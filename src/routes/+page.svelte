@@ -1,4 +1,6 @@
 <script lang="ts">
+import Navigation from "$lib/components/Navigation.svelte"
 </script>
 
-<main class="mx-auto flex flex-col items-center gap-6 p-6 bg-gray-900 min-h-screen text-white">Welcome</main>
+<Navigation />
+<main class="mx-auto flex flex-col items-center gap-6 p-6">Welcome</main>

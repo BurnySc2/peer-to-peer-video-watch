@@ -7,7 +7,7 @@ const is_active = (path: string) => {
 }
 </script>
 
-<nav class="bg-gray-800 p-4 text-white">
+<nav class="bg-gray-800 p-4 shadow-2xl rounded">
     <div class="container mx-auto flex justify-center space-x-8">
         <a
             href={resolve('/')}

@@ -99,7 +99,7 @@ function toggle_custom_subtitles() {
 
 {#if temp_state.playlist[temp_state.playlist_index]?.video_title}
     <div
-        class="absolute top-0 left-0 p-2 text-white bg-black/50 rounded-br-xl text-xl transition-opacity duration-500"
+        class="absolute top-0 left-0 p-2 bg-black/50 rounded-br-xl text-xl transition-opacity duration-500"
         style="opacity: {controls_opacity};"
     >
         {temp_state.playlist[temp_state.playlist_index].video_title}
@@ -120,7 +120,7 @@ function toggle_custom_subtitles() {
     onpointerleave={onMouseLeaveControls}
 >
     <button
-        class="text-white hover:text-blue-400 hover:scale-130 transition"
+        class="hover:text-blue-400 hover:scale-130 transition"
         onclick={local_set_play_pause}
         aria-label={temp_state.video_state_paused ? "Play" : "Pause"}
         data-testid={temp_state.video_state_paused ? "player-play" : "player-pause"}
@@ -132,7 +132,7 @@ function toggle_custom_subtitles() {
         {/if}
     </button>
     <button
-        class="text-white hover:text-blue-400 hover:scale-130 transition"
+        class="hover:text-blue-400 hover:scale-130 transition"
         onclick={seek_back}
         aria-label="Seek back"
         data-testid="seek-back"
@@ -140,7 +140,7 @@ function toggle_custom_subtitles() {
         <BackIcon />
     </button>
     <button
-        class="text-white hover:text-blue-400 hover:scale-130 transition"
+        class="hover:text-blue-400 hover:scale-130 transition"
         onclick={seek_forward}
         aria-label="Seek forward"
         data-testid="seek-forward"
@@ -149,20 +149,20 @@ function toggle_custom_subtitles() {
     </button>
     <div
         id="current-time"
-        class="text-white select-none text-right min-w-14 max-w-14"
+        class="select-none text-right min-w-14 max-w-14"
         data-testid="current-time"
     >
         {current_time_formatted}
     </div>
     <div
         id="time-separator"
-        class="text-white select-none -mx-0.5"
+        class="select-none -mx-0.5"
     >
         /
     </div>
     <div
         id="total-time"
-        class="text-white select-none min-w-14 max-w-14"
+        class="select-none min-w-14 max-w-14"
         data-testid="total-time"
     >
         {total_time}
@@ -187,7 +187,7 @@ function toggle_custom_subtitles() {
         >
         {#if seek_hover_value !== null}
             <div
-                class="absolute -top-6 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded pointer-events-none"
+                class="absolute -top-6 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded pointer-events-none"
                 style="left: {seek_hover_percent}%"
             >
                 {seek_hover_value}
@@ -196,7 +196,7 @@ function toggle_custom_subtitles() {
     </div>
     <div
         id="remaining-time"
-        class="text-white select-none mr-4 min-w-14 max-w-14 text-right"
+        class="select-none mr-4 min-w-14 max-w-14 text-right"
         aria-label="Remaining time"
         data-testid="remaining-time"
     >
@@ -211,7 +211,7 @@ function toggle_custom_subtitles() {
         CC
     </button>
     <button
-        class="ml-auto text-white hover:text-blue-400 hover:scale-130 transition"
+        class="ml-auto hover:text-blue-400 hover:scale-130 transition"
         onclick={p2p_send_ready_check}
         aria-label="Ready check"
         data-testid="ready-check"
@@ -219,7 +219,7 @@ function toggle_custom_subtitles() {
         R
     </button>
     <button
-        class="ml-auto text-white hover:text-blue-400 hover:scale-130 transition"
+        class="ml-auto hover:text-blue-400 hover:scale-130 transition"
         onclick={toggle_fullscreen}
         aria-label="Fullscreen"
         data-testid="fullscreen"

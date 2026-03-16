@@ -290,7 +290,7 @@ $effect(() => {
 })
 </script>
 
-<div class="grid grid-cols-5 gap-4 max-w-1/2">
+<div class="grid grid-cols-5 gap-4 max-w-1/2 pb-2">
     {#if temp_state.playlist.length}
         <div class="flex flex-col border border-gray-600 rounded">
             <label
@@ -342,7 +342,7 @@ $effect(() => {
                 >
                 {#if volume_hover_value !== null}
                     <div
-                        class="absolute -top-6 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded pointer-events-none"
+                        class="absolute -top-6 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded pointer-events-none"
                         style="left: {volume_hover_percent}%"
                     >
                         {Math.round(volume_hover_value * 100)}%

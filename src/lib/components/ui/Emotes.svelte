@@ -136,7 +136,7 @@ $effect(() => {
         </div>
     {:else}
         <button
-            class="absolute top-1/2 right-0 mr-1 p-1 bg-black/60 rounded-xl text-white hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
+            class="absolute right-0 top-1/2 -translate-y-1/2 mr-1 p-1 bg-black/60 rounded-xl hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
             style="opacity: {controls_opacity};"
             onclick={() => {show_emote_list = !show_emote_list}}
         >

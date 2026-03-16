@@ -101,7 +101,7 @@ $effect(() => {
         <div class="flex">
             {#if temp_state.ready_peers.has(perma_state.global_settings.peer_id)}
                 <div
-                    class="flex-1 p-2 rounded-lg bg-green-800 text-white
+                    class="flex-1 p-2 rounded-lg bg-green-800
         font-semibold"
                 >
                     Waiting for peers...
@@ -109,7 +109,7 @@ $effect(() => {
             {:else}
                 <button
                     onclick={p2p_send_ready}
-                    class="flex-1 py-2 rounded-lg bg-green-600 text-white
+                    class="flex-1 py-2 rounded-lg bg-green-600
         font-semibold hover:bg-green-700 active:bg-green-800
         transition"
                 >

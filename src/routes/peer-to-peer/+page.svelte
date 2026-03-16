@@ -1,8 +1,9 @@
 <script lang="ts">
-// TODO: Send video segment data
 import type { DataConnection } from "peerjs"
 import { Peer } from "peerjs"
 import { onMount } from "svelte"
+// TODO: Send video segment data
+import Navigation from "$lib/components/Navigation.svelte"
 
 type Message = {
     from: string
@@ -100,7 +101,7 @@ function broadcast_message() {
     input_message = "" // clear input
 }
 </script>
-
+<Navigation />
 <div class="flex flex-col items-center">
     {#if my_id !== ""}
         <div>My id:</div>
@@ -119,7 +120,7 @@ function broadcast_message() {
         bind:value={input_connect_id}
     >
     <button
-        class="border hover:bg-green-300 bg-green-400 m-2 p-2"
+        class="border hover:bg-green-400 bg-green-600 m-2 p-2"
         onclick={() => {connect(input_connect_id)}}
     >
         Connect to peer id
@@ -133,7 +134,7 @@ function broadcast_message() {
         bind:value={input_message}
     >
     <button
-        class="border hover:bg-green-300 bg-green-400 m-2 p-2"
+        class="border hover:bg-green-400 bg-green-600 m-2 p-2"
         onclick={() => { broadcast_message()}}
     >
         Send message
