@@ -12,15 +12,18 @@ export function handle_ready_check() {
     ready_check.active = true
 
     setTimeout(() => {
-        console.log("Ready check ended")
-
-        ready_check.active = false
-        if (temp_state.ready_peers.size - 1 < temp_state.peer_connections.length) {
-            console.log("Peers not ready")
-            toast("Peers not ready")
-        }
-        temp_state.ready_peers = new Set()
+        end_ready_check()
     }, APP_CONFIG.ready_check_delay_ms)
+}
+
+function end_ready_check() {
+    console.log("Ready check ended")
+    if (temp_state.ready_peers.size - 1 < temp_state.peer_connections.length) {
+        console.log("Peers not ready")
+        toast("Peers not ready")
+    }
+    ready_check.active = false
+    temp_state.ready_peers = []
 }
 
 export function handle_ready_success() {

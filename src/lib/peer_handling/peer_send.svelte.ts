@@ -45,17 +45,23 @@ export function p2p_send_ready_check() {
         console.log("Ready check not run - no peers are connected")
         return
     }
-    if (temp_state.ready_peers.size > 0) {
+    if (temp_state.ready_peers.length > 0) {
         console.log("Ready check already active")
         return
     }
-    broadcast({ type: "start_ready_check", peer_id: perma_state.global_settings.peer_id })
-    temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)
+    const my_id = perma_state.global_settings.peer_id
+    broadcast({ type: "start_ready_check", peer_id: my_id })
+    if (!temp_state.ready_peers.includes(my_id)) {
+        temp_state.ready_peers.push(my_id)
+    }
     console.log("broadcasting start ready check")
 }
 export function p2p_send_ready() {
-    broadcast({ type: "send_ready", peer_id: perma_state.global_settings.peer_id })
-    temp_state.ready_peers = new Set(temp_state.ready_peers).add(perma_state.global_settings.peer_id)
+    const my_id = perma_state.global_settings.peer_id
+    broadcast({ type: "send_ready", peer_id: my_id })
+    if (!temp_state.ready_peers.includes(my_id)) {
+        temp_state.ready_peers.push(my_id)
+    }
     console.log("broadcasting send_ready")
 }
 export function p2p_send_subtitle_offset() {

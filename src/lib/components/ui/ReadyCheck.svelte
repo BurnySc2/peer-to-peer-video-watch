@@ -32,31 +32,43 @@ function handle_ready_check() {
     ready_check_active = true
 
     ready_check_timer = setTimeout(() => {
-        console.log("Ready check ended")
-
-        ready_check_active = false
-        ready_check_timer = null
-        if (temp_state.ready_peers.size - 1 < temp_state.peer_connections.length) {
-            console.log("Peers not ready")
-            toast("Peers not ready")
-        }
-        temp_state.ready_peers = new Set()
+        ready_check_timeout()
     }, APP_CONFIG.ready_check_delay_ms)
+}
+
+function ready_check_timeout() {
+    console.log("Ready check ended")
+
+    if (temp_state.ready_peers.length - 1 < temp_state.peer_connections.length) {
+        console.log("Peers not ready")
+        toast("Peers not ready")
+    }
+    ready_check_active = false
+    if (ready_check_timer) {
+        clearTimeout(ready_check_timer)
+        ready_check_timer = null
+    }
+    temp_state.ready_peers = []
 }
 
 function handle_ready_success() {
     if (ready_check_active === true) {
         console.log("Ready check success")
         toast.success("Peers ready", { position: APP_CONFIG.toast_location })
+        if (ready_check_timer) {
+            clearTimeout(ready_check_timer)
+            ready_check_timer = null
+        }
+        temp_state.ready_peers = []
         ready_check_active = false
         local_set_play()
     }
 }
 
 $effect(() => {
-    if (temp_state.ready_peers.size - 1 >= temp_state.peer_connections.length) {
+    if (temp_state.ready_peers.length - 1 >= temp_state.peer_connections.length) {
         handle_ready_success()
-    } else if (temp_state.ready_peers.size > 0) {
+    } else if (temp_state.ready_peers.length > 0) {
         console.log("Handle ready check")
         handle_ready_check()
     }
@@ -75,7 +87,7 @@ $effect(() => {
             <ul class="space-y-1 text-sm">
                 <li class="flex justify-between">
                     <span>You</span>
-                    {#if temp_state.ready_peers.has(perma_state.global_settings.peer_id)}
+                    {#if temp_state.ready_peers.includes(perma_state.global_settings.peer_id)}
                         <span class="text-green-600 font-semibold">✅</span>
                     {:else}
                         <span class="text-green-600 font-semibold">⏳</span>
@@ -88,7 +100,7 @@ $effect(() => {
                         class="flex justify-between text-gray-700"
                     >
                         <span>Peer {i + 1}</span>
-                        {#if temp_state.ready_peers.has(con.peer)}
+                        {#if temp_state.ready_peers.includes(con.peer)}
                             <span>✅</span>
                         {:else}
                             <span class="text-green-600 font-semibold">⏳</span>
@@ -99,7 +111,7 @@ $effect(() => {
         </div>
 
         <div class="flex">
-            {#if temp_state.ready_peers.has(perma_state.global_settings.peer_id)}
+            {#if temp_state.ready_peers.includes(perma_state.global_settings.peer_id)}
                 <div
                     class="flex-1 p-2 rounded-lg bg-green-800
         font-semibold"

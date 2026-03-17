@@ -124,12 +124,16 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 break
             case "start_ready_check":
                 console.log("Receiving start ready check from ", data_validated.peer_id)
-                temp_state.ready_peers = new Set(temp_state.ready_peers).add(data_validated.peer_id)
+                if (!temp_state.ready_peers.includes(data_validated.peer_id)) {
+                    temp_state.ready_peers.push(data_validated.peer_id)
+                }
                 console.log(temp_state.ready_peers)
                 break
             case "send_ready":
                 console.log("Received ready from ", data_validated.peer_id)
-                temp_state.ready_peers = new Set(temp_state.ready_peers).add(data_validated.peer_id)
+                if (!temp_state.ready_peers.includes(data_validated.peer_id)) {
+                    temp_state.ready_peers.push(data_validated.peer_id)
+                }
                 break
             case "send_subtitle_offset":
                 console.log("Receiving subtitle_offset", data_validated.subtitle_offset)
