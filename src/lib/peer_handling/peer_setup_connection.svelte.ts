@@ -154,6 +154,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
         }
     })
 
+    // This catch up stop method might not work, peer_connections might not be updated yet
     conn.on("close", () => {
         // Clean up when peer disconnects
         toast("Peer disconnected", { position: APP_CONFIG.toast_location })
@@ -164,20 +165,20 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
             temp_state.video_playback_speed !== temp_state.video_target_playback_speed
         ) {
             console.log("No peers remaining, stopping catch up")
-            temp_state.video_playback_speed = Number.isNaN(temp_state.video_target_playback_speed)
-                ? 1
-                : temp_state.video_target_playback_speed
+            temp_state.video_playback_speed = temp_state.video_target_playback_speed
         }
     })
 
+    // This catch up stop method might not work, peer_connections might not be updated yet
     conn.on("error", (err) => {
         toast("Peer connection closed/error", { position: APP_CONFIG.toast_location })
         console.error("Connection error, resetting playback_speed:", err)
-        if (temp_state.video_playback_speed !== temp_state.video_target_playback_speed) {
-            console.log("Peer connection error, stopping catch up")
-            temp_state.video_playback_speed = Number.isNaN(temp_state.video_target_playback_speed)
-                ? 1
-                : temp_state.video_target_playback_speed
+        if (
+            !temp_state.peer_connections.length &&
+            temp_state.video_playback_speed !== temp_state.video_target_playback_speed
+        ) {
+            console.log("No peers remaining, stopping catch up")
+            temp_state.video_playback_speed = temp_state.video_target_playback_speed
         }
     })
 
