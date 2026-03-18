@@ -4,7 +4,7 @@ import { APP_CONFIG } from "$lib/config"
 import PlayIcon from "$lib/icons/PlayIcon.svelte"
 import TrashIcon from "$lib/icons/TrashIcon.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
-import { type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
+import { peer_count, type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 import { extract_title, fetch_file_data, fetch_season_data } from "$lib/utils/fetch_jelly_data"
 import { get_subs_url } from "$lib/utils/subtitles_fetching"
@@ -305,7 +305,7 @@ $effect(() => {
                     () => temp_state.video_target_playback_speed ,
                     (v: number) => {
                         temp_state.video_target_playback_speed = v
-                        if (!temp_state.peer_connections.length) {
+                        if (!peer_count()) {
                             temp_state.video_playback_speed = v
                         }
                     }}

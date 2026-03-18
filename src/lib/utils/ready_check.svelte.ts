@@ -1,6 +1,6 @@
 import toast from "svelte-5-french-toast"
 import { APP_CONFIG } from "$lib/config"
-import { temp_state } from "$lib/temporary-storage.svelte"
+import { peer_count, temp_state } from "$lib/temporary-storage.svelte"
 
 // This is unused, call ready check simply via p2p_send_ready_check()
 export const ready_check = $state({ active: false })
@@ -18,7 +18,7 @@ export function handle_ready_check() {
 
 function end_ready_check() {
     console.log("Ready check ended")
-    if (temp_state.ready_peers.size - 1 < temp_state.peer_connections.length) {
+    if (temp_state.ready_peers.length - 1 < peer_count()) {
         console.log("Peers not ready")
         toast("Peers not ready")
     }

@@ -12,7 +12,7 @@ const TempState = z.object({
     playlist_index: z.number(),
     autoplay: z.boolean(),
     ready_peers: z.array(z.string()),
-    peer_connections: z.array(z.custom<DataConnection>()),
+    peer_connections: z.record(z.string(), z.custom<DataConnection>()),
     subtitles: z.object({
         enabled: z.boolean(),
         active_url: z.string(),
@@ -46,7 +46,7 @@ export const temp_state: TTempState = $state({
     playlist_index: -1,
     autoplay: false,
     ready_peers: [],
-    peer_connections: [],
+    peer_connections: {},
     subtitles: {
         enabled: false,
         active_url: "",
@@ -65,3 +65,7 @@ export const temp_state: TTempState = $state({
     video_element: null,
     video_title: "",
 })
+
+export function peer_count(): number {
+    return Object.keys(temp_state.peer_connections).length
+}

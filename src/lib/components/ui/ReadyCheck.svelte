@@ -3,7 +3,7 @@ import toast from "svelte-5-french-toast"
 import { APP_CONFIG } from "$lib/config"
 import { p2p_send_ready } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
-import { temp_state } from "$lib/temporary-storage.svelte"
+import { peer_count, temp_state } from "$lib/temporary-storage.svelte"
 
 interface Props {
     send_video_play?: (time: number) => void
@@ -39,7 +39,7 @@ function handle_ready_check() {
 function ready_check_timeout() {
     console.log("Ready check ended")
 
-    if (temp_state.ready_peers.length - 1 < temp_state.peer_connections.length) {
+    if (temp_state.ready_peers.length - 1 < peer_count()) {
         console.log("Peers not ready")
         toast("Peers not ready")
     }
@@ -66,7 +66,7 @@ function handle_ready_success() {
 }
 
 $effect(() => {
-    if (temp_state.ready_peers.length - 1 >= temp_state.peer_connections.length) {
+    if (temp_state.ready_peers.length - 1 >= peer_count()) {
         handle_ready_success()
     } else if (temp_state.ready_peers.length > 0) {
         console.log("Handle ready check")
@@ -94,7 +94,7 @@ $effect(() => {
                     {/if}
                 </li>
 
-                {#each temp_state.peer_connections as con, i (con.peer)}
+                {#each Object.values(temp_state.peer_connections) as con, i (con.peer)}
                     <li
                         id={con.peer}
                         class="flex justify-between text-gray-700"

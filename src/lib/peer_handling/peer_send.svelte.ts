@@ -1,12 +1,12 @@
 import type { DataConnection } from "peerjs"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import type { TPlayListItem } from "$lib/temporary-storage.svelte"
-import { temp_state } from "$lib/temporary-storage.svelte"
+import { peer_count, temp_state } from "$lib/temporary-storage.svelte"
 import type { TMessage } from "$lib/types/peer_to_peer"
 import { format_time } from "$lib/utils/format_time"
 
 export function broadcast(data: TMessage) {
-    temp_state.peer_connections.forEach((conn) => {
+    Object.values(temp_state.peer_connections).forEach((conn) => {
         if (conn.open) {
             connection_send_validated(conn, data)
         }
@@ -41,7 +41,7 @@ export function p2p_video_current_time_sync(message: { time: number }) {
     broadcast({ type: "video_current_time_interval", time: message.time, timestamp_now: Date.now() })
 }
 export function p2p_send_ready_check() {
-    if (temp_state.peer_connections.length === 0) {
+    if (peer_count() === 0) {
         console.log("Ready check not run - no peers are connected")
         return
     }
@@ -75,5 +75,5 @@ export function p2p_send_emote(id: string, emote: string) {
 export function p2p_send_ping() {
     broadcast({ type: "send_ping", peer_id: perma_state.global_settings.peer_id })
     console.log("Ping send. i am ", perma_state.global_settings.peer_id)
-    console.log("I am connected to ", $state.snapshot(temp_state.peer_connections))
+    console.log("I am connected to ", $state.snapshot(Object.values(temp_state.peer_connections)))
 }

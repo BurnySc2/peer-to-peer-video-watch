@@ -3,7 +3,7 @@ import { onMount } from "svelte"
 import { Toaster } from "svelte-5-french-toast"
 import { p2p_send_playlist_set, p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
-import { temp_state } from "$lib/temporary-storage.svelte"
+import { peer_count, temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
 import { update_progress_for_item_id } from "$lib/utils/fetch_jelly_data"
 import { handle_load_subtitles } from "$lib/utils/subtitles_fetching"
@@ -94,7 +94,7 @@ async function handle_video_loaded() {
     // Actions for autoplay
     // When video is loaded, if in group send ready check, if solo just play
     if (temp_state.autoplay) {
-        if (temp_state.peer_connections.length) {
+        if (peer_count()) {
             p2p_send_ready_check()
         } else {
             temp_state.video_state_paused = false
@@ -106,7 +106,7 @@ async function handle_video_loaded() {
 // Autoplay handling
 function handle_video_end() {
     // In jellyfin, mark the video as "watched" when watching solo
-    if (!temp_state.peer_connections.length) {
+    if (!peer_count()) {
         update_progress_for_item_id(temp_state.playlist[temp_state.playlist_index].url, 1)
     }
 
@@ -126,7 +126,7 @@ function handle_video_end() {
 onMount(() => {
     // Update progress to jellyfin if watching solo
     const timer_update_jellyfin_progress = setInterval(() => {
-        if (temp_state.video_element === null || temp_state.peer_connections.length) {
+        if (temp_state.video_element === null || peer_count()) {
             return
         }
         const progress = temp_state.video_current_time / temp_state.video_duration

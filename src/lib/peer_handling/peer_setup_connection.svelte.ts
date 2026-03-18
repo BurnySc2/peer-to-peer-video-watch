@@ -2,7 +2,7 @@ import type { DataConnection, Peer } from "peerjs"
 import toast from "svelte-5-french-toast"
 import { APP_CONFIG } from "$lib/config"
 import { perma_state } from "$lib/persistent-storage.svelte"
-import { temp_state } from "$lib/temporary-storage.svelte"
+import { peer_count, temp_state } from "$lib/temporary-storage.svelte"
 import { Message, type TMessage, type TSetupOptions } from "$lib/types/peer_to_peer"
 import { emote_state } from "$lib/utils/emotes.svelte"
 import { get_speedup_factor, should_start_catching_up, should_stop_catching_up } from "./peer_catchup.svelte"
@@ -14,7 +14,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
         if (options.send_init) {
             connection_send_validated(conn, {
                 type: "init_connect",
-                peer_ids: temp_state.peer_connections.map((c) => c.peer),
+                peer_ids: Object.keys(temp_state.peer_connections),
                 playlist: temp_state.playlist,
                 playlist_index: temp_state.playlist_index,
                 video_target_playback_speed: temp_state.video_target_playback_speed,
@@ -29,10 +29,10 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
         const data_validated: TMessage = Message.parse(data)
         switch (data_validated.type) {
             case "init_connect": {
-                const peers_connected = temp_state.peer_connections.map((c) => c.peer)
+                // const peers_connected = Object.keys(temp_state.peer_connections)
                 data_validated.peer_ids.forEach((peer_id) => {
                     // Connect to missing peers
-                    if (!peers_connected.includes(peer_id) && peer_id !== perma_state.global_settings.peer_id) {
+                    if (!(peer_id in temp_state.peer_connections) && peer_id !== perma_state.global_settings.peer_id) {
                         const new_conn = peer.connect(peer_id)
                         setup_connection(peer, new_conn, { send_init: false })
                     }
@@ -157,13 +157,10 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
     // This catch up stop method might not work, peer_connections might not be updated yet
     conn.on("close", () => {
         // Clean up when peer disconnects
+        remove_peer(conn.peer)
         toast("Peer disconnected", { position: APP_CONFIG.toast_location })
         console.log("Peer disconnected")
-        temp_state.peer_connections = temp_state.peer_connections.filter((c) => c !== conn)
-        if (
-            !temp_state.peer_connections.length &&
-            temp_state.video_playback_speed !== temp_state.video_target_playback_speed
-        ) {
+        if (!peer_count() && temp_state.video_playback_speed !== temp_state.video_target_playback_speed) {
             console.log("No peers remaining, stopping catch up")
             temp_state.video_playback_speed = temp_state.video_target_playback_speed
         }
@@ -171,17 +168,26 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 
     // This catch up stop method might not work, peer_connections might not be updated yet
     conn.on("error", (err) => {
+        remove_peer(conn.peer)
         toast("Peer connection closed/error", { position: APP_CONFIG.toast_location })
         console.error("Connection error, resetting playback_speed:", err)
-        if (
-            !temp_state.peer_connections.length &&
-            temp_state.video_playback_speed !== temp_state.video_target_playback_speed
-        ) {
+        if (!peer_count() && temp_state.video_playback_speed !== temp_state.video_target_playback_speed) {
             console.log("No peers remaining, stopping catch up")
             temp_state.video_playback_speed = temp_state.video_target_playback_speed
         }
     })
 
-    // // Add to our list of active connections
-    temp_state.peer_connections = [...temp_state.peer_connections, conn]
+    // Prevent duplicate connections if peers connect at same time
+    if (temp_state.peer_connections[conn.peer]) {
+        console.log("Duplicate connection, closing old one ", conn.peer)
+        temp_state.peer_connections[conn.peer].close()
+    }
+    // Add to our list of active connections
+    temp_state.peer_connections[conn.peer] = conn
+}
+
+function remove_peer(peer_id: string) {
+    const new_connections = { ...temp_state.peer_connections }
+    delete new_connections[peer_id]
+    temp_state.peer_connections = new_connections
 }
