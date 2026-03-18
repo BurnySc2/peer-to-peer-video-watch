@@ -143,8 +143,12 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 break
             case "send_emote": {
                 console.log("Receiving emote", data_validated.emote)
-                const incoming_emote = new URL(data_validated.emote)
-                if (APP_CONFIG.allowed_emote_origins.includes(incoming_emote.origin)) {
+                // This likely will fail testing environment as window isn't defined
+                const incoming_emote = new URL(data_validated.emote, window.location.origin)
+                if (
+                    APP_CONFIG.allowed_emote_origins.includes(incoming_emote.origin) ||
+                    incoming_emote.origin === window.location.origin
+                ) {
                     emote_state.push({ id: data_validated.id, src: data_validated.emote })
                 }
                 break
