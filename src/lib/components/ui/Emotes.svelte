@@ -90,19 +90,19 @@ $effect(() => {
     onpointerleave={onMouseLeaveControls}
 >
     {#if show_emote_list}
-        <div class="absolute bottom-10 right-0 bg-gray-900/75 rounded-t-lg p-1 max-h-36 overflow-y-auto ">
+        <div class="absolute bottom-10 right-0 bg-gray-900/75 rounded-t-lg p-1 max-h-48 overflow-y-auto ">
             <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
                 <div class="grow h-px bg-gray-600"></div>
                 <span>Your emotes</span>
                 <div class="grow h-px bg-gray-600"></div>
             </div>
-            <div class="grid grid-cols-4 gap-2 justify-items-center">
+            <div class="grid grid-cols-5 gap-2 justify-items-center">
                 {#each perma_state.global_settings.personal_emotes as emote}
                     <button
                         onclick={() => {display_emote(emote)}}
                         onauxclick={() => {delete_local_emote(emote)}}
                     >
-                        <div class="w-12 h-12 flex items-center justify-center cursor-pointer hover:outline">
+                        <div class="w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
                             <img
                                 class="max-w-full max-h-full object-contain"
                                 src={emote}
@@ -118,10 +118,10 @@ $effect(() => {
                 <span>Global emotes</span>
                 <div class="grow h-px bg-gray-600"></div>
             </div>
-            <div class="grid grid-cols-4 gap-2 justify-items-center">
+            <div class="grid grid-cols-5 gap-2 justify-items-center">
                 {#each emotes as emote}
                     <button onclick={() => {display_emote(emote)}}>
-                        <div class="w-12 h-12 flex items-center justify-center cursor-pointer hover:outline">
+                        <div class="w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
                             <img
                                 class="max-w-full max-h-full object-contain"
                                 src={emote}
@@ -136,7 +136,7 @@ $effect(() => {
         </div>
     {:else}
         <button
-            class="absolute right-1 top-1/2 -translate-y-1/2 mr-1 p-1 bg-black/60 rounded-xl hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
+            class="absolute right-1 top-11/12 -translate-y-1/2 mr-1 p-1 bg-black/60 rounded-xl hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
             style="opacity: {controls_opacity};"
             onclick={() => {show_emote_list = !show_emote_list}}
         >
