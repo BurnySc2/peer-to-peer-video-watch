@@ -2,7 +2,7 @@
 // npx playwright test -g "video-player"
 // npx playwright test --ui
 
-import { expect, type Locator, type Page, test } from "@playwright/test"
+import { type Browser, expect, type Locator, type Page, test } from "@playwright/test"
 
 const TEST_VIDEO_1 = {
     URL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
@@ -26,6 +26,29 @@ async function add_video_to_playlist(page: Page, video_url: string) {
     await expect(page.getByPlaceholder(/new playlist item/i)).toHaveValue("")
     await expect(page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
     await expect(page.locator("video")).toBeVisible()
+}
+
+async function setup_p2p_room(browser: Browser) {
+    // Host creates a room
+    const host_context = await browser.newContext()
+    const host_page = await host_context.newPage()
+    await host_page.goto("/rooms")
+    await host_page.getByRole("button", { name: /create room/i }).click()
+
+    // Wait until room redirect happens
+    await host_page.waitForFunction(() => window.location.href.includes("?room_id="))
+    const room_url = await host_page.evaluate(() => window.location.href)
+
+    // Member joins room
+    const member_context = await browser.newContext()
+    const member_page = await member_context.newPage()
+    await member_page.goto(room_url)
+
+    return {
+        room_url,
+        host_page,
+        member_page,
+    }
 }
 
 test("initial page state", async ({ page }) => {
@@ -181,7 +204,7 @@ test("solo autoplay", async ({ page }) => {
     })
 })
 
-test("p2p sync controls", async ({ browser }) => {
+test("p2p room setup", async ({ browser }) => {
     // Define host as 1
     const context1 = await browser.newContext()
     const page1 = await context1.newPage()
@@ -208,37 +231,48 @@ test("p2p sync controls", async ({ browser }) => {
 
     // Member sees vid in playlist
     await expect(page2.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+})
+
+test("p2p sync controls", async ({ browser }) => {
+    const { host_page, member_page } = await setup_p2p_room(browser)
+
+    // Host adds vid to playlist
+    await host_page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.URL)
+    await host_page.getByRole("button", { name: /add to playlist/i }).click()
+
+    // Member sees vid in playlist
+    await expect(member_page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
 
     // Video loads for both
-    await expect(page1.locator("video")).toBeVisible()
-    await expect(page2.locator("video")).toBeVisible()
-    const video1 = page1.locator("video")
-    const video2 = page2.locator("video")
+    await expect(host_page.locator("video")).toBeVisible()
+    await expect(member_page.locator("video")).toBeVisible()
+    const video1 = host_page.locator("video")
+    const video2 = member_page.locator("video")
 
     // Host presses seek forward
-    await page1.getByTestId("seek-forward").click({ clickCount: 2 })
-    await expect(page2.getByTestId("current-time")).toHaveText(/0:20|0:21/)
+    await host_page.getByTestId("seek-forward").click({ clickCount: 2 })
+    await expect(member_page.getByTestId("current-time")).toHaveText(/0:20|0:21/)
 
     // Host presses play, member video plays --- might break if browser autoplay disallowed
-    await page1.getByTestId("player-play").click()
+    await host_page.getByTestId("player-play").click()
     await expect(video2).toHaveJSProperty("paused", false)
 
     // Member presses pause, host pauses
-    await page2.getByTestId("player-pause").click()
+    await member_page.getByTestId("player-pause").click()
     await expect(video1).toHaveJSProperty("paused", true)
 
     // Host presses seek back
-    await page1.getByTestId("seek-back").click({ clickCount: 3 })
-    await expect(page2.getByTestId("current-time")).toHaveText("0:00")
+    await host_page.getByTestId("seek-back").click({ clickCount: 3 })
+    await expect(member_page.getByTestId("current-time")).toHaveText("0:00")
 
     // Member increases playback rate, use poll to check all values at once
-    await page2.selectOption("#playback_speed", "2")
+    await member_page.selectOption("#playback_speed", "2")
     await expect
         .poll(async () => ({
             v1: await video1.evaluate((v: HTMLVideoElement) => v.playbackRate),
             v2: await video2.evaluate((v: HTMLVideoElement) => v.playbackRate),
-            s1: await page1.locator("#playback_speed").inputValue(),
-            s2: await page2.locator("#playback_speed").inputValue(),
+            s1: await host_page.locator("#playback_speed").inputValue(),
+            s2: await member_page.locator("#playback_speed").inputValue(),
         }))
         .toEqual({
             v1: 2,
@@ -248,13 +282,13 @@ test("p2p sync controls", async ({ browser }) => {
         })
 
     // Host decreases playback rate
-    await page1.selectOption("#playback_speed", "1")
+    await host_page.selectOption("#playback_speed", "1")
     await expect
         .poll(async () => ({
             v1: await video1.evaluate((v: HTMLVideoElement) => v.playbackRate),
             v2: await video2.evaluate((v: HTMLVideoElement) => v.playbackRate),
-            s1: await page1.locator("#playback_speed").inputValue(),
-            s2: await page2.locator("#playback_speed").inputValue(),
+            s1: await host_page.locator("#playback_speed").inputValue(),
+            s2: await member_page.locator("#playback_speed").inputValue(),
         }))
         .toEqual({
             v1: 1,
