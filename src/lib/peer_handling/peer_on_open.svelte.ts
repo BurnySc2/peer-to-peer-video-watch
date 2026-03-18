@@ -1,10 +1,14 @@
 import type Peer from "peerjs"
+import { tick } from "svelte"
 import { replaceState } from "$app/navigation"
 import { page } from "$app/state"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { setup_connection } from "./peer_setup_connection.svelte"
 
-export function set_room_url(room_id: string) {
+export async function set_room_url(room_id: string) {
+    // calling tick fixes following error:
+    // Cannot call replaceState(...) before router is initialized
+    await tick()
     const url = new URL(page.url.href)
     url.searchParams.set("room_id", room_id)
     replaceState(url, "")
