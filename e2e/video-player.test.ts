@@ -4,6 +4,12 @@
 
 import { type Browser, expect, type Locator, type Page, test } from "@playwright/test"
 
+type VIDEO_OBJ = {
+    URL: string
+    LENGTH_FORMATTED: string
+    LENGTH_S: number
+}
+
 const TEST_VIDEO_1 = {
     URL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     LENGTH_FORMATTED: "9:56",
@@ -20,11 +26,11 @@ async function get_video_duration(video: Locator) {
     return video.evaluate((v: HTMLVideoElement) => v.duration)
 }
 
-async function add_video_to_playlist(page: Page, video_url: string) {
-    await page.getByPlaceholder(/new playlist item/i).fill(video_url)
+async function add_video_to_playlist(page: Page, video_obj: VIDEO_OBJ) {
+    await page.getByPlaceholder(/new playlist item/i).fill(video_obj.URL)
     await page.getByRole("button", { name: /add to playlist/i }).click()
     await expect(page.getByPlaceholder(/new playlist item/i)).toHaveValue("")
-    await expect(page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+    await expect(page.getByRole("option", { name: video_obj.URL })).toBeVisible()
     await expect(page.locator("video")).toBeVisible()
 }
 
@@ -39,10 +45,11 @@ async function setup_p2p_room(browser: Browser) {
     await host_page.waitForFunction(() => window.location.href.includes("?room_id="))
     const room_url = await host_page.evaluate(() => window.location.href)
 
-    // Member joins room
+    // Member joins room with empty playlist
     const member_context = await browser.newContext()
     const member_page = await member_context.newPage()
     await member_page.goto(room_url)
+    await expect(member_page.getByText(/enter a link below to begin.../i)).toBeVisible()
 
     return {
         room_url,
@@ -149,13 +156,13 @@ test("solo autoplay", async ({ page }) => {
     await page.goto("/video-player")
 
     await test.step("add video_1 to playlist", async () => {
-        await add_video_to_playlist(page, TEST_VIDEO_1.URL)
+        await add_video_to_playlist(page, TEST_VIDEO_1)
     })
     // Adding first video to playlist loads the video element
     const video = page.locator("video")
 
     await test.step("add video_2 to playlist", async () => {
-        await add_video_to_playlist(page, TEST_VIDEO_2.URL)
+        await add_video_to_playlist(page, TEST_VIDEO_2)
     })
 
     // Let video first frame load or autoplay will trigger for itself (not a problem for users)
@@ -231,6 +238,39 @@ test("p2p room setup", async ({ browser }) => {
 
     // Member sees vid in playlist
     await expect(page2.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+})
+
+test("p2p join room in progress", async ({ browser }) => {
+    // Define host as 1
+    const context1 = await browser.newContext()
+    const page1 = await context1.newPage()
+
+    // Define member as 2
+    const context2 = await browser.newContext()
+    const page2 = await context2.newPage()
+
+    // Host creates a room
+    await page1.goto("/rooms")
+    await page1.getByRole("button", { name: /create room/i }).click()
+
+    // Wait until room redirect happens
+    await page1.waitForFunction(() => window.location.href.includes("?room_id="))
+    const room_url = await page1.evaluate(() => window.location.href)
+
+    // Host adds vids to playlist, first video loads
+    await add_video_to_playlist(page1, TEST_VIDEO_1)
+    await add_video_to_playlist(page1, TEST_VIDEO_2)
+    await expect(page1.locator("video")).toBeVisible()
+
+    // Member joins room and sees video (NB Checking for toasts doesn't work well since playwright polling can miss it)
+    await page2.goto(room_url)
+    await expect(page2.locator("video")).toBeVisible()
+    const video_page2 = page2.locator("video")
+    await expect(video_page2).toHaveJSProperty("src", TEST_VIDEO_1.URL)
+
+    // Member sees vids in playlist
+    await expect(page2.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+    await expect(page2.getByRole("option", { name: TEST_VIDEO_2.URL })).toBeVisible()
 })
 
 test("p2p sync controls", async ({ browser }) => {

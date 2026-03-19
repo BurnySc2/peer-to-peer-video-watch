@@ -90,7 +90,7 @@ async function handle_video_loaded() {
     // Reset catch up
     temp_state.video_p2p_max_time = 0
     temp_state.is_catching_up = false
-    
+
     // Actions for autoplay
     // When video is loaded, if in group send ready check, if solo just play
     if (temp_state.autoplay) {
