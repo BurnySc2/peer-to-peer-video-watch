@@ -94,6 +94,7 @@ function toggle_subtitles() {
 
 function toggle_custom_subtitles() {
     temp_state.subtitles.enabled = !temp_state.subtitles.enabled
+    console.log("Subtitles enabled:", temp_state.subtitles.enabled)
 }
 </script>
 
