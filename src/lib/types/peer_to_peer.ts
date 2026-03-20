@@ -16,6 +16,9 @@ export const Message = z.union([
         video_current_time: z.number(),
         video_state_paused: z.boolean(),
     }),
+    z.object({
+        type: z.literal("request_init"),
+    }),
     // Set new playlist (triggered by adding or removing an item)
     z.object({
         type: z.literal("playlist_set"),

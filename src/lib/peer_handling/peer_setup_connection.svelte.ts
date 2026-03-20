@@ -12,15 +12,22 @@ let last_seek_toast_time = 0
 export function setup_connection(peer: Peer, conn: DataConnection, options: TSetupOptions) {
     conn.on("open", () => {
         if (options.send_init) {
-            connection_send_validated(conn, {
-                type: "init_connect",
-                peer_ids: Object.keys(temp_state.peer_connections),
-                playlist: temp_state.playlist,
-                playlist_index: temp_state.playlist_index,
-                video_target_playback_speed: temp_state.video_target_playback_speed,
-                video_current_time: temp_state.video_current_time,
-                video_state_paused: temp_state.video_state_paused,
-            })
+            if (temp_state.playlist.length === 0) {
+                console.log("State empty, requesting from peer")
+                connection_send_validated(conn, {
+                    type: "request_init",
+                })
+            } else {
+                connection_send_validated(conn, {
+                    type: "init_connect",
+                    peer_ids: Object.keys(temp_state.peer_connections),
+                    playlist: temp_state.playlist,
+                    playlist_index: temp_state.playlist_index,
+                    video_target_playback_speed: temp_state.video_target_playback_speed,
+                    video_current_time: temp_state.video_current_time,
+                    video_state_paused: temp_state.video_state_paused,
+                })
+            }
         }
     })
 
@@ -44,6 +51,20 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 temp_state.video_target_playback_speed = data_validated.video_target_playback_speed
                 temp_state.video_current_time = data_validated.video_current_time
                 temp_state.video_state_paused = data_validated.video_state_paused
+                break
+            }
+            case "request_init": {
+                if (temp_state.playlist.length) {
+                    connection_send_validated(conn, {
+                        type: "init_connect",
+                        peer_ids: Object.keys(temp_state.peer_connections),
+                        playlist: temp_state.playlist,
+                        playlist_index: temp_state.playlist_index,
+                        video_target_playback_speed: temp_state.video_target_playback_speed,
+                        video_current_time: temp_state.video_current_time,
+                        video_state_paused: temp_state.video_state_paused,
+                    })
+                }
                 break
             }
             case "playlist_set":
@@ -168,6 +189,17 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
             console.log("No peers remaining, stopping catch up")
             temp_state.video_playback_speed = temp_state.video_target_playback_speed
         }
+
+        // Only host reconnecting handled, since members will reconnect naturally via URL room_id
+        // i.e. non-hosts should attempt reconnect to host only
+        const params = new URLSearchParams(window.location.search)
+        const room_id = params.get("room_id")
+        const is_host = perma_state.global_settings.peer_id === room_id
+        const is_host_connection = conn.peer === room_id
+
+        if (!is_host && is_host_connection) {
+            start_reconnect_loop(peer, room_id)
+        }
     })
 
     // This catch up stop method might not work, peer_connections might not be updated yet
@@ -194,4 +226,38 @@ function remove_peer(peer_id: string) {
     const new_connections = { ...temp_state.peer_connections }
     delete new_connections[peer_id]
     temp_state.peer_connections = new_connections
+}
+
+let reconnecting = false
+function start_reconnect_loop(peer: Peer, room_id: string) {
+    // Only host reconnecting handled, since members will reconnect naturally via URL room_id
+    if (reconnecting) {
+        return
+    }
+    reconnecting = true
+
+    if (!room_id) {
+        console.log("Cannot reconnect - no room id")
+        return
+    }
+    let attempts = 0
+    const reconnect_interval = setInterval(() => {
+        attempts += 1
+        console.log("Attempting to reconnect to host", attempts)
+        if (attempts > 30) {
+            clearInterval(reconnect_interval)
+            reconnecting = false
+            console.log("Max reconnect attempts reached")
+            return
+        }
+
+        const conn = peer.connect(room_id)
+        conn.on("open", () => {
+            console.log("Host reconnected")
+            setup_connection(peer, conn, { send_init: false })
+
+            clearInterval(reconnect_interval)
+            reconnecting = false
+        })
+    }, 2000)
 }
