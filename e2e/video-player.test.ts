@@ -338,7 +338,7 @@ test("p2p sync controls", async ({ browser }) => {
         })
 })
 
-test("p2p member reconnects", async( { browser }) => {
+test("p2p member reconnects", async ({ browser }) => {
     const { host_page, member_page } = await setup_p2p_room(browser)
     await add_video_to_playlist(host_page, TEST_VIDEO_1)
     const video_host = host_page.locator("video")
@@ -358,27 +358,27 @@ test("p2p member reconnects", async( { browser }) => {
 
     // Host and member both seek correctly
     await expect
-    .poll(async () => await video_host.evaluate((v: HTMLVideoElement) => v.currentTime))
-    .toBeGreaterThanOrEqual(target)
+        .poll(async () => await video_host.evaluate((v: HTMLVideoElement) => v.currentTime))
+        .toBeGreaterThanOrEqual(target)
 
     await expect
-    .poll(async () => await video_member.evaluate((v: HTMLVideoElement) => v.currentTime))
-    .toBeGreaterThanOrEqual(target)
+        .poll(async () => await video_member.evaluate((v: HTMLVideoElement) => v.currentTime))
+        .toBeGreaterThanOrEqual(target)
 
     // Member refreshes page (waituntil: networkidle - might not work here since video is loading)
-    await member_page.reload({waitUntil: "load"})
+    await member_page.reload({ waitUntil: "load" })
 
     // Members reloads video at correct time
     await expect
-    .poll(async () => await video_member.evaluate((v: HTMLVideoElement) => v.currentTime))
-    .toBeGreaterThanOrEqual(target)
+        .poll(async () => await video_member.evaluate((v: HTMLVideoElement) => v.currentTime))
+        .toBeGreaterThanOrEqual(target)
 
     // Member is still part of the group - host presses play, member video plays
     await host_page.getByTestId("player-play").click()
     await expect(video_member).toHaveJSProperty("paused", false)
 })
 
-test("p2p host reconnects", async( { browser }) => {
+test("p2p host reconnects", async ({ browser }) => {
     const { host_page, member_page } = await setup_p2p_room(browser)
     await add_video_to_playlist(host_page, TEST_VIDEO_1)
     const video_host = host_page.locator("video")
@@ -398,20 +398,20 @@ test("p2p host reconnects", async( { browser }) => {
 
     // Host and member both seek correctly
     await expect
-    .poll(async () => await video_host.evaluate((v: HTMLVideoElement) => v.currentTime))
-    .toBeGreaterThanOrEqual(target)
+        .poll(async () => await video_host.evaluate((v: HTMLVideoElement) => v.currentTime))
+        .toBeGreaterThanOrEqual(target)
 
     await expect
-    .poll(async () => await video_member.evaluate((v: HTMLVideoElement) => v.currentTime))
-    .toBeGreaterThanOrEqual(target)
+        .poll(async () => await video_member.evaluate((v: HTMLVideoElement) => v.currentTime))
+        .toBeGreaterThanOrEqual(target)
 
     // Host refreshes page (waituntil: networkidle - might not work here since video is loading)
-    await host_page.reload({waitUntil: "load"})
+    await host_page.reload({ waitUntil: "load" })
 
     // Host reloads video at correct time
     await expect
-    .poll(async () => await video_host.evaluate((v: HTMLVideoElement) => v.currentTime))
-    .toBeGreaterThanOrEqual(target)
+        .poll(async () => await video_host.evaluate((v: HTMLVideoElement) => v.currentTime))
+        .toBeGreaterThanOrEqual(target)
 
     // Host is still part of the group - host presses play, member video plays
     await host_page.getByTestId("player-play").click()
