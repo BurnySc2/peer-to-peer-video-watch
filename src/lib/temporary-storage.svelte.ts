@@ -8,6 +8,12 @@ export const PlayListItem = z.object({
     subtitles_original_url: z.string(),
 })
 const TempState = z.object({
+    emote_state: z.array(
+        z.object({
+            id: z.string(),
+            src: z.string(),
+        }),
+    ),
     playlist: z.array(PlayListItem),
     playlist_index: z.number(),
     autoplay: z.boolean(),
@@ -42,6 +48,7 @@ export type TTempState = z.infer<typeof TempState>
 export type TPlayListItem = z.infer<typeof PlayListItem>
 
 export const temp_state: TTempState = $state({
+    emote_state: [],
     playlist: [],
     playlist_index: -1,
     autoplay: false,

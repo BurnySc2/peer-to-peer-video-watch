@@ -1,11 +1,10 @@
 <script lang="ts">
+import { APP_CONFIG } from "$lib/config"
 import SmileyIcon from "$lib/icons/SmileyIcon.svelte"
 import { p2p_send_emote } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
-import { emote_state, emotes } from "$lib/utils/emotes.svelte"
-
-const SEND_EMOTE_COOLDOWN_MS = 1000
+import { global_emotes } from "./emotes"
 
 interface Props {
     controls_opacity: number
@@ -30,17 +29,17 @@ function display_emote(emote: string) {
     show_emote_list = false
     const id = generate_emote_id()
 
-    emote_state.push({ id, src: emote })
+    temp_state.emote_state.push({ id, src: emote })
     p2p_send_emote(id, emote)
     setTimeout(() => {
-        const index = emote_state.findIndex((i) => i.id === id)
+        const index = temp_state.emote_state.findIndex((i) => i.id === id)
         if (index !== -1) {
-            emote_state.splice(index, 1)
+            temp_state.emote_state.splice(index, 1)
         }
-    }, 6000)
+    }, APP_CONFIG.emote_expire_ms)
     setTimeout(() => {
         allow_emote_push = true
-    }, SEND_EMOTE_COOLDOWN_MS)
+    }, APP_CONFIG.emote_send_cooldown_ms)
 }
 
 function generate_emote_id(): string {
@@ -66,8 +65,8 @@ $effect(() => {
 })
 </script>
 
-{#each emote_state as emote (emote.id)}
-    {@const rise = random_helper(5,7)}
+{#each temp_state.emote_state as emote (emote.id)}
+    {@const rise = random_helper(2,5)}
     {@const wobble = random_helper(1.5,2.5)}
     {@const x = random_helper(-80,0)}
     <div
@@ -119,14 +118,14 @@ $effect(() => {
                 <div class="grow h-px bg-gray-600"></div>
             </div>
             <div class="grid grid-cols-5 gap-2 justify-items-center">
-                {#each emotes as emote}
-                    <button onclick={() => {display_emote(emote)}}>
+                {#each global_emotes as emote}
+                    <button onclick={() => {display_emote(emote.url)}}>
                         <div class="w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
                             <img
                                 class="max-w-full max-h-full object-contain"
-                                src={emote}
+                                src={emote.url}
                                 alt=""
-                                title={emote.split("/").pop()}
+                                title={emote.name}
                                 loading="lazy"
                             >
                         </div>

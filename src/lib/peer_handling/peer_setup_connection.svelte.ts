@@ -4,7 +4,6 @@ import { APP_CONFIG } from "$lib/config"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { peer_count, temp_state } from "$lib/temporary-storage.svelte"
 import { Message, type TMessage, type TSetupOptions } from "$lib/types/peer_to_peer"
-import { emote_state } from "$lib/utils/emotes.svelte"
 import { get_speedup_factor, should_start_catching_up, should_stop_catching_up } from "./peer_catchup.svelte"
 import { connection_send_validated } from "./peer_send.svelte"
 
@@ -170,7 +169,7 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                     APP_CONFIG.allowed_emote_origins.includes(incoming_emote.origin) ||
                     incoming_emote.origin === window.location.origin
                 ) {
-                    emote_state.push({ id: data_validated.id, src: data_validated.emote })
+                    temp_state.emote_state.push({ id: data_validated.id, src: data_validated.emote })
                 }
                 break
             }
