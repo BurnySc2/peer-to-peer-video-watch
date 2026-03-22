@@ -417,3 +417,43 @@ test("p2p host reconnects", async ({ browser }) => {
     await host_page.getByTestId("player-play").click()
     await expect(video_member).toHaveJSProperty("paused", false)
 })
+
+test("p2p ready check", async ({ browser }) => {
+    const { host_page, member_page } = await setup_p2p_room(browser)
+
+    // Safe to define before the video exists
+    const video_host = host_page.locator("video")
+    const video_member = member_page.locator("video")
+
+    await test.step("set up room and load video", async () => {
+        await add_video_to_playlist(host_page, TEST_VIDEO_1)
+
+        // Video is paused initially
+        await expect(video_host).toHaveJSProperty("paused", true)
+        await expect(video_member).toHaveJSProperty("paused", true)
+    })
+
+    // Host sends ready check, host and member see it
+    await test.step("send ready check, both see it", async () => {
+        await host_page.getByTestId("ready-check").click()
+        await expect(host_page.getByText(/waiting for peers/i)).toBeVisible()
+        await expect(member_page.getByText(/ready check/i)).toBeVisible()
+
+        // Check one peer is marked as ready, one is marked as waiting
+        await expect(member_page.getByText("✅")).toHaveCount(1)
+        await expect(member_page.getByText("⏳")).toHaveCount(1)
+    })
+
+    await test.step("member presses ready, both are ready, check ends and video plays", async () => {
+        // Member presses ready
+        await member_page.getByTestId("send-ready").click()
+
+        // Ready check disappears for both
+        await expect(host_page.getByText(/ready check/i)).not.toBeVisible()
+        await expect(member_page.getByText(/ready check/i)).not.toBeVisible()
+
+        // Video plays for both
+        await expect(video_host).toHaveJSProperty("paused", false)
+        await expect(video_member).toHaveJSProperty("paused", false)
+    })
+})

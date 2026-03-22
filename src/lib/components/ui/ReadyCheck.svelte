@@ -121,6 +121,7 @@ $effect(() => {
             {:else}
                 <button
                     onclick={p2p_send_ready}
+                    data-testid="send-ready"
                     class="flex-1 py-2 rounded-lg bg-green-600
         font-semibold text-white hover:bg-green-700 active:bg-green-800
         transition"
