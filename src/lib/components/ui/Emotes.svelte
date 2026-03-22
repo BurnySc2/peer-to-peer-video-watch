@@ -66,7 +66,7 @@ $effect(() => {
 </script>
 
 {#each temp_state.emote_state as emote (emote.id)}
-    {@const rise = random_helper(2,5)}
+    {@const rise_time_s = random_helper(10,14)}
     {@const wobble = random_helper(1.5,2.5)}
     {@const x = random_helper(-80,0)}
     <div
@@ -76,7 +76,7 @@ $effect(() => {
         <img
             src={emote.src}
             class="max-w-3/4 max-h-3/4 object-contain drop-shadow pointer-events-none emote-rise"
-            style="--rise-time:{rise}s; --wobble-time:{wobble}s;"
+            style="--rise-time:{rise_time_s}s; --wobble-time:{wobble}s;"
             alt=""
         >
     </div>
