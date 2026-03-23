@@ -103,7 +103,7 @@ $effect(() => {
                     >
                         <div class="w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
                             <img
-                                class="max-w-full max-h-full object-contain"
+                                class="max-w-full max-h-full object-contain select-none"
                                 src={emote}
                                 alt=""
                                 loading="lazy"
