@@ -4,22 +4,22 @@
 
 import { type Browser, type BrowserContext, expect, type Locator, type Page, test } from "@playwright/test"
 
-type VIDEO_OBJ = {
-    URL: string
-    LENGTH_FORMATTED: string
-    LENGTH_S: number
+type VideoInfo = {
+    url: string
+    length_formatted: string
+    length_s: number
 }
 
-const TEST_VIDEO_1 = {
-    URL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    LENGTH_FORMATTED: "9:56",
-    LENGTH_S: 596.474195,
+const TEST_VIDEO_1: VideoInfo = {
+    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    length_formatted: "9:56",
+    length_s: 596.474195,
 }
 
-const TEST_VIDEO_2 = {
-    URL: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-    LENGTH_FORMATTED: "0:05",
-    LENGTH_S: 5.055,
+const TEST_VIDEO_2: VideoInfo = {
+    url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    length_formatted: "0:05",
+    length_s: 5.055,
 }
 
 // ============================================================================
@@ -40,11 +40,11 @@ async function get_video_duration(video: Locator) {
     return video.evaluate((v: HTMLVideoElement) => v.duration)
 }
 
-async function add_video_to_playlist(page: Page, video_obj: VIDEO_OBJ) {
-    await page.getByPlaceholder(/new playlist item/i).fill(video_obj.URL)
+async function add_video_to_playlist(page: Page, video_obj: VideoInfo) {
+    await page.getByPlaceholder(/new playlist item/i).fill(video_obj.url)
     await page.getByRole("button", { name: /add to playlist/i }).click()
     await expect(page.getByPlaceholder(/new playlist item/i)).toHaveValue("")
-    await expect(page.getByRole("option", { name: video_obj.URL })).toBeVisible()
+    await expect(page.getByRole("option", { name: video_obj.url })).toBeVisible()
     await expect(page.locator("video")).toBeVisible()
 }
 
@@ -109,19 +109,19 @@ test.describe("solo video player", () => {
 
         await test.step("add video to playlist", async () => {
             // Adds url into playlist
-            await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.URL)
+            await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.url)
             await page.getByRole("button", { name: /add to playlist/i }).click()
             // Input box clears
             await expect(page.getByPlaceholder(/new playlist item/i)).toHaveValue("")
             // URL added to playlist
-            await expect(page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+            await expect(page.getByRole("option", { name: TEST_VIDEO_1.url })).toBeVisible()
 
             // Video element is now visible
             await expect(page.locator("video")).toBeVisible()
         })
 
         const video = page.locator("video")
-        await expect(video).toHaveJSProperty("duration", TEST_VIDEO_1.LENGTH_S)
+        await expect(video).toHaveJSProperty("duration", TEST_VIDEO_1.length_s)
         await test.step("lower video controls now visible", async () => {
             await expect(page.getByText(/playback rate/i)).toBeVisible()
             await expect(page.getByText(/volume/i)).toBeVisible()
@@ -139,7 +139,7 @@ test.describe("solo video player", () => {
             await expect(page.getByRole("button", { name: /seek forward/i })).toBeVisible()
             await expect(page.getByRole("button", { name: /fullscreen/i })).toBeVisible()
             await expect(page.getByTestId("current-time")).toHaveText("0:00")
-            await expect(page.getByTestId("total-time")).toHaveText(TEST_VIDEO_1.LENGTH_FORMATTED)
+            await expect(page.getByTestId("total-time")).toHaveText(TEST_VIDEO_1.length_formatted)
         })
 
         await test.step("in video controls work", async () => {
@@ -190,7 +190,7 @@ test.describe("solo video player", () => {
         await expect(video).toHaveJSProperty("readyState", 4)
 
         await test.step("enable autoplay", async () => {
-            await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_2.URL)
+            await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_2.url)
             await page.getByRole("checkbox", { name: /autoplay/i }).check()
             await expect(page.getByRole("checkbox", { name: /autoplay/i })).toBeChecked()
         })
@@ -219,7 +219,7 @@ test.describe("solo video player", () => {
                 .toBeGreaterThanOrEqual(target)
 
             // Check next vid in playlist plays
-            await expect.poll(async () => video.evaluate((v: HTMLVideoElement) => v.src)).toBe(TEST_VIDEO_2.URL)
+            await expect.poll(async () => video.evaluate((v: HTMLVideoElement) => v.src)).toBe(TEST_VIDEO_2.url)
 
             // Check vid still has 1.5 playback rate
             await expect(video).toHaveJSProperty("playbackRate", 1.5)
@@ -251,11 +251,11 @@ test.describe("p2p video player", () => {
 
     test("room setup", async () => {
         // Host adds vid to playlist
-        await host_page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.URL)
+        await host_page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.url)
         await host_page.getByRole("button", { name: /add to playlist/i }).click()
 
         // Member sees vid in playlist
-        await expect(member_page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+        await expect(member_page.getByRole("option", { name: TEST_VIDEO_1.url })).toBeVisible()
     })
 
     test("join room in progress", async ({ browser }) => {
@@ -273,20 +273,20 @@ test.describe("p2p video player", () => {
         await member_p.goto(setup.room_url)
         await expect(member_p.locator("video")).toBeVisible()
         const video_page2 = member_p.locator("video")
-        await expect(video_page2).toHaveJSProperty("src", TEST_VIDEO_1.URL)
+        await expect(video_page2).toHaveJSProperty("src", TEST_VIDEO_1.url)
 
         // Member sees vids in playlist
-        await expect(member_p.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
-        await expect(member_p.getByRole("option", { name: TEST_VIDEO_2.URL })).toBeVisible()
+        await expect(member_p.getByRole("option", { name: TEST_VIDEO_1.url })).toBeVisible()
+        await expect(member_p.getByRole("option", { name: TEST_VIDEO_2.url })).toBeVisible()
     })
 
     test("sync controls", async () => {
         // Host adds vid to playlist
-        await host_page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.URL)
+        await host_page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.url)
         await host_page.getByRole("button", { name: /add to playlist/i }).click()
 
         // Member sees vid in playlist
-        await expect(member_page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+        await expect(member_page.getByRole("option", { name: TEST_VIDEO_1.url })).toBeVisible()
 
         // Video loads for both
         await expect(host_page.locator("video")).toBeVisible()
