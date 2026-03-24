@@ -32,6 +32,7 @@ let {
 }: MyProps = $props()
 
 let player_container: HTMLDivElement | null = null
+let mouse_location = $state<"inside" | "outside">("outside")
 let controls_opacity = $state(1)
 let hide_timeout: number | null = null
 
@@ -59,12 +60,25 @@ function debounce_mouse_move(_event: Event) {
     // Show controls immediately
     controls_opacity = 1
 
+    // Mouse is inside the div
+    show_mouse()
+    mouse_location = "inside"
+
     // Set a timeout to hide controls after 3 seconds
     hide_timeout = setTimeout(() => {
         if (!mouse_in_controls) {
             controls_opacity = 0
+            if (mouse_location === "inside") {
+                document.body.style.cursor = "none"
+            }
         }
     }, 1000) as unknown as number
+}
+
+function show_mouse() {
+    // Mouse has been moved or left the div
+    mouse_location = "outside"
+    document.body.style.cursor = "default"
 }
 
 let subtitles = $state<SubtitleItem[]>([])
@@ -150,6 +164,7 @@ onMount(() => {
 <div
     bind:this={player_container}
     class="relative flex w-full h-full"
+    onmouseleave={show_mouse}
     onmousemove={debounce_mouse_move}
     onscroll={debounce_mouse_move}
     onpointerdown={debounce_mouse_move}
