@@ -26,6 +26,16 @@ const TEST_VIDEO_2 = {
 // Helper Functions
 // ============================================================================
 
+// Seek slider manipulation helper - avoids duplicating this code across tests
+async function seek_video_to(page: Page, targetSeconds: number) {
+    const slider = page.getByTestId("seek-slider")
+    await slider.evaluate((el, value) => {
+        const input = el as HTMLInputElement
+        input.valueAsNumber = value
+        input.dispatchEvent(new InputEvent("input", { bubbles: true }))
+    }, targetSeconds)
+}
+
 async function get_video_duration(video: Locator) {
     return video.evaluate((v: HTMLVideoElement) => v.duration)
 }
@@ -176,7 +186,8 @@ test.describe("solo video player", () => {
         })
 
         // Let video first frame load or autoplay will trigger for itself (not a problem for users)
-        await page.waitForTimeout(1000)
+        await expect(video).toBeVisible()
+        await expect(video).toHaveJSProperty("readyState", 4)
 
         await test.step("enable autoplay", async () => {
             await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_2.URL)
@@ -193,13 +204,7 @@ test.describe("solo video player", () => {
         // Seek towards end of video to test autoplay is working
         const target = (await get_video_duration(video)) - 2
         await test.step("seek close to end of first video", async () => {
-            // Use slider to seek video, can use API though
-            const slider = page.getByTestId("seek-slider")
-            await slider.evaluate((el, value) => {
-                const input = el as HTMLInputElement
-                input.valueAsNumber = value
-                input.dispatchEvent(new InputEvent("input", { bubbles: true }))
-            }, target)
+            await seek_video_to(page, target)
         })
 
         await test.step("check seek success, play and next vid autoplays with correct speed", async () => {
@@ -352,12 +357,7 @@ test.describe("p2p video player", () => {
 
         // Seek video to 30s
         const target = 30
-        const slider = host_page.getByTestId("seek-slider")
-        await slider.evaluate((el, value) => {
-            const input = el as HTMLInputElement
-            input.valueAsNumber = value
-            input.dispatchEvent(new InputEvent("input", { bubbles: true }))
-        }, target)
+        await seek_video_to(host_page, target)
 
         // Host and member both seek correctly
         await expect
@@ -391,12 +391,7 @@ test.describe("p2p video player", () => {
 
         // Seek video to 30s
         const target = 30
-        const slider = host_page.getByTestId("seek-slider")
-        await slider.evaluate((el, value) => {
-            const input = el as HTMLInputElement
-            input.valueAsNumber = value
-            input.dispatchEvent(new InputEvent("input", { bubbles: true }))
-        }, target)
+        await seek_video_to(host_page, target)
 
         // Host and member both seek correctly
         await expect
