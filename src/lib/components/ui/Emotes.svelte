@@ -72,6 +72,7 @@ $effect(() => {
     <div
         class="absolute bottom-0 right-0 w-24 h-24 flex items-center justify-center"
         style="transform: translateX({x}px);"
+        data-testid="pushed-emote"
     >
         <img
             src={emote.src}
@@ -117,7 +118,10 @@ $effect(() => {
                 <span>Global emotes</span>
                 <div class="grow h-px bg-gray-600"></div>
             </div>
-            <div class="grid grid-cols-5 gap-2 justify-items-center">
+            <div
+                class="grid grid-cols-5 gap-2 justify-items-center"
+                data-testid="global-emotes"
+            >
                 {#each global_emotes as emote}
                     <button onclick={() => {display_emote(emote.url)}}>
                         <div class="w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
@@ -137,6 +141,7 @@ $effect(() => {
         <button
             class="absolute right-1 top-11/12 -translate-y-1/2 mr-1 p-1 bg-black/60 rounded-xl hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
             style="opacity: {controls_opacity};"
+            data-testid="open-emote-menu"
             onclick={() => {show_emote_list = !show_emote_list}}
         >
             <SmileyIcon />

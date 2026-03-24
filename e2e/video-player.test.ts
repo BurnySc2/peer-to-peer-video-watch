@@ -411,6 +411,55 @@ test.describe("p2p video player", () => {
         await expect(video_member).toHaveJSProperty("paused", false)
     })
 
+    test("emotes", async () => {
+        // Safe to define before the video exists
+        const video_host = host_page.locator("video")
+        const video_member = member_page.locator("video")
+        const emotes = host_page.getByTestId("global-emotes").locator("img")
+
+        await test.step("set up room and load video", async () => {
+            await add_video_to_playlist(host_page, TEST_VIDEO_1)
+
+            // Video is paused initially
+            await expect(video_host).toHaveJSProperty("paused", true)
+            await expect(video_member).toHaveJSProperty("paused", true)
+        })
+
+        let clicked_image_src: string | null = null
+        await test.step("host opens emote menu", async () => {
+            await host_page.getByTestId("open-emote-menu").click()
+
+            // Emotes menu should be visible
+            await expect.poll(async () => emotes.count()).toBeGreaterThanOrEqual(3)
+        })
+
+        await test.step("host sends emote", async () => {
+            const first_image = emotes.first()
+            clicked_image_src = await emotes.first().getAttribute("src")
+            await first_image.click()
+
+            // Emote menu should close
+            await expect(emotes).not.toBeVisible()
+        })
+
+        await test.step("host sees emote", async () => {
+            if (clicked_image_src === null) {
+                throw new Error("Clicked image has no src - test invalid")
+            }
+            const visible_host_emote = host_page.getByTestId("pushed-emote").locator("img")
+
+            await expect(visible_host_emote).toHaveAttribute("src", clicked_image_src)
+        })
+
+        await test.step("member sees emote", async () => {
+            if (clicked_image_src === null) {
+                throw new Error("Clicked image has no src - test invalid")
+            }
+            const visible_member_emote = member_page.getByTestId("pushed-emote").locator("img")
+            await expect(visible_member_emote).toHaveAttribute("src", clicked_image_src)
+        })
+    })
+
     test("ready check", async () => {
         // Safe to define before the video exists
         const video_host = host_page.locator("video")
