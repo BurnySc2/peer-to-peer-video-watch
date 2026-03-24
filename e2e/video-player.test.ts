@@ -232,23 +232,21 @@ test.describe("solo video player", () => {
 // ============================================================================
 
 test.describe("p2p video player", () => {
-    // Shared state for P2P tests - set up once per test
+    // Store page references at module level for test access
     let host_page: Page
     let member_page: Page
-    let host_context: BrowserContext
-    let member_context: BrowserContext
 
     test.beforeEach(async ({ browser }) => {
+        // Set up P2P room for each test
         const setup = await setup_p2p_room(browser)
         host_page = setup.host_page
         member_page = setup.member_page
-        host_context = setup.host_context
-        member_context = setup.member_context
     })
 
-    test.afterEach(async () => {
-        // Clean up browser contexts to prevent resource leaks
-        await Promise.allSettled([host_context?.close(), member_context?.close()])
+    test.afterEach(async ({ browser }) => {
+        // Clean up ALL browser contexts to prevent resource leaks
+        const all_contexts = browser.contexts()
+        await Promise.allSettled(all_contexts.map((c) => c.close()))
     })
 
     test("room setup", async () => {
@@ -261,6 +259,7 @@ test.describe("p2p video player", () => {
     })
 
     test("join room in progress", async ({ browser }) => {
+        // Create additional room setup (global afterEach will clean up)
         const setup = await setup_p2p_room(browser)
         const host_p = setup.host_page
         const member_p = setup.member_page
@@ -279,9 +278,6 @@ test.describe("p2p video player", () => {
         // Member sees vids in playlist
         await expect(member_p.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
         await expect(member_p.getByRole("option", { name: TEST_VIDEO_2.URL })).toBeVisible()
-
-        // Clean up this specific test's contexts
-        await Promise.allSettled([setup.host_context.close(), setup.member_context.close()])
     })
 
     test("sync controls", async () => {
