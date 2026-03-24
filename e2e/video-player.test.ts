@@ -2,7 +2,7 @@
 // npx playwright test -g "video-player"
 // npx playwright test --ui
 
-import { type Browser, type BrowserContext, expect, type Locator, type Page, test } from "@playwright/test"
+import { type Browser, expect, type Locator, type Page, test } from "@playwright/test"
 
 type VideoInfo = {
     url: string
