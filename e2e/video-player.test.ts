@@ -212,65 +212,33 @@ test("solo autoplay", async ({ page }) => {
 })
 
 test("p2p room setup", async ({ browser }) => {
-    // Define host as 1
-    const context1 = await browser.newContext()
-    const page1 = await context1.newPage()
-
-    // Define member as 2
-    const context2 = await browser.newContext()
-    const page2 = await context2.newPage()
-
-    // Host creates a room
-    await page1.goto("/rooms")
-    await page1.getByRole("button", { name: /create room/i }).click()
-
-    // Wait until room redirect happens
-    await page1.waitForFunction(() => window.location.href.includes("?room_id="))
-    const room_url = await page1.evaluate(() => window.location.href)
-
-    // Member joins room (NB Checking for toasts doesn't work well since playwright polling can miss it)
-    await page2.goto(room_url)
-    await expect(page2.getByText(/enter a link below to begin.../i)).toBeVisible()
+    const { host_page, member_page } = await setup_p2p_room(browser)
 
     // Host adds vid to playlist
-    await page1.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.URL)
-    await page1.getByRole("button", { name: /add to playlist/i }).click()
+    await host_page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.URL)
+    await host_page.getByRole("button", { name: /add to playlist/i }).click()
 
     // Member sees vid in playlist
-    await expect(page2.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+    await expect(member_page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
 })
 
 test("p2p join room in progress", async ({ browser }) => {
-    // Define host as 1
-    const context1 = await browser.newContext()
-    const page1 = await context1.newPage()
-
-    // Define member as 2
-    const context2 = await browser.newContext()
-    const page2 = await context2.newPage()
-
-    // Host creates a room
-    await page1.goto("/rooms")
-    await page1.getByRole("button", { name: /create room/i }).click()
-
-    // Wait until room redirect happens
-    await page1.waitForFunction(() => window.location.href.includes("?room_id="))
-    const room_url = await page1.evaluate(() => window.location.href)
+    const { room_url, host_page, member_page } = await setup_p2p_room(browser)
 
     // Host adds vids to playlist, first video loads
-    await add_video_to_playlist(page1, TEST_VIDEO_1)
-    await add_video_to_playlist(page1, TEST_VIDEO_2)
-    await expect(page1.locator("video")).toBeVisible()
+    await add_video_to_playlist(host_page, TEST_VIDEO_1)
+    await add_video_to_playlist(host_page, TEST_VIDEO_2)
+    await expect(host_page.locator("video")).toBeVisible()
 
     // Member joins room and sees video (NB Checking for toasts doesn't work well since playwright polling can miss it)
-    await page2.goto(room_url)
-    await expect(page2.locator("video")).toBeVisible()
-    const video_page2 = page2.locator("video")
+    await member_page.goto(room_url)
+    await expect(member_page.locator("video")).toBeVisible()
+    const video_page2 = member_page.locator("video")
     await expect(video_page2).toHaveJSProperty("src", TEST_VIDEO_1.URL)
 
     // Member sees vids in playlist
-    await expect(page2.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
-    await expect(page2.getByRole("option", { name: TEST_VIDEO_2.URL })).toBeVisible()
+    await expect(member_page.getByRole("option", { name: TEST_VIDEO_1.URL })).toBeVisible()
+    await expect(member_page.getByRole("option", { name: TEST_VIDEO_2.URL })).toBeVisible()
 })
 
 test("p2p sync controls", async ({ browser }) => {
