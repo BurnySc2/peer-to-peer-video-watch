@@ -7,7 +7,12 @@ const GlobalSettings = z
         peer_id: z.string(),
         volume: z.number(),
         subtitles_font_size_rem: z.number(),
-        personal_emotes: z.array(z.string()),
+        personal_emotes: z.array(
+            z.object({
+                name: z.string(),
+                url: z.string(),
+            }),
+        ),
         favourite_emotes: z.array(
             z.object({
                 name: z.string(),

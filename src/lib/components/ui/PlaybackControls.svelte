@@ -9,6 +9,7 @@ import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 import { extract_title, fetch_file_data, fetch_season_data } from "$lib/utils/fetch_jelly_data"
 import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
+import type { Emote } from "./emotes"
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
@@ -217,7 +218,7 @@ let emote_input = $state("")
 function handle_emote_submit() {
     flash = true
     setTimeout(() => (flash = false), 300)
-    if (perma_state.global_settings.personal_emotes.includes(emote_input)) {
+    if (perma_state.global_settings.personal_emotes.some((e) => e.url === emote_input)) {
         emote_input = ""
         return
     }
@@ -236,14 +237,15 @@ function handle_emote_submit() {
         try {
             const emote_url = new URL(emote.trim())
             if (!APP_CONFIG.allowed_emote_origins.includes(emote_url.origin)) {
-                console.log(`Rejecting. invalid origin: ${emote}`)
+                console.log(`Rejecting, invalid origin: ${emote}`)
                 return
             }
-            if (perma_state.global_settings.personal_emotes.includes(emote_url.toString())) {
+            if (perma_state.global_settings.personal_emotes.some((e) => e.url === emote_url.toString())) {
                 console.log(`Rejecting, duplicate: ${emote}`)
                 return
             }
-            perma_state.global_settings.personal_emotes.push(emote_url.toString())
+            const new_emote: Emote = { name: "", url: emote_url.toString() }
+            perma_state.global_settings.personal_emotes.push(new_emote)
         } catch {
             console.log(`Invalid url ${emote.trim()}`)
             return
