@@ -108,7 +108,7 @@ $effect(() => {
         <div class="absolute bottom-10 right-0 bg-gray-900/75 rounded-t-lg p-1 max-h-48 overflow-y-auto ">
             <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
                 <div class="grow h-px bg-gray-600"></div>
-                <span>Favourited emotes</span>
+                <span>Favourites</span>
                 <div class="grow h-px bg-gray-600"></div>
             </div>
             <div class="grid grid-cols-5 gap-2 justify-items-center">
@@ -135,7 +135,7 @@ $effect(() => {
             </div>
             <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
                 <div class="grow h-px bg-gray-600"></div>
-                <span>Your emotes</span>
+                <span>Yours</span>
                 <div class="grow h-px bg-gray-600"></div>
             </div>
             <div class="grid grid-cols-5 gap-2 justify-items-center">
@@ -157,7 +157,7 @@ $effect(() => {
             </div>
             <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
                 <div class="grow h-px bg-gray-600"></div>
-                <span>Global emotes</span>
+                <span>Global</span>
                 <div class="grow h-px bg-gray-600"></div>
             </div>
             <div
