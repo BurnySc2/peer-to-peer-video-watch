@@ -1,4 +1,4 @@
-type Emote = {
+export type Emote = {
     name: string
     url: string
 }

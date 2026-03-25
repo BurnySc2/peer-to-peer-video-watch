@@ -1,9 +1,11 @@
 <script lang="ts">
 import { APP_CONFIG } from "$lib/config"
 import SmileyIcon from "$lib/icons/SmileyIcon.svelte"
+import StarIcon from "$lib/icons/StarIcon.svelte"
 import { p2p_send_emote } from "$lib/peer_handling/peer_send.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { temp_state } from "$lib/temporary-storage.svelte"
+import type { Emote } from "./emotes"
 import { global_emotes } from "./emotes"
 
 interface Props {
@@ -52,10 +54,23 @@ function random_helper(a: number, b: number): number {
     return Math.random() * (max - min) + min
 }
 
-function delete_local_emote(emote: string) {
+function delete_local_emote(emote: Emote) {
     perma_state.global_settings.personal_emotes = perma_state.global_settings.personal_emotes.filter(
-        (item) => item !== emote,
+        (item) => item.url !== emote.url,
     )
+}
+
+function handle_toggle_favourite_emote(emote: Emote) {
+    const favourite_emotes = perma_state.global_settings.favourite_emotes
+    const exists = favourite_emotes.some((e) => e.url === emote.url)
+
+    perma_state.global_settings.favourite_emotes = exists
+        ? favourite_emotes.filter((e) => e.url !== emote.url)
+        : [...favourite_emotes, emote]
+}
+
+function is_favourite_emote(emote: Emote) {
+    return perma_state.global_settings.favourite_emotes.some((e) => e.url === emote.url)
 }
 
 $effect(() => {
@@ -91,31 +106,69 @@ $effect(() => {
 >
     {#if show_emote_list}
         <div class="absolute bottom-10 right-0 bg-gray-900/75 rounded-t-lg p-1 max-h-48 overflow-y-auto ">
-            <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
-                <div class="grow h-px bg-gray-600"></div>
-                <span>Your emotes</span>
-                <div class="grow h-px bg-gray-600"></div>
-            </div>
-            <div class="grid grid-cols-5 gap-2 justify-items-center">
-                {#each perma_state.global_settings.personal_emotes as emote}
-                    <button
-                        onclick={() => {display_emote(emote)}}
-                        onauxclick={() => {delete_local_emote(emote)}}
-                    >
-                        <div class="w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
-                            <img
-                                class="max-w-full max-h-full object-contain select-none"
-                                src={emote}
-                                alt=""
-                                loading="lazy"
+            {#if perma_state.global_settings.favourite_emotes.length}
+                <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
+                    <div class="grow h-px bg-gray-600"></div>
+                    <span>Favourites</span>
+                    <div class="grow h-px bg-gray-600"></div>
+                </div>
+                <div class="grid grid-cols-5 gap-2 justify-items-center">
+                    {#each perma_state.global_settings.favourite_emotes as emote}
+                        <div class="relative w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
+                            <button onclick={() => {display_emote(emote.url)}}>
+                                <img
+                                    class="max-w-full max-h-full object-contain"
+                                    src={emote.url}
+                                    alt=""
+                                    title={emote.name}
+                                    loading="lazy"
+                                >
+                            </button>
+                            <button
+                                class="absolute top-0 right-0 h-3 w-3 text-yellow-300"
+                                onclick={() => {handle_toggle_favourite_emote(emote)}}
+                                title="Add/remove from favourites"
                             >
+                                <StarIcon filled={is_favourite_emote(emote)} />
+                            </button>
                         </div>
-                    </button>
-                {/each}
-            </div>
+                    {/each}
+                </div>
+            {/if}
+            {#if perma_state.global_settings.personal_emotes.length}
+                <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
+                    <div class="grow h-px bg-gray-600"></div>
+                    <span>Yours</span>
+                    <div class="grow h-px bg-gray-600"></div>
+                </div>
+                <div class="grid grid-cols-5 gap-2 justify-items-center">
+                    {#each perma_state.global_settings.personal_emotes as emote}
+                        <div class="relative w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
+                            <button
+                                onclick={() => {display_emote(emote.url)}}
+                                onauxclick={() => delete_local_emote(emote)}
+                            >
+                                <img
+                                    class="max-w-full max-h-full object-contain"
+                                    src={emote.url}
+                                    alt=""
+                                    loading="lazy"
+                                >
+                            </button>
+                            <button
+                                class="absolute top-0 right-0 h-3 w-3 text-yellow-300"
+                                onclick={() => {handle_toggle_favourite_emote(emote)}}
+                                title="Add/remove from favourites"
+                            >
+                                <StarIcon filled={is_favourite_emote(emote)} />
+                            </button>
+                        </div>
+                    {/each}
+                </div>
+            {/if}
             <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
                 <div class="grow h-px bg-gray-600"></div>
-                <span>Global emotes</span>
+                <span>Global</span>
                 <div class="grow h-px bg-gray-600"></div>
             </div>
             <div
@@ -123,8 +176,8 @@ $effect(() => {
                 data-testid="global-emotes"
             >
                 {#each global_emotes as emote}
-                    <button onclick={() => {display_emote(emote.url)}}>
-                        <div class="w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
+                    <div class="relative w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
+                        <button onclick={() => {display_emote(emote.url)}}>
                             <img
                                 class="max-w-full max-h-full object-contain"
                                 src={emote.url}
@@ -132,8 +185,15 @@ $effect(() => {
                                 title={emote.name}
                                 loading="lazy"
                             >
-                        </div>
-                    </button>
+                        </button>
+                        <button
+                            class="absolute top-0 right-0 h-3 w-3 text-yellow-300"
+                            onclick={() => {handle_toggle_favourite_emote(emote)}}
+                            title="Add/remove from favourites"
+                        >
+                            <StarIcon filled={is_favourite_emote(emote)} />
+                        </button>
+                    </div>
                 {/each}
             </div>
         </div>

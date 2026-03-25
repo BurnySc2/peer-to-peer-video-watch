@@ -7,13 +7,25 @@ const GlobalSettings = z
         peer_id: z.string(),
         volume: z.number(),
         subtitles_font_size_rem: z.number(),
-        personal_emotes: z.array(z.string()),
+        personal_emotes: z.array(
+            z.object({
+                name: z.string(),
+                url: z.string(),
+            }),
+        ),
+        favourite_emotes: z.array(
+            z.object({
+                name: z.string(),
+                url: z.string(),
+            }),
+        ),
     })
     .catch({
         peer_id: "",
         volume: 0.5,
         subtitles_font_size_rem: 1.25,
         personal_emotes: [],
+        favourite_emotes: [],
     })
 const RoomData = z.object({}).catch({})
 
@@ -44,6 +56,7 @@ export const perma_state = $state<TPermaState>({
         volume: 0.5,
         subtitles_font_size_rem: 1.25,
         personal_emotes: [],
+        favourite_emotes: [],
     },
     room_data: {},
 })
