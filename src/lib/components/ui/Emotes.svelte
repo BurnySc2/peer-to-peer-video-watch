@@ -58,6 +58,10 @@ function delete_local_emote(emote: Emote) {
     perma_state.global_settings.personal_emotes = perma_state.global_settings.personal_emotes.filter(
         (item) => item.url !== emote.url,
     )
+
+    perma_state.global_settings.favourite_emotes = perma_state.global_settings.favourite_emotes.filter(
+        (item) => item.url !== emote.url,
+    )
 }
 
 function handle_toggle_favourite_emote(emote: Emote) {
