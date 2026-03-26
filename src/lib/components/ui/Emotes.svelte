@@ -109,7 +109,7 @@ $effect(() => {
     onpointerleave={onMouseLeaveControls}
 >
     {#if show_emote_list}
-        <div class="absolute bottom-10 right-0 bg-gray-900/75 rounded-t-lg p-1 max-h-48 overflow-y-auto ">
+        <div class="absolute bottom-10 right-0 bg-gray-900/75 rounded-t-lg p-1 max-h-48 overflow-y-auto custom-scroll">
             {#if perma_state.global_settings.favourite_emotes.length}
                 <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
                     <div class="grow h-px bg-gray-600"></div>
@@ -119,9 +119,12 @@ $effect(() => {
                 <div class="grid grid-cols-5 gap-2 justify-items-center">
                     {#each perma_state.global_settings.favourite_emotes as emote}
                         <div class="relative w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
-                            <button onclick={() => {display_emote(emote.url)}}>
+                            <button
+                                onclick={() => {display_emote(emote.url)}}
+                                class="w-full h-full"
+                            >
                                 <img
-                                    class="max-w-full max-h-full object-contain"
+                                    class="w-full h-full object-cover"
                                     src={emote.url}
                                     alt=""
                                     title={emote.name}
@@ -151,9 +154,10 @@ $effect(() => {
                             <button
                                 onclick={() => {display_emote(emote.url)}}
                                 onauxclick={() => delete_local_emote(emote)}
+                                class="w-full h-full"
                             >
                                 <img
-                                    class="max-w-full max-h-full object-contain"
+                                    class="w-full h-full object-cover"
                                     src={emote.url}
                                     alt=""
                                     loading="lazy"
@@ -181,9 +185,12 @@ $effect(() => {
             >
                 {#each global_emotes as emote}
                     <div class="relative w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
-                        <button onclick={() => {display_emote(emote.url)}}>
+                        <button
+                            onclick={() => {display_emote(emote.url)}}
+                            class="w-full h-full"
+                        >
                             <img
-                                class="max-w-full max-h-full object-contain"
+                                class="w-full h-full object-cover"
                                 src={emote.url}
                                 alt=""
                                 title={emote.name}
@@ -203,7 +210,7 @@ $effect(() => {
         </div>
     {:else}
         <button
-            class="absolute right-1 top-11/12 -translate-y-1/2 mr-1 p-1 bg-black/60 rounded-xl hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
+            class="absolute right-1 bottom-6 -translate-y-1/2 mr-1 p-1 bg-black/60 rounded-xl hover:text-blue-400 hover:scale-130 transition-opacity duration-500"
             style="opacity: {controls_opacity};"
             data-testid="open-emote-menu"
             onclick={() => {show_emote_list = !show_emote_list}}
