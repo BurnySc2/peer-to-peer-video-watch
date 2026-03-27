@@ -22,6 +22,8 @@ const TEST_VIDEO_2: VideoInfo = {
     length_s: 5.055,
 }
 
+const TEST_EMOTE = "https://cdn.7tv.app/emote/01G7YR9X5G0003Z50SB3FM5WR4/4x.avif"
+
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -223,6 +225,42 @@ test.describe("solo video player", () => {
 
             // Check vid still has 1.5 playback rate
             await expect(video).toHaveJSProperty("playbackRate", 1.5)
+        })
+    })
+
+    test("personal emote adding/deleting", async ({ page }) => {
+        await page.goto("/video-player")
+        const personal_emotes = page.getByTestId("personal-emotes").locator("img")
+
+        // Test begins with no personal emotes added
+        await expect.poll(async () => personal_emotes.count()).toBe(0)
+
+        await test.step("input emote url", async () => {
+            await add_video_to_playlist(page, TEST_VIDEO_1)
+            const emote_input = page.getByTestId("add-emote")
+            await emote_input.fill(TEST_EMOTE)
+            await expect.poll(async () => emote_input.inputValue()).toBe("")
+        })
+
+        await test.step("check emote is in emote menu", async () => {
+            await page.getByTestId("open-emote-menu").click()
+
+            // Emotes menu should be visible
+            await expect.poll(async () => personal_emotes.count()).toBe(1)
+
+            // Emote we added should be visible
+            const sources = await personal_emotes.evaluateAll((imgs) =>
+                imgs.map((img) => (img as HTMLImageElement).getAttribute("src")),
+            )
+            expect(sources).toContain(TEST_EMOTE)
+        })
+
+        await test.step("delete personal emote", async () => {
+            // Middle click deletes personal emotes
+            personal_emotes.first().click({ button: "middle" })
+
+            // No personal emotes should be visible
+            await expect.poll(async () => personal_emotes.count()).toBe(0)
         })
     })
 })

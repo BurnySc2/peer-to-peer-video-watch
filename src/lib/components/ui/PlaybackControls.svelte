@@ -404,6 +404,7 @@ $effect(() => {
             <input
                 type="text"
                 id="add_emote"
+                data-testid="add-emote"
                 class="border border-gray-600 rounded max-w-full transition-colors duration-300
            {flash ? 'bg-blue-200' : ''}"
                 bind:value={emote_input}

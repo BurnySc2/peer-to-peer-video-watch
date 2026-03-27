@@ -148,7 +148,10 @@ $effect(() => {
                     <span>Yours</span>
                     <div class="grow h-px bg-gray-600"></div>
                 </div>
-                <div class="grid grid-cols-5 gap-2 justify-items-center">
+                <div
+                    class="grid grid-cols-5 gap-2 justify-items-center"
+                    data-testid="personal-emotes"
+                >
                     {#each perma_state.global_settings.personal_emotes as emote}
                         <div class="relative w-8 h-8 flex items-center justify-center cursor-pointer hover:outline">
                             <button
