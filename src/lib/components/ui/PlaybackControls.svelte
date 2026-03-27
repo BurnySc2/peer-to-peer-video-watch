@@ -253,10 +253,6 @@ function handle_emote_submit() {
     })
 }
 
-function delete_local_emotes() {
-    perma_state.global_settings.personal_emotes = []
-}
-
 let remaining = $state(0)
 let timer: ReturnType<typeof setInterval> | undefined
 // Sleep timer - does not broadcast pause
