@@ -405,7 +405,8 @@ $effect(() => {
                 type="text"
                 id="add_emote"
                 data-testid="add-emote"
-                class="border border-gray-600 rounded max-w-full transition-colors duration-300
+                placeholder="Paste emote"
+                class="border-t border-gray-600 max-w-full transition-colors duration-300 text-center p-1
            {flash ? 'bg-blue-200' : ''}"
                 bind:value={emote_input}
                 oninput={handle_emote_submit}
@@ -430,39 +431,24 @@ $effect(() => {
         </div>
     {/if}
 
-    <div class="flex flex-col h-full justify-between space-y-2 col-start-1 col-span-1">
+    <div class="col-start-1 flex flex-col">
         <input
-            class="col-start-2 col-span-2 border border-gray-600 rounded p-2 text-center grow"
+            class="border border-gray-600 rounded p-2 text-center"
             type="url"
             placeholder="New playlist item"
             bind:value={input_new_playlist_url}
         >
-        <div class="flex justify-center space-x-2">
-            <button
-                class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none grow"
-                onclick={add_playlist_item}
-            >
-                Add to playlist
-            </button>
-            <button
-                class="border border-gray-600 rounded hover:bg-blue-400 p-1 select-none grow"
-                onclick={add_jellyfin_season}
-            >
-                Add jellyfin season
-            </button>
-            <!-- TODO Add entire series? -->
-        </div>
     </div>
-    <div class="col-span-3 items-center border border-gray-600 rounded p-2 text-center overflow-x-auto ">
+    <div class="col-start-2 col-span-3 row-span-3 items-center border border-gray-600 rounded p-2 text-center">
         {#if temp_state.playlist.length}
-            <div class="flex flex-col">
+            <div class="flex flex-col h-full">
                 <label
                     class="select-none"
                     for="select-playlist"
                     >Current playlist</label
                 >
                 <select
-                    class="border border-gray-600 rounded p-1"
+                    class="border border-gray-600 rounded p-1 flex-1"
                     id="select-playlist"
                     multiple
                     bind:value={select_playlist_items}
@@ -495,5 +481,22 @@ $effect(() => {
         >
             <TrashIcon />
         </button>
+    </div>
+    <div class="col-start-1 flex flex-col">
+        <button
+            class="border border-gray-600 rounded hover:bg-blue-400 p-2 select-none"
+            onclick={add_playlist_item}
+        >
+            Add to playlist
+        </button>
+    </div>
+    <div class="col-start-1 flex flex-col">
+        <button
+            class="border border-gray-600 rounded hover:bg-blue-400 p-2 select-none"
+            onclick={add_jellyfin_season}
+        >
+            Add jellyfin season
+        </button>
+        <!-- TODO Add entire series? -->
     </div>
 </div>
