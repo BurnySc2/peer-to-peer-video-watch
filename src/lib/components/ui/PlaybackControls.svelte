@@ -240,11 +240,20 @@ function handle_emote_submit() {
                 console.log(`Rejecting, invalid origin: ${emote}`)
                 return
             }
-            if (perma_state.global_settings.personal_emotes.some((e) => e.url === emote_url.toString())) {
+
+            let emote_href = emote_url.href
+
+            // Convert 7tv url to cdn.7tv url
+            if (emote_url.origin === "https://7tv.app") {
+                const emote_id = emote_url.pathname.split("/").at(-1)
+                emote_href = `https://cdn.7tv.app/emote/${emote_id}/4x.avif`
+            }
+
+            if (perma_state.global_settings.personal_emotes.some((e) => e.url === emote_href)) {
                 console.log(`Rejecting, duplicate: ${emote}`)
                 return
             }
-            const new_emote: Emote = { name: "", url: emote_url.toString() }
+            const new_emote: Emote = { name: "", url: emote_href }
             perma_state.global_settings.personal_emotes.push(new_emote)
         } catch {
             console.log(`Invalid url ${emote.trim()}`)

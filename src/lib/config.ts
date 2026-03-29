@@ -3,6 +3,7 @@ export const APP_CONFIG = {
     ready_check_delay_ms: 7000,
     toast_location: "top-right",
     allowed_emote_origins: [
+        "https://7tv.app",
         "https://cdn.7tv.app",
         "https://cdn.betterttv.net",
         "https://media1.tenor.com",
