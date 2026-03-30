@@ -81,11 +81,6 @@ let prev_vid_time: null | number = null
 // Reset subtitle parsing state - MUST be called when switching videos
 export function reset_subtitle_state() {
     current_subtitle_id = null
-    current_text = ""
-    curr_subtitle_start = null
-    curr_subtitle_end = null
-    next_subtitle_start = null
-    next_subtitle_end = null
     prev_vid_time = null
 }
 
@@ -109,7 +104,7 @@ export function update_current_subtitle(subtitles: null | SubtitleItem[] = null)
 
     // We are at an unexpected playback point, possibly due to seeking, so reset.
     if (Math.abs(prev_vid_time - temp_state.video_current_time) > 5) {
-        prev_vid_time = null
+        reset_subtitle_state()
         initialise_subtitles(subtitles)
         return ""
     }

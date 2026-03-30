@@ -115,10 +115,8 @@ async function handle_video_loaded() {
         }
     }
 
-    // Reset subtitles - unnecessary? handle_load_subtitles should take care of this already?
-    temp_state.subtitles.active_url = ""
+    // Reset subtitles
     subtitle_text = ""
-    subtitles = []
     reset_subtitle_state()
 
     subtitles = await handle_load_subtitles()
