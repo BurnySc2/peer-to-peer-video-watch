@@ -208,9 +208,14 @@ function handle_volume_hover(event: PointerEvent) {
     volume_hover_value = percent
 }
 
-function set_subtitle_offset(value: number) {
-    temp_state.subtitles.offset = value
-    send_subtitle_offset({ subtitle_offset: value })
+function set_subtitle_offset(value: string) {
+    const value_as_number = Number(value)
+    if (Number.isNaN(value_as_number)) {
+        return
+    }
+    console.log(value_as_number)
+    temp_state.subtitles.offset = value_as_number
+    send_subtitle_offset({ subtitle_offset: value_as_number })
 }
 
 let flash = $state(false)
@@ -364,12 +369,12 @@ $effect(() => {
                 >Subs offset</label
             >
             <input
-                type="number"
+                type="text"
                 class="border-t border-gray-600 p-1 text-center"
                 id="subtitle_offset"
                 value={temp_state.subtitles.offset}
                 oninput={(e) => {
-                set_subtitle_offset(Number((e.target as HTMLInputElement).value))
+                set_subtitle_offset((e.target as HTMLInputElement).value)
             }}
             >
         </div>
