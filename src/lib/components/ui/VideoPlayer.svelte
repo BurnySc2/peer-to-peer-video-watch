@@ -92,7 +92,7 @@ async function handle_subtitle_update() {
     if (!temp_state.subtitles.active_url) {
         subtitles = await handle_load_subtitles()
     }
-    const new_text = update_current_subtitle(subtitles)
+    const new_text = update_current_subtitle($state.snapshot(subtitles))
     if (new_text !== subtitle_text) {
         subtitle_text = new_text
     }
