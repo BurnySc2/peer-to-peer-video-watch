@@ -7,7 +7,7 @@ import { peer_count, temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
 import { update_progress_for_item_id } from "$lib/utils/fetch_jelly_data"
 import { handle_load_subtitles } from "$lib/utils/subtitles_fetching"
-import { update_current_subtitle } from "$lib/utils/subtitles_parsing"
+import { reset_subtitle_state, update_current_subtitle } from "$lib/utils/subtitles_parsing"
 import NewControls from "./NewControls.svelte"
 import ReadyCheck from "./ReadyCheck.svelte"
 import Sleeping from "./Sleeping.svelte"
@@ -119,6 +119,8 @@ async function handle_video_loaded() {
     temp_state.subtitles.active_url = ""
     subtitle_text = ""
     subtitles = []
+    reset_subtitle_state()
+
     subtitles = await handle_load_subtitles()
 }
 

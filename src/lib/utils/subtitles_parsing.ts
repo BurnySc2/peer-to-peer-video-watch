@@ -77,6 +77,18 @@ function initialise_subtitles(subtitles: SubtitleItem[]) {
 }
 
 let prev_vid_time: null | number = null
+
+// Reset subtitle parsing state - MUST be called when switching videos
+export function reset_subtitle_state() {
+    current_subtitle_id = null
+    current_text = ""
+    curr_subtitle_start = null
+    curr_subtitle_end = null
+    next_subtitle_start = null
+    next_subtitle_end = null
+    prev_vid_time = null
+}
+
 export function update_current_subtitle(subtitles: null | SubtitleItem[] = null): string {
     if (!subtitles || !subtitles.length) {
         return ""
