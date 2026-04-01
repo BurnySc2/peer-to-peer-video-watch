@@ -22,15 +22,17 @@ export function parse_srt(raw_text: string): SubtitleItem[] {
             return
         }
 
+        const subtitle_text = pieces
+            .slice(2)
+            .join("\n")
+            .trim()
+            .replace(/\{\\an8\}/g, "")
+
         subtitles.push({
             id: pieces[0].trim(),
             start_s: srt_time_to_s(start_time.trim()),
             end_s: srt_time_to_s(end_time.trim()),
-            text: pieces
-                .slice(2)
-                .join("\n")
-                .trim()
-                .replace(/\{\\an8\}/g, ""),
+            text: sanitize_subtitle(subtitle_text),
         })
     })
 
@@ -133,4 +135,14 @@ export function update_current_subtitle(subtitles: null | SubtitleItem[] = null)
         current_text = ""
     }
     return current_text
+}
+
+export function sanitize_subtitle(html: string): string {
+    // Remove all tags except i, b, u
+    return (
+        html
+            .replace(/<(?!\/?(i|b|u)\b)[^>]*>/gi, "")
+            // Remove dangerous attributes like onerror / onclick
+            .replace(/\son\w+="[^"]*"/gi, "")
+    )
 }

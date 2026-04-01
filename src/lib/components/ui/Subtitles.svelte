@@ -1,5 +1,6 @@
 <script lang="ts">
 import { perma_state } from "$lib/persistent-storage.svelte"
+import { sanitize_subtitle } from "$lib/utils/subtitles_parsing"
 
 interface Props {
     subtitle_text: string
@@ -17,6 +18,6 @@ let { subtitle_text, enabled }: Props = $props()
         class="inline-block p-2 bg-black/70"
         style="font-size: {perma_state.global_settings.subtitles_font_size_rem}rem"
     >
-        {subtitle_text}
+        {@html sanitize_subtitle(subtitle_text)}
     </div>
 </div>
