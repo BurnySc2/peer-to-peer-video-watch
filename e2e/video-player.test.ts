@@ -11,9 +11,9 @@ type VideoInfo = {
 }
 
 const TEST_VIDEO_1: VideoInfo = {
-    url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    length_formatted: "9:56",
-    length_s: 596.474195,
+    url: "https://dn720709.ca.archive.org/0/items/Sintel/sintel-2048-surround.mp4",
+    length_formatted: "14:48",
+    length_s: 888.064,
 }
 
 const TEST_VIDEO_2: VideoInfo = {
@@ -189,7 +189,7 @@ test.describe("solo video player", () => {
 
         // Let video first frame load or autoplay will trigger for itself (not a problem for users)
         await expect(video).toBeVisible()
-        await expect(video).toHaveJSProperty("readyState", 4)
+        await expect(video).toHaveJSProperty("readyState", 4, { timeout: 10000 })
 
         await test.step("enable autoplay", async () => {
             await page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_2.url)
@@ -230,6 +230,7 @@ test.describe("solo video player", () => {
 
     test("personal emote adding/deleting", async ({ page }) => {
         await page.goto("/video-player")
+        await add_video_to_playlist(page, TEST_VIDEO_2)
         const personal_emotes = page.getByTestId("personal-emotes").locator("img")
 
         // Test begins with no personal emotes added
@@ -504,7 +505,7 @@ test.describe("p2p video player", () => {
         const video_member = member_page.locator("video")
 
         await test.step("set up room and load video", async () => {
-            await add_video_to_playlist(host_page, TEST_VIDEO_1)
+            await add_video_to_playlist(host_page, TEST_VIDEO_2)
 
             // Video is paused initially
             await expect(video_host).toHaveJSProperty("paused", true)
