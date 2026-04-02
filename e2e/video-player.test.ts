@@ -11,7 +11,7 @@ type VideoInfo = {
 }
 
 const TEST_VIDEO_1: VideoInfo = {
-    url: "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4",
+    url: "/BigBuckBunny_320x180.mp4",
     length_formatted: "9:56",
     length_s: 596.458333,
 }
