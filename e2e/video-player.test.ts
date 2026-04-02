@@ -11,9 +11,9 @@ type VideoInfo = {
 }
 
 const TEST_VIDEO_1: VideoInfo = {
-    url: "/BigBuckBunny_320x180.mp4",
-    length_formatted: "9:56",
-    length_s: 596.458333,
+    url: "https://dn720709.ca.archive.org/0/items/Sintel/sintel-2048-surround.mp4",
+    length_formatted: "14:48",
+    length_s: 888.064,
 }
 
 const TEST_VIDEO_2: VideoInfo = {
