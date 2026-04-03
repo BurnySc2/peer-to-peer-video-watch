@@ -15,7 +15,7 @@
         "test:unit": "vitest",
         "pretest": "mkdir -p static/_tests && cp test_vid.mp4 static/_tests/test_vid.mp4",
         "test": "npm run test:unit -- --run && npm run test:e2e",
-        "posttest": "node -e \"if(process.env.GITHUB_ACTIONS==='true'){require('fs').unlinkSync('static/_test/video.mp4');console.log('Deleted test video');}\"",
+        "posttest": "node -e \"if(process.env.GITHUB_ACTIONS==='true'){require('fs').unlinkSync('static/_test/test_vid.mp4');console.log('Deleted test video');}\"",
         "test:e2e": "playwright test"
     },
     "devDependencies": {
