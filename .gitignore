@@ -2,6 +2,7 @@ test-results
 node_modules
 data_return_example.json
 subtitles_example.srt
+static/_tests/test_vid.mp4
 
 # Output
 .output
