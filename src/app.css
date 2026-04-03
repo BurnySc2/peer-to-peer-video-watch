@@ -1,21 +1,31 @@
 @import "tailwindcss";
 
-/* Style scrollbars inside the emote menu */
-.custom-scroll::-webkit-scrollbar {
-    width: 6px;
+@layer base {
+    /* width */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    /* track */
+    ::-webkit-scrollbar-track {
+        background: grey;
+    }
+
+    /* handle */
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.726);
+        border-radius: 8px;
+    }
 }
 
-.custom-scroll::-webkit-scrollbar-track {
+.emote-scroll::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.custom-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
+.emote-scroll::-webkit-scrollbar-thumb {
+    background: rgba(236, 236, 236, 0.493);
     border-radius: 8px;
-}
-
-.custom-scroll::-webkit-scrollbar-button {
-    display: none;
 }
 
 /* Firefox scoped

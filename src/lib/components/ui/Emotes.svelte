@@ -109,7 +109,7 @@ $effect(() => {
     onpointerleave={onMouseLeaveControls}
 >
     {#if show_emote_list}
-        <div class="absolute bottom-10 right-0 bg-gray-900/75 rounded-t-lg p-1 max-h-48 overflow-y-auto custom-scroll">
+        <div class="absolute bottom-10 right-0 bg-gray-900/75 rounded-t-lg p-1 max-h-48 overflow-y-auto emote-scroll">
             {#if perma_state.global_settings.favourite_emotes.length}
                 <div class="flex items-center gap-2 my-2 text-xs text-gray-300 uppercase">
                     <div class="grow h-px bg-gray-600"></div>
