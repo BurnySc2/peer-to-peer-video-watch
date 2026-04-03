@@ -13,7 +13,9 @@
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
         "lint-format": "biome check --write",
         "test:unit": "vitest",
+        "pretest": "cp test_vid.mp4 static/_tests/test_vid.mp4",
         "test": "npm run test:unit -- --run && npm run test:e2e",
+        "posttest": "rm -f static/_tests/test_vid.mp4",
         "test:e2e": "playwright test"
     },
     "devDependencies": {
