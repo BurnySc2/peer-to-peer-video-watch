@@ -213,7 +213,6 @@ function set_subtitle_offset(value: string) {
     if (Number.isNaN(value_as_number)) {
         return
     }
-    console.log(value_as_number)
     temp_state.subtitles.offset = value_as_number
     send_subtitle_offset({ subtitle_offset: value_as_number })
 }
@@ -369,10 +368,12 @@ $effect(() => {
                 >Subs offset</label
             >
             <input
-                type="text"
+                type="number"
+                step="1"
                 class="border-t border-gray-600 p-1 text-center"
                 id="subtitle_offset"
                 value={temp_state.subtitles.offset}
+                onfocus={(e) => e.currentTarget.select()}
                 oninput={(e) => {
                 set_subtitle_offset((e.target as HTMLInputElement).value)
             }}
