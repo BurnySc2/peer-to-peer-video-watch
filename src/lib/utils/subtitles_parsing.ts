@@ -78,12 +78,12 @@ function initialise_subtitles(subtitles: SubtitleItem[]) {
     next_subtitle_end = subtitles[current_subtitle_id + 1]?.end_s
 }
 
-let prev_vid_time: null | number = null
+let prev_vid_subtitle_time: null | number = null
 
 // Reset subtitle parsing state - MUST be called when switching videos
 export function reset_subtitle_state() {
     current_subtitle_id = null
-    prev_vid_time = null
+    prev_vid_subtitle_time = null
 }
 
 export function update_current_subtitle(subtitles: null | SubtitleItem[] = null): string {
@@ -100,23 +100,20 @@ export function update_current_subtitle(subtitles: null | SubtitleItem[] = null)
         return ""
     }
 
-    if (prev_vid_time === null) {
-        prev_vid_time = temp_state.video_current_time
+    const current_time_with_offset = temp_state.video_current_time + temp_state.subtitles.offset
+    if (prev_vid_subtitle_time === null) {
+        prev_vid_subtitle_time = current_time_with_offset
     }
 
     // We are at an unexpected playback point, possibly due to seeking, so reset.
-    if (Math.abs(prev_vid_time - temp_state.video_current_time) > 5) {
+    if (Math.abs(prev_vid_subtitle_time - current_time_with_offset) > 3) {
         reset_subtitle_state()
         initialise_subtitles(subtitles)
         return ""
     }
-    prev_vid_time = temp_state.video_current_time
-
-    const current_time_with_offset = temp_state.video_current_time + temp_state.subtitles.offset
-    // console.log(`offset: ${temp_state.subtitles.offset}, curr_offset_time: ${current_time_with_offset}, ends at ${curr_subtitle_end}`)
+    prev_vid_subtitle_time = current_time_with_offset
 
     if (current_time_with_offset > curr_subtitle_end) {
-        // console.log("Next sub triggered")
         current_subtitle_id += 1
         curr_subtitle_start = next_subtitle_start
         curr_subtitle_end = next_subtitle_end
