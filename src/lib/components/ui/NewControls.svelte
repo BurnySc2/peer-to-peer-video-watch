@@ -213,6 +213,7 @@ function toggle_custom_subtitles() {
     </button>
     <button
         class="ml-auto hover:text-blue-400 hover:scale-130 transition"
+        title={`Peers: ${Object.keys(temp_state.peer_connections).length}`}
         onclick={p2p_send_ready_check}
         aria-label="Ready check"
         data-testid="ready-check"
