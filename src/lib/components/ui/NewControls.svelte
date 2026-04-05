@@ -183,7 +183,11 @@ function toggle_custom_subtitles() {
             step="0.01"
             value={temp_state.video_current_time || 0}
             oninput={(e) => {
-                seek_to_time((e.target as HTMLInputElement).valueAsNumber)
+                const value = seek_hover_percent > 0
+                    ? temp_state.video_duration * seek_hover_percent/100
+                    : (e.target as HTMLInputElement).valueAsNumber
+
+                seek_to_time(value)
             }}
         >
         {#if seek_hover_value !== null}
