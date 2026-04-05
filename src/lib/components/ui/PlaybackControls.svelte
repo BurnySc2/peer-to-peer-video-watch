@@ -340,8 +340,6 @@ $effect(() => {
             <div
                 class="relative px-2"
                 role="presentation"
-                onpointermove={handle_volume_hover}
-                onpointerleave={() => (volume_hover_value = null)}
             >
                 <input
                     class="w-full"
@@ -349,7 +347,16 @@ $effect(() => {
                     min="0"
                     max="1"
                     step="0.01"
+                    onpointermove={handle_volume_hover}
+                    onpointerleave={() => (volume_hover_value = null)}
                     bind:value={perma_state.global_settings.volume}
+                    oninput={(e) => {
+                        if (volume_hover_value === null) {
+                            perma_state.global_settings.volume = (e.currentTarget as HTMLInputElement).valueAsNumber
+                            return
+                        }
+                        perma_state.global_settings.volume = volume_hover_value
+                    }}
                 >
                 {#if volume_hover_value !== null}
                     <div
