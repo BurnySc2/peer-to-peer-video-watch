@@ -142,6 +142,7 @@ test.describe("solo video player", () => {
             await expect(page.getByRole("button", { name: /fullscreen/i })).toBeVisible()
             await expect(page.getByTestId("current-time")).toHaveText("0:00")
             await expect(page.getByTestId("total-time")).toHaveText(TEST_VIDEO_1.length_formatted)
+            await expect(page.getByTestId("ready-check")).toHaveAttribute("title", "Peers: 0")
         })
 
         await test.step("in video controls work", async () => {
@@ -320,66 +321,78 @@ test.describe("p2p video player", () => {
     })
 
     test("sync controls", async () => {
-        // Host adds vid to playlist
-        await host_page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.url)
-        await host_page.getByRole("button", { name: /add to playlist/i }).click()
-
-        // Member sees vid in playlist
-        await expect(member_page.getByRole("option", { name: TEST_VIDEO_1.url })).toBeVisible()
-
-        // Video loads for both
-        await expect(host_page.locator("video")).toBeVisible()
-        await expect(member_page.locator("video")).toBeVisible()
         const video1 = host_page.locator("video")
         const video2 = member_page.locator("video")
 
-        // Host presses seek forward
-        await host_page.getByTestId("seek-forward").click({ clickCount: 2 })
-        await expect(member_page.getByTestId("current-time")).toHaveText(/0:20|0:21/)
+        await test.step("host adds vid to playlist", async () => {
+            await host_page.getByPlaceholder(/new playlist item/i).fill(TEST_VIDEO_1.url)
+            await host_page.getByRole("button", { name: /add to playlist/i }).click()
 
-        // Host presses play, member video plays --- might break if browser autoplay disallowed
-        await host_page.getByTestId("player-play").click()
-        await expect(video2).toHaveJSProperty("paused", false)
+            // Member sees vid in playlist
+            await expect(member_page.getByRole("option", { name: TEST_VIDEO_1.url })).toBeVisible()
+        })
 
-        // Member presses pause, host pauses
-        await member_page.getByTestId("player-pause").click()
-        await expect(video1).toHaveJSProperty("paused", true)
+        await test.step("video loads for both", async () => {
+            await expect(host_page.locator("video")).toBeVisible()
+            await expect(member_page.locator("video")).toBeVisible()
+        })
 
-        // Host presses seek back
-        await host_page.getByTestId("seek-back").click({ clickCount: 3 })
-        await expect(member_page.getByTestId("current-time")).toHaveText("0:00")
+        await test.step("host and member both see one connected peer", async () => {
+            await expect(host_page.getByTestId("ready-check")).toHaveAttribute("title", "Peers: 1")
+            await expect(member_page.getByTestId("ready-check")).toHaveAttribute("title", "Peers: 1")
+        })
 
-        // Member increases playback rate, use poll to check all values at once
-        await member_page.selectOption("#playback_speed", "2")
-        await expect
-            .poll(async () => ({
-                v1: await video1.evaluate((v: HTMLVideoElement) => v.playbackRate),
-                v2: await video2.evaluate((v: HTMLVideoElement) => v.playbackRate),
-                s1: await host_page.locator("#playback_speed").inputValue(),
-                s2: await member_page.locator("#playback_speed").inputValue(),
-            }))
-            .toEqual({
-                v1: 2,
-                v2: 2,
-                s1: "2",
-                s2: "2",
-            })
+        await test.step("play, pause and seek sync", async () => {
+            // Host presses seek forward
+            await host_page.getByTestId("seek-forward").click({ clickCount: 2 })
+            await expect(member_page.getByTestId("current-time")).toHaveText(/0:20|0:21/)
 
-        // Host decreases playback rate
-        await host_page.selectOption("#playback_speed", "1")
-        await expect
-            .poll(async () => ({
-                v1: await video1.evaluate((v: HTMLVideoElement) => v.playbackRate),
-                v2: await video2.evaluate((v: HTMLVideoElement) => v.playbackRate),
-                s1: await host_page.locator("#playback_speed").inputValue(),
-                s2: await member_page.locator("#playback_speed").inputValue(),
-            }))
-            .toEqual({
-                v1: 1,
-                v2: 1,
-                s1: "1",
-                s2: "1",
-            })
+            // Host presses play, member video plays --- might break if browser autoplay disallowed
+            await host_page.getByTestId("player-play").click()
+            await expect(video2).toHaveJSProperty("paused", false)
+
+            // Member presses pause, host pauses
+            await member_page.getByTestId("player-pause").click()
+            await expect(video1).toHaveJSProperty("paused", true)
+
+            // Host presses seek back
+            await host_page.getByTestId("seek-back").click({ clickCount: 3 })
+            await expect(member_page.getByTestId("current-time")).toHaveText("0:00")
+        })
+
+        await test.step("playback rate sync", async () => {
+            // Member increases playback rate, use poll to check all values at once
+            await member_page.selectOption("#playback_speed", "2")
+            await expect
+                .poll(async () => ({
+                    v1: await video1.evaluate((v: HTMLVideoElement) => v.playbackRate),
+                    v2: await video2.evaluate((v: HTMLVideoElement) => v.playbackRate),
+                    s1: await host_page.locator("#playback_speed").inputValue(),
+                    s2: await member_page.locator("#playback_speed").inputValue(),
+                }))
+                .toEqual({
+                    v1: 2,
+                    v2: 2,
+                    s1: "2",
+                    s2: "2",
+                })
+
+            // Host decreases playback rate
+            await host_page.selectOption("#playback_speed", "1")
+            await expect
+                .poll(async () => ({
+                    v1: await video1.evaluate((v: HTMLVideoElement) => v.playbackRate),
+                    v2: await video2.evaluate((v: HTMLVideoElement) => v.playbackRate),
+                    s1: await host_page.locator("#playback_speed").inputValue(),
+                    s2: await member_page.locator("#playback_speed").inputValue(),
+                }))
+                .toEqual({
+                    v1: 1,
+                    v2: 1,
+                    s1: "1",
+                    s2: "1",
+                })
+        })
     })
 
     test("member reconnects", async () => {
