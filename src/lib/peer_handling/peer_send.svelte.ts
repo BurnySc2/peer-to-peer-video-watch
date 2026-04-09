@@ -30,6 +30,7 @@ export function p2p_send_video_pause(time: number) {
     console.log("broadcasting pause")
 }
 export function p2p_send_video_seek_to(time: number) {
+    temp_state.video_p2p_max_time = time
     broadcast({ type: "video_seek_to", time: time })
     console.log("broadcasting seek to ", format_time(time))
 }
