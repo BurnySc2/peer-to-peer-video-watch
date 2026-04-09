@@ -7,6 +7,14 @@ const GlobalSettings = z
         peer_id: z.string(),
         volume: z.number(),
         subtitles_font_size_rem: z.number(),
+        recent_playlist_items: z
+            .array(
+                z.object({
+                    title: z.string(),
+                    url: z.string(),
+                }),
+            )
+            .default([]),
         personal_emotes: z.array(
             z.object({
                 name: z.string(),
@@ -24,6 +32,7 @@ const GlobalSettings = z
         peer_id: "",
         volume: 0.5,
         subtitles_font_size_rem: 1.25,
+        recent_playlist_items: [],
         personal_emotes: [],
         favourite_emotes: [],
     })
@@ -43,6 +52,12 @@ export type TGlobalSettings = z.infer<typeof GlobalSettings>
 export type TRoomData = z.infer<typeof RoomData>
 export type TPermaState = z.infer<typeof PermaState>
 
+export const PlayListItem = z.object({
+    url: z.string(),
+    video_title: z.string(),
+    subtitles_original_url: z.string(),
+})
+
 // Permanent settings here
 // TODO: Room info - playlist, current index, current video time and playback speed
 
@@ -55,6 +70,7 @@ export const perma_state = $state<TPermaState>({
         peer_id: "",
         volume: 0.5,
         subtitles_font_size_rem: 1.25,
+        recent_playlist_items: [],
         personal_emotes: [],
         favourite_emotes: [],
     },
