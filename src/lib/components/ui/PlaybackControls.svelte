@@ -7,6 +7,7 @@ import { perma_state } from "$lib/persistent-storage.svelte"
 import { peer_count, type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 import { extract_title, fetch_file_data, fetch_season_data } from "$lib/utils/fetch_jelly_data"
+import { update_recent_playlist_items, update_title_playlist_items } from "$lib/utils/playlist"
 import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
 import type { Emote } from "./emotes"
@@ -41,6 +42,11 @@ async function fetch_metadata(jellyfin_item_url: string): Promise<{
     const metadata = await fetch_file_data(jellyfin_item_url)
     const video_title = extract_title(metadata)
     const subtitles_original_url = get_subs_url(jellyfin_item_url, metadata)
+
+    // For dropdown of recent playlist items
+    if (video_title) {
+        update_title_playlist_items(jellyfin_item_url, video_title)
+    }
     return { video_title, subtitles_original_url }
 }
 
@@ -119,6 +125,8 @@ async function add_playlist_item(_event: Event) {
         playlist_index: temp_state.playlist_index,
     })
 
+    update_recent_playlist_items(new_playlist_url)
+
     // Fetch titles and subs, sync after all have been fetched
     fetch_metadata_for_playlist()
 }
@@ -158,6 +166,8 @@ async function add_jellyfin_season(_event: Event) {
         playlist: temp_state.playlist,
         playlist_index: temp_state.playlist_index,
     })
+
+    update_recent_playlist_items(new_playlist_url)
 
     // Fetch titles and subs, sync after all have been fetched
     fetch_metadata_for_playlist()
@@ -266,6 +276,10 @@ function handle_emote_submit() {
     })
 }
 
+function handle_clear_recent_items() {
+    perma_state.global_settings.recent_playlist_items = []
+}
+
 let remaining = $state(0)
 let timer: ReturnType<typeof setInterval> | undefined
 // Sleep timer - does not broadcast pause
@@ -292,6 +306,7 @@ function set_sleep_timer(sleep_time: number) {
         }
     }, 60000)
 }
+let show_dropdown = $state(false)
 
 $effect(() => {
     send_video_set_playback_rate({
@@ -453,13 +468,43 @@ $effect(() => {
         </div>
     {/if}
 
-    <div class="col-start-1 flex flex-col">
+    <div class="relative col-start-1 flex flex-col">
         <input
             class="border border-gray-600 rounded p-2 text-center"
             type="url"
             placeholder="New playlist item"
+            onfocus={() => show_dropdown = true}
+            onblur={() => {setTimeout(() => {
+                show_dropdown = false
+            }, 100);}}
+            oninput={() => show_dropdown = false}
             bind:value={input_new_playlist_url}
         >
+        {#if show_dropdown && perma_state.global_settings.recent_playlist_items.length}
+            <div class="absolute left-0 right-0 mt-12 bg-white border text-black rounded">
+                {#each perma_state.global_settings.recent_playlist_items as item}
+                    <div
+                        class="p-2 hover:bg-gray-100 cursor-pointer truncate"
+                        onmousedown={() => {input_new_playlist_url = item.url}}
+                        aria-label="Select URL"
+                        role="button"
+                        tabindex="0"
+                        title={item.title || item.url}
+                    >
+                        {item.title || item.url}
+                    </div>
+                {/each}
+                <div
+                    class="p-2 hover:bg-red-100 cursor-pointer truncate text-center"
+                    onmousedown={handle_clear_recent_items}
+                    aria-label="Select URL"
+                    role="button"
+                    tabindex="0"
+                >
+                    Clear recent items
+                </div>
+            </div>
+        {/if}
     </div>
     <div class="col-start-2 col-span-3 row-span-3 items-center border border-gray-600 rounded p-2 text-center">
         {#if temp_state.playlist.length}

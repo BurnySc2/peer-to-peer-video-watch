@@ -10,4 +10,5 @@ export const APP_CONFIG = {
     ] as readonly string[],
     emote_send_cooldown_ms: 1_000,
     emote_expire_ms: 12_000,
+    recent_playlist_items_max_length: 5,
 } as const
