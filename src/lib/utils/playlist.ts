@@ -1,24 +1,18 @@
 import { APP_CONFIG } from "$lib/config"
 import { perma_state } from "$lib/persistent-storage.svelte"
 
-// Add url to recent_playlist_items, if title is passed, add/update recent_playlist_items
+// Add url to recent_playlist_items
 // Keep list to fixed length
-export function update_recent_playlist_items(url: string, title: string = ""): void {
+export function add_recent_playlist_item(url: string): void {
     if (!url) {
         return
     }
-    const new_item = { title, url }
+    const new_item = { title: "", url }
     const recent_items = perma_state.global_settings.recent_playlist_items
     const index = recent_items.findIndex((item) => item.url === url)
 
-    // url already in items return, ignore unless adding title
+    // url already in items return
     if (index !== -1) {
-        if (!title) {
-            return
-        }
-        const updated = [...recent_items]
-        updated[index].title = title
-        perma_state.global_settings.recent_playlist_items = updated
         return
     }
 

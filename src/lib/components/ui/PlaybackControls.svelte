@@ -7,7 +7,7 @@ import { perma_state } from "$lib/persistent-storage.svelte"
 import { peer_count, type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
 import { extract_title, fetch_file_data, fetch_season_data } from "$lib/utils/fetch_jelly_data"
-import { update_recent_playlist_items, update_title_playlist_items } from "$lib/utils/playlist"
+import { add_recent_playlist_item, update_title_playlist_items } from "$lib/utils/playlist"
 import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
 import type { Emote } from "./emotes"
@@ -125,7 +125,7 @@ async function add_playlist_item(_event: Event) {
         playlist_index: temp_state.playlist_index,
     })
 
-    update_recent_playlist_items(new_playlist_url)
+    add_recent_playlist_item(new_playlist_url)
 
     // Fetch titles and subs, sync after all have been fetched
     fetch_metadata_for_playlist()
@@ -167,7 +167,7 @@ async function add_jellyfin_season(_event: Event) {
         playlist_index: temp_state.playlist_index,
     })
 
-    update_recent_playlist_items(new_playlist_url)
+    add_recent_playlist_item(new_playlist_url)
 
     // Fetch titles and subs, sync after all have been fetched
     fetch_metadata_for_playlist()
