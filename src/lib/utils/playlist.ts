@@ -11,13 +11,19 @@ export function add_recent_playlist_item(url: string): void {
     const recent_items = perma_state.global_settings.recent_playlist_items
     const index = recent_items.findIndex((item) => item.url === url)
 
-    // url already in items return
+    // url already in items, reorder list and return
     if (index !== -1) {
+        const existing = recent_items[index]
+        const updated = [existing, ...recent_items.filter((item) => item.url !== url)]
+        perma_state.global_settings.recent_playlist_items = updated.slice(
+            0,
+            APP_CONFIG.recent_playlist_items_max_length,
+        )
         return
     }
 
     // add new url
-    const updated = [new_item, ...perma_state.global_settings.recent_playlist_items]
+    const updated = [new_item, ...recent_items]
     perma_state.global_settings.recent_playlist_items = updated.slice(0, APP_CONFIG.recent_playlist_items_max_length)
 }
 
