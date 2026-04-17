@@ -92,22 +92,37 @@ export async function get_me(video_url: string): Promise<JellyfinUser | null> {
     return null
 }
 
-export async function update_progress_for_item_id(video_url: string, progress: number) {
-    console.assert(0 <= progress && progress <= 1, "Progress needs to be between 0 and 1")
-
+async function get_user_item_url(video_url: string): Promise<{ target_url: string; userId: string } | null> {
+    // Both update_progress_for_item_id and get_progress_for_item_id need the same URL and userId.
+    // This helper avoids duplicating the item_id extraction and jellyfin_my_id resolution logic.
+    // Returns null if the userId cannot be resolved (e.g., non-jellyfin URL or API error).
     const [base_url, params] = get_search_params(video_url)
     const item_id = extract_jellyfin_item_id(base_url)
+
     if (temp_state.jellyfin_my_id === null) {
         const me = await get_me(video_url)
         if (!me) {
-            return
+            return null
         }
         temp_state.jellyfin_my_id = me.Id
     }
 
+    return {
+        target_url: `${base_url.origin}/UserItems/${item_id}/UserData?userId=${temp_state.jellyfin_my_id}&api_key=${params.api_key}`,
+        userId: temp_state.jellyfin_my_id,
+    }
+}
+
+export async function update_progress_for_item_id(video_url: string, progress: number) {
+    console.assert(0 <= progress && progress <= 1, "Progress needs to be between 0 and 1")
+
+    const result = await get_user_item_url(video_url)
+    if (!result) {
+        return
+    }
+
     // https://api.jellyfin.org/#tag/Items/operation/UpdateItemUserData
-    const target_url = `${base_url.origin}/UserItems/${item_id}/UserData?userId=${temp_state.jellyfin_my_id}&api_key=${params.api_key}`
-    const _response = await fetch(target_url, {
+    const _response = await fetch(result.target_url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -120,20 +135,14 @@ export async function update_progress_for_item_id(video_url: string, progress: n
 }
 
 export async function get_progress_for_item_id(video_url: string): Promise<number | null> {
-    const [base_url, params] = get_search_params(video_url)
-    const item_id = extract_jellyfin_item_id(base_url)
-    if (temp_state.jellyfin_my_id === null) {
-        const me = await get_me(video_url)
-        if (!me) {
-            return null
-        }
-        temp_state.jellyfin_my_id = me.Id
+    const result = await get_user_item_url(video_url)
+    if (!result) {
+        return null
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItemUserData
-    const target_url = `${base_url.origin}/UserItems/${item_id}/UserData?userId=${temp_state.jellyfin_my_id}&api_key=${params.api_key}`
     try {
-        const response = await fetch(target_url)
+        const response = await fetch(result.target_url)
         if (response.ok) {
             const data = await response.json()
             return data.PlayedPercentage !== null ? data.PlayedPercentage / 100 : null
