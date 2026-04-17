@@ -118,3 +118,28 @@ export async function update_progress_for_item_id(video_url: string, progress: n
         }),
     })
 }
+
+export async function get_progress_for_item_id(video_url: string): Promise<number | null> {
+    const [base_url, params] = get_search_params(video_url)
+    const item_id = extract_jellyfin_item_id(base_url)
+    if (temp_state.jellyfin_my_id === null) {
+        const me = await get_me(video_url)
+        if (!me) {
+            return null
+        }
+        temp_state.jellyfin_my_id = me.Id
+    }
+
+    // https://api.jellyfin.org/#tag/Items/operation/GetItemUserData
+    const target_url = `${base_url.origin}/UserItems/${item_id}/UserData?userId=${temp_state.jellyfin_my_id}&api_key=${params.api_key}`
+    try {
+        const response = await fetch(target_url)
+        if (response.ok) {
+            const data = await response.json()
+            return data.PlayedPercentage !== null ? data.PlayedPercentage / 100 : null
+        }
+    } catch (err) {
+        console.warn("get_progress_for_item_id fetch failed:", err)
+    }
+    return null
+}

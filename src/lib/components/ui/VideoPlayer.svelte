@@ -5,7 +5,7 @@ import { p2p_send_playlist_set, p2p_send_ready_check } from "$lib/peer_handling/
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { peer_count, temp_state } from "$lib/temporary-storage.svelte"
 import type { SubtitleItem } from "$lib/types/subtitle_item"
-import { update_progress_for_item_id } from "$lib/utils/fetch_jelly_data"
+import { get_progress_for_item_id, update_progress_for_item_id } from "$lib/utils/fetch_jelly_data"
 import { handle_load_subtitles } from "$lib/utils/subtitles_fetching"
 import { reset_subtitle_state, update_current_subtitle } from "$lib/utils/subtitles_parsing"
 import NewControls from "./NewControls.svelte"
@@ -104,6 +104,14 @@ async function handle_video_loaded() {
     // Reset catch up
     temp_state.video_p2p_max_time = 0
     temp_state.is_catching_up = false
+
+    // Restore playback progress for solo watching
+    if (!peer_count()) {
+        const progress = await get_progress_for_item_id(temp_state.playlist[temp_state.playlist_index].url)
+        if (progress !== null && progress > 0 && temp_state.video_element) {
+            temp_state.video_element.currentTime = progress * temp_state.video_duration
+        }
+    }
 
     // Actions for autoplay
     // When video is loaded, if in group send ready check, if solo just play
