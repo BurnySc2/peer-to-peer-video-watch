@@ -2,46 +2,41 @@ import * as z from "zod"
 import { browser } from "$app/environment"
 
 // Zod
-const GlobalSettings = z
-    .object({
-        peer_id: z.string(),
-        volume: z.number(),
-        subtitles_font_size_rem: z.number(),
-        recent_playlist_items: z
-            .array(
-                z.object({
-                    title: z.string(),
-                    url: z.string(),
-                }),
-            )
-            .default([]),
-        personal_emotes: z.array(
+const GlobalSettings = z.object({
+    peer_id: z.string().default(""),
+    volume: z.number().default(0.5),
+    subtitles_font_size_rem: z.number().default(1.25),
+    recent_playlist_items: z
+        .array(
+            z.object({
+                title: z.string(),
+                url: z.string(),
+            }),
+        )
+        .default([]),
+    personal_emotes: z
+        .array(
             z.object({
                 name: z.string(),
                 url: z.string(),
             }),
-        ),
-        favourite_emotes: z.array(
+        )
+        .default([]),
+    favourite_emotes: z
+        .array(
             z.object({
                 name: z.string(),
                 url: z.string(),
             }),
-        ),
-    })
-    .catch({
-        peer_id: "",
-        volume: 0.5,
-        subtitles_font_size_rem: 1.25,
-        recent_playlist_items: [],
-        personal_emotes: [],
-        favourite_emotes: [],
-    })
-const RoomData = z.object({}).catch({})
+        )
+        .default([]),
+})
+const RoomData = z.object({}).default({})
 
 const PermaState = z.object({
     loading: z.object({
-        global_settings: true,
-        room_data: true,
+        global_settings: z.boolean(),
+        room_data: z.boolean(),
     }),
     global_settings: GlobalSettings,
     room_data: RoomData,
@@ -66,15 +61,9 @@ export const perma_state = $state<TPermaState>({
         global_settings: true,
         room_data: true,
     },
-    global_settings: {
-        peer_id: "",
-        volume: 0.5,
-        subtitles_font_size_rem: 1.25,
-        recent_playlist_items: [],
-        personal_emotes: [],
-        favourite_emotes: [],
-    },
-    room_data: {},
+    // Each value in GlobalSettings and RoomData should have a default
+    global_settings: GlobalSettings.parse({}),
+    room_data: RoomData.parse({}),
 })
 
 $effect.root(() => {
