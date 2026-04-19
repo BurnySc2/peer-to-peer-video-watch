@@ -110,7 +110,11 @@ async function get_user_item_url(video_url: string): Promise<string | null> {
     return `${base_url.origin}/UserItems/${item_id}/UserData?userId=${temp_state.jellyfin_my_id}&api_key=${params.api_key}`
 }
 
-export async function update_progress_for_item_id(video_url: string, progress: number) {
+export async function update_progress_for_item_id(
+    video_url: string,
+    progress: number,
+    video_current_time_seconds: number,
+) {
     console.assert(0 <= progress && progress <= 1, "Progress needs to be between 0 and 1")
 
     const target_url = await get_user_item_url(video_url)
@@ -125,7 +129,7 @@ export async function update_progress_for_item_id(video_url: string, progress: n
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            PlayedPercentage: progress !== 1 ? 100 * progress : null,
+            PlaybackPositionTicks: video_current_time_seconds * 10_000_000,
             Played: progress === 1 ? true : null,
         }),
     })

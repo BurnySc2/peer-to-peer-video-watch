@@ -134,7 +134,7 @@ async function handle_video_loaded() {
 function handle_video_end() {
     // In jellyfin, mark the video as "watched" when watching solo
     if (!peer_count()) {
-        update_progress_for_item_id(temp_state.playlist[temp_state.playlist_index].url, 1)
+        update_progress_for_item_id(temp_state.playlist[temp_state.playlist_index].url, 1, 0)
     }
 
     if (!temp_state.autoplay) {
@@ -158,7 +158,11 @@ onMount(() => {
         }
         const progress = temp_state.video_current_time / temp_state.video_duration
         if (progress < 0.9 && !temp_state.video_state_paused) {
-            update_progress_for_item_id(temp_state.playlist[temp_state.playlist_index].url, progress)
+            update_progress_for_item_id(
+                temp_state.playlist[temp_state.playlist_index].url,
+                progress,
+                temp_state.video_current_time,
+            )
         }
     }, 30_000)
 

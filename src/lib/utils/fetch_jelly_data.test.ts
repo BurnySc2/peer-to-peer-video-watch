@@ -221,10 +221,10 @@ describe("update_progress_for_item_id test", () => {
 
         const fetch_mock = vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true } as Response)
         const body_mock = JSON.stringify({
-            PlayedPercentage: 100 * input_progress,
+            PlaybackPositionTicks: 30 * 10_000_000,
             Played: null,
         })
-        await update_progress_for_item_id(input_url, input_progress)
+        await update_progress_for_item_id(input_url, input_progress, 30)
 
         const [url, options] = fetch_mock.mock.calls[0]
 
@@ -238,10 +238,10 @@ describe("update_progress_for_item_id test", () => {
         const fetch_mock = vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true } as Response)
 
         const body_mock = JSON.stringify({
-            PlayedPercentage: null,
+            PlaybackPositionTicks: 0,
             Played: true,
         })
-        await update_progress_for_item_id(input_url, input_progress)
+        await update_progress_for_item_id(input_url, input_progress, 0)
 
         const [url, options] = fetch_mock.mock.calls[0]
 
