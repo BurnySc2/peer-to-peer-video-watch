@@ -182,7 +182,10 @@ onMount(() => {
     onpointerdown={debounce_mouse_move}
 >
     {#if temp_state.playlist_index === -1}
-        <div class="p-6 w-full text-center text-xl">Enter a link below to begin...</div>
+        <div class="flex flex-col w-full p-6 text-center text-xl">
+            <div>Enter a link below to begin...</div>
+            <div>Peers: {Object.keys(temp_state.peer_connections).length}</div>
+        </div>
     {:else}
         {#if temp_state.is_sleeping}
             <Sleeping />
