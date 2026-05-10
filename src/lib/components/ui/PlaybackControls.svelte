@@ -567,10 +567,10 @@ onMount(() => {
             Add to playlist
         </button>
     </div>
-    <div class="row-span-2 items-center border border-gray-600 rounded p-2 text-center">
+    <div class="row-span-2 items-center border border-gray-600 rounded text-center">
         <div class="flex flex-col h-full">
-            <div>Peer status</div>
-            <div class="border border-gray-600 rounded p-1 flex-1 text-center">
+            <div class="py-1">Peer status</div>
+            <div class="border-t border-gray-600 p-1 flex-1 text-center">
                 {#each Object.entries(temp_state.peer_connections) as entry}
                     {@const [peer_id, meta] = entry}
                     <PeerStatusRow
