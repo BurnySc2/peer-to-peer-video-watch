@@ -5,7 +5,7 @@ import FullscreenIcon from "$lib/icons/FullscreenIcon.svelte"
 import PauseIcon from "$lib/icons/PauseIcon.svelte"
 import PlayIcon from "$lib/icons/PlayIcon.svelte"
 import { p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte"
-import { temp_state } from "$lib/temporary-storage.svelte"
+import { peer_count, temp_state } from "$lib/temporary-storage.svelte"
 import { format_time } from "$lib/utils/format_time"
 import Emotes from "./Emotes.svelte"
 
@@ -217,7 +217,7 @@ function toggle_custom_subtitles() {
     </button>
     <button
         class="ml-auto hover:text-blue-400 hover:scale-130 transition"
-        title={`Peers: ${Object.keys(temp_state.peer_connections).length}`}
+        title={`Peers: ${peer_count()}`}
         onclick={p2p_send_ready_check}
         aria-label="Ready check"
         data-testid="ready-check"

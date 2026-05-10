@@ -184,7 +184,7 @@ onMount(() => {
     {#if temp_state.playlist_index === -1}
         <div class="flex flex-col w-full p-6 text-center text-xl">
             <div>Enter a link below to begin...</div>
-            <div>Peers: {Object.keys(temp_state.peer_connections).length}</div>
+            <div>Peers: {peer_count()}</div>
         </div>
     {:else}
         {#if temp_state.is_sleeping}
