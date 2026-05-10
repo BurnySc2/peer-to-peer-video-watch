@@ -1,5 +1,5 @@
 <script lang="ts">
-import { untrack } from "svelte"
+import { onMount, untrack } from "svelte"
 import { APP_CONFIG } from "$lib/config"
 import PlayIcon from "$lib/icons/PlayIcon.svelte"
 import TrashIcon from "$lib/icons/TrashIcon.svelte"
@@ -314,6 +314,15 @@ $effect(() => {
         time: untrack(() => temp_state.video_current_time),
     })
 })
+
+let now = $state(0)
+onMount(() => {
+    const interval = setInterval(() => {
+        now = Date.now()
+    }, 1000)
+
+    return () => clearInterval(interval)
+})
 </script>
 
 <div class="grid grid-cols-5 gap-4 max-w-1/2 pb-2">
@@ -556,6 +565,22 @@ $effect(() => {
         >
             Add to playlist
         </button>
+    </div>
+    <div class="row-span-2 items-center border border-gray-600 rounded p-2 text-center">
+        <div class="flex flex-col h-full">
+            <div
+                class=""
+                title="Peer | Last Seen"
+            >
+                Peer status
+            </div>
+            <div class="border border-gray-600 rounded p-1 flex-1 text-center">
+                {#each Object.entries(temp_state.peer_connections) as entry}
+                    {@const [peer_id, meta] = entry}
+                    <div title={peer_id}>{peer_id.slice(-4)} | {Math.floor((now-meta.last_seen)/1000)}</div>
+                {/each}
+            </div>
+        </div>
     </div>
     <div class="col-start-1 flex flex-col">
         <button
