@@ -6,7 +6,7 @@ import type { TMessage } from "$lib/types/peer_to_peer"
 import { format_time } from "$lib/utils/format_time"
 
 export function broadcast(data: TMessage) {
-    Object.values(temp_state.peer_connections).forEach((conn) => {
+    Object.values(temp_state.peer_connections).forEach(({ conn }) => {
         if (conn.open) {
             connection_send_validated(conn, data)
         }

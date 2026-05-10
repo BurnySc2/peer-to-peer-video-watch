@@ -1,6 +1,11 @@
 import type { DataConnection } from "peerjs"
 import * as z from "zod"
 
+export type PeerConnectionMeta = {
+    conn: DataConnection
+    last_seen: number
+}
+
 // Zod
 export const PlayListItem = z.object({
     url: z.string(),
@@ -18,7 +23,7 @@ const TempState = z.object({
     playlist_index: z.number(),
     autoplay: z.boolean(),
     ready_peers: z.array(z.string()),
-    peer_connections: z.record(z.string(), z.custom<DataConnection>()),
+    peer_connections: z.record(z.string(), z.custom<PeerConnectionMeta>()),
     subtitles: z.object({
         enabled: z.boolean(),
         active_url: z.string(),

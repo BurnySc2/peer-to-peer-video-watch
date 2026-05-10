@@ -32,6 +32,12 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
 
     // biome-ignore lint/suspicious/noExplicitAny: data may be anything
     conn.on("data", (data: any) => {
+        const peer_id = conn.peer
+
+        if (temp_state.peer_connections[peer_id]) {
+            temp_state.peer_connections[peer_id].last_seen = Date.now()
+        }
+
         const data_validated: TMessage = Message.parse(data)
         switch (data_validated.type) {
             case "init_connect": {
@@ -215,10 +221,13 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
     // Prevent duplicate connections if peers connect at same time
     if (temp_state.peer_connections[conn.peer]) {
         console.log("Duplicate connection, closing old one ", conn.peer)
-        temp_state.peer_connections[conn.peer].close()
+        temp_state.peer_connections[conn.peer].conn.close()
     }
     // Add to our list of active connections
-    temp_state.peer_connections[conn.peer] = conn
+    temp_state.peer_connections[conn.peer] = {
+        conn,
+        last_seen: Date.now(),
+    }
 }
 
 function remove_peer(peer_id: string) {

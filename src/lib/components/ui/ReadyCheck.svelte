@@ -94,13 +94,13 @@ $effect(() => {
                     {/if}
                 </li>
 
-                {#each Object.values(temp_state.peer_connections) as con, i (con.peer)}
+                {#each Object.values(temp_state.peer_connections) as { conn, last_seen }, i (conn.peer)}
                     <li
-                        id={con.peer}
+                        id={conn.peer}
                         class="flex justify-between text-gray-700"
                     >
                         <span>Peer {i + 1}</span>
-                        {#if temp_state.ready_peers.includes(con.peer)}
+                        {#if temp_state.ready_peers.includes(conn.peer)}
                             <span>✅</span>
                         {:else}
                             <span class="text-green-600 font-semibold">⏳</span>
