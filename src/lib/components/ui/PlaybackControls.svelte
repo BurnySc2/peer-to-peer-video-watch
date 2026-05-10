@@ -516,16 +516,16 @@ onMount(() => {
             </div>
         {/if}
     </div>
-    <div class="col-start-2 col-span-3 row-span-3 items-center border border-gray-600 rounded p-2 text-center">
+    <div class="col-start-2 col-span-3 row-span-3 items-center border border-gray-600 rounded text-center">
         {#if temp_state.playlist.length}
             <div class="flex flex-col h-full">
                 <label
-                    class="select-none"
+                    class="select-none p-2"
                     for="select-playlist"
                     >Current playlist</label
                 >
                 <select
-                    class="border border-gray-600 rounded p-1 flex-1"
+                    class="border-t border-gray-600 p-1 flex-1"
                     id="select-playlist"
                     multiple
                     bind:value={select_playlist_items}
