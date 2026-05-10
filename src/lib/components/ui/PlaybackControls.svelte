@@ -11,6 +11,7 @@ import { add_recent_playlist_item, update_title_playlist_items } from "$lib/util
 import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
 import type { Emote } from "./emotes"
+import PeerStatusRow from "./PeerStatusRow.svelte"
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
@@ -568,16 +569,15 @@ onMount(() => {
     </div>
     <div class="row-span-2 items-center border border-gray-600 rounded p-2 text-center">
         <div class="flex flex-col h-full">
-            <div
-                class=""
-                title="Peer | Last Seen"
-            >
-                Peer status
-            </div>
+            <div>Peer status</div>
             <div class="border border-gray-600 rounded p-1 flex-1 text-center">
                 {#each Object.entries(temp_state.peer_connections) as entry}
                     {@const [peer_id, meta] = entry}
-                    <div title={peer_id}>{peer_id.slice(-4)} | {Math.floor((now-meta.last_seen)/1000)}</div>
+                    <PeerStatusRow
+                        {peer_id}
+                        last_seen={meta.last_seen}
+                        {now}
+                    />
                 {/each}
             </div>
         </div>

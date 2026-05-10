@@ -75,6 +75,6 @@ export function p2p_send_emote(id: string, emote: string) {
 }
 export function p2p_send_ping() {
     broadcast({ type: "send_ping", peer_id: perma_state.global_settings.peer_id })
-    console.log("Ping send. i am ", perma_state.global_settings.peer_id)
-    console.log("I am connected to ", $state.snapshot(Object.values(temp_state.peer_connections)))
+    // console.log("Ping send. i am ", perma_state.global_settings.peer_id)
+    // console.log("I am connected to ", $state.snapshot(Object.values(temp_state.peer_connections)))
 }

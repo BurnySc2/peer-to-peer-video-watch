@@ -1,5 +1,5 @@
 import { temp_state } from "$lib/temporary-storage.svelte"
-import { p2p_video_current_time_sync } from "./peer_send.svelte"
+import { p2p_send_ping, p2p_video_current_time_sync } from "./peer_send.svelte"
 
 // How often to send current video time to peers
 export const VIDEO_SYNC_INTERVAL_MS = 5000
@@ -35,6 +35,7 @@ export function get_speedup_factor(time_behind_ms: number): number {
 
 export function broadcast_current_time_for_sync() {
     if (temp_state.video_element === null || temp_state.video_state_paused) {
+        p2p_send_ping()
         return
     }
     p2p_video_current_time_sync({ time: temp_state.video_current_time })
