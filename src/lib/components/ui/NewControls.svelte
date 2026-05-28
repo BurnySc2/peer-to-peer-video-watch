@@ -1,4 +1,5 @@
 <script lang="ts">
+import Customslider from "$lib/components/ui/CustomSlider.svelte"
 import BackIcon from "$lib/icons/BackIcon.svelte"
 import ForwardIcon from "$lib/icons/ForwardIcon.svelte"
 import FullscreenIcon from "$lib/icons/FullscreenIcon.svelte"
@@ -174,30 +175,15 @@ function toggle_custom_subtitles() {
         onmousemove={handle_seek_hover}
         onmouseleave={() => seek_hover_value = null}
     >
-        <input
-            type="range"
-            data-testid="seek-slider"
-            class="w-full"
-            min="0"
+        <Customslider
+            min={0}
             max={temp_state.video_duration}
-            step="0.01"
-            value={temp_state.video_current_time || 0}
-            oninput={(e) => {
-                const value = seek_hover_percent > 0
-                    ? temp_state.video_duration * seek_hover_percent/100
-                    : (e.target as HTMLInputElement).valueAsNumber
-
+            bind:value={temp_state.video_current_time}
+            on_change={(value: number) => {
                 seek_to_time(value)
             }}
-        >
-        {#if seek_hover_value !== null}
-            <div
-                class="absolute -top-6 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded pointer-events-none"
-                style="left: {seek_hover_percent}%"
-            >
-                {seek_hover_value}
-            </div>
-        {/if}
+            tooltip_function={format_time}
+        />
     </div>
     <div
         id="remaining-time"
