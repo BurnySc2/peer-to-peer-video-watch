@@ -2,11 +2,13 @@
 import Navigation from "$lib/components/Navigation.svelte"
 import CustomSlider from "$lib/components/ui/CustomSlider.svelte"
 import { LINEAR, LOGARITHMIC, SQUARED } from "$lib/components/ui/CustomSliderConstants"
+import { format_time } from "$lib/utils/format_time"
 
 let linear_value = $state(0.75)
 let squared_value = $state(0.5)
 let logarithmic_value = $state(0.5)
 let volume_value = $state(0.5)
+let time_seconds_value = $state(3667)
 </script>
 
 <Navigation />
@@ -68,6 +70,20 @@ let volume_value = $state(0.5)
                     bind:value={volume_value}
                     on_change={(v) => (volume_value = v)}
                     step_fn={SQUARED}
+                />
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between">
+                    <span class="font-medium">Time-like</span>
+                    <span>{format_time(time_seconds_value)}</span>
+                </div>
+                <CustomSlider
+                    min={0}
+                    max={7200}
+                    bind:value={time_seconds_value}
+                    tooltip_function={format_time}
+                    on_change={(v) => (time_seconds_value = v)}
                 />
             </div>
         </div>
