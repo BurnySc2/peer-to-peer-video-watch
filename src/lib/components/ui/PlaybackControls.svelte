@@ -55,23 +55,33 @@ async function fetch_metadata_for_playlist() {
     // Fetches titles and subtitles for all playlist items, then syncs them with peers
     const playlist = $state.snapshot(temp_state.playlist) // Deepcopy
 
-    for (const item of playlist) {
-        if (item.video_title !== "" && item.subtitles_original_url !== "") {
-            // Already have all info, skip
-            continue
-        }
-        const data = await fetch_metadata(item.url)
-        if (data.video_title !== null) {
-            // Set title
-            item.video_title = data.video_title
-        }
+    const BATCH_SIZE = 50
 
-        if (data.subtitles_original_url !== null) {
-            // Set subtitle url
-            item.subtitles_original_url = data.subtitles_original_url
-        }
+    // Filter items that need metadata
+    const items_needing_metadata = playlist.filter(
+        (item) => item.video_title === "" || item.subtitles_original_url === "",
+    )
+
+    // Process in batches
+    for (let i = 0; i < items_needing_metadata.length; i += BATCH_SIZE) {
+        const batch = items_needing_metadata.slice(i, i + BATCH_SIZE)
+        await Promise.all(
+            batch.map(async (item) => {
+                const data = await fetch_metadata(item.url)
+                if (data.video_title !== null) {
+                    // Set title
+                    item.video_title = data.video_title
+                }
+
+                if (data.subtitles_original_url !== null) {
+                    // Set subtitle url
+                    item.subtitles_original_url = data.subtitles_original_url
+                }
+            }),
+        )
     }
-    // Verify active playlist has same urls and order
+
+    // Verify active playlist has same urls and order after fetch operation
     const current_playlist = $state.snapshot(temp_state.playlist).map((i) => i.url)
     const arrays_equal = (a: string[], b: string[]) =>
         a.length === b.length && a.every((v: string, i: number) => v === b[i])
