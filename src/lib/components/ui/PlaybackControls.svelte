@@ -13,6 +13,8 @@ import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
 import type { Emote } from "./emotes"
 import PeerStatusRow from "./PeerStatusRow.svelte"
+import CustomSlider from "$lib/components/ui/CustomSlider.svelte"
+import { LINEAR, LOGARITHMIC, SQUARED } from "$lib/components/ui/CustomSliderConstants"
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
@@ -463,31 +465,13 @@ onMount(() => {
                 class="relative px-2"
                 role="presentation"
             >
-                <input
-                    class="w-full"
-                    type="range"
-                    min="0"
-                    max="{BRIGHTNESS_MAX_VALUE}"
-                    step="0.01"
-                    onpointermove={handle_brightness_hover}
-                    onpointerleave={() => (brightness_hover_value = null)}
+                <CustomSlider
+                    min={0}
+                    max={5}
                     bind:value={perma_state.global_settings.brightness}
-                    oninput={(e) => {
-                        if (brightness_hover_value === null) {
-                            perma_state.global_settings.brightness = (e.currentTarget as HTMLInputElement).valueAsNumber
-                            return
-                        }
-                        perma_state.global_settings.brightness = brightness_hover_value
-                    }}
-                >
-                {#if brightness_hover_value !== null}
-                    <div
-                        class="absolute -top-6 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded pointer-events-none"
-                        style="left: {(brightness_hover_value / BRIGHTNESS_MAX_VALUE) * 100}%"
-                    >
-                        {Math.round(brightness_hover_value * 100)}%
-                    </div>
-                {/if}
+                    on_change={(value: number) => {perma_state.global_settings.brightness = value}}
+                    step_fn={LINEAR}
+                />
             </div>
         </div>
         <div
