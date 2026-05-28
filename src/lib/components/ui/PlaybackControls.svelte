@@ -12,6 +12,7 @@ import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
 import type { Emote } from "./emotes"
 import PeerStatusRow from "./PeerStatusRow.svelte"
+import Customslider from "$lib/components/ui/CustomSlider.svelte"
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
@@ -389,31 +390,12 @@ onMount(() => {
                 class="relative px-2"
                 role="presentation"
             >
-                <input
-                    class="w-full"
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    onpointermove={handle_volume_hover}
-                    onpointerleave={() => (volume_hover_value = null)}
+                <Customslider
+                    min={0}
+                    max={1}
                     bind:value={perma_state.global_settings.volume}
-                    oninput={(e) => {
-                        if (volume_hover_value === null) {
-                            perma_state.global_settings.volume = (e.currentTarget as HTMLInputElement).valueAsNumber
-                            return
-                        }
-                        perma_state.global_settings.volume = volume_hover_value
-                    }}
-                >
-                {#if volume_hover_value !== null}
-                    <div
-                        class="absolute -top-6 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded pointer-events-none"
-                        style="left: {volume_hover_percent}%"
-                    >
-                        {Math.round(volume_hover_value * 100)}%
-                    </div>
-                {/if}
+                    on_change={(value: number) => {perma_state.global_settings.volume = value}}
+                />
             </div>
         </div>
         <div class="flex flex-col border border-gray-600 rounded">
@@ -658,6 +640,5 @@ onMount(() => {
         >
             Add jellyfin season
         </button>
-        <!-- TODO Add entire series? -->
     </div>
 </div>
