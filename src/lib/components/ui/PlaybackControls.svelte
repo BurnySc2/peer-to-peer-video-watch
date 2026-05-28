@@ -229,6 +229,19 @@ function handle_volume_hover(event: PointerEvent) {
     volume_hover_value = percent
 }
 
+let brightness_hover_value = $state<number | null>(null)
+const BRIGHTNESS_MAX_VALUE = 2
+function handle_brightness_hover(event: PointerEvent) {
+    const target = event.currentTarget as HTMLElement
+    const rect = target.getBoundingClientRect()
+
+    let percent = (BRIGHTNESS_MAX_VALUE * (event.clientX - rect.left)) / rect.width
+
+    percent = Math.min(BRIGHTNESS_MAX_VALUE, Math.max(0, percent))
+
+    brightness_hover_value = percent
+}
+
 function set_subtitle_offset(value: string) {
     const value_as_number = Number(value)
     if (Number.isNaN(value_as_number)) {
@@ -436,7 +449,7 @@ onMount(() => {
             >
         </div>
 
-        <div class="col-start-2 flex flex-col items-center space-y-1 border border-gray-600 rounded p-2">
+        <div class="col-start-1 flex flex-col items-center space-y-1 border border-gray-600 rounded p-2">
             <label
                 class="select-none"
                 for="autoplay"
@@ -448,6 +461,52 @@ onMount(() => {
                 class=""
                 bind:checked={temp_state.autoplay}
             >
+        </div>
+
+        <div class="flex flex-col col-span-2 border border-gray-600 rounded p-1 w-full">
+            <div class="flex justify-between items-center">
+                <label
+                    class="flex-1 text-center select-none"
+                    for="brightness_control"
+                    >Brightness</label
+                >
+                <button
+                    class="border border-gray-600 rounded hover:bg-blue-400 px-2 py-1 text-xs select-none"
+                    onclick={() => {perma_state.global_settings.brightness = 1}}
+                >
+                    Reset
+                </button>
+            </div>
+            <div
+                class="relative px-2"
+                role="presentation"
+            >
+                <input
+                    class="w-full"
+                    type="range"
+                    min="0"
+                    max="{BRIGHTNESS_MAX_VALUE}"
+                    step="0.01"
+                    onpointermove={handle_brightness_hover}
+                    onpointerleave={() => (brightness_hover_value = null)}
+                    bind:value={perma_state.global_settings.brightness}
+                    oninput={(e) => {
+                        if (brightness_hover_value === null) {
+                            perma_state.global_settings.brightness = (e.currentTarget as HTMLInputElement).valueAsNumber
+                            return
+                        }
+                        perma_state.global_settings.brightness = brightness_hover_value
+                    }}
+                >
+                {#if brightness_hover_value !== null}
+                    <div
+                        class="absolute -top-6 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded pointer-events-none"
+                        style="left: {(brightness_hover_value / BRIGHTNESS_MAX_VALUE) * 100}%"
+                    >
+                        {Math.round(brightness_hover_value * 100)}%
+                    </div>
+                {/if}
+            </div>
         </div>
         <div
             class="flex flex-col items-center border border-gray-600 rounded"

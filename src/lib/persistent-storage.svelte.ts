@@ -6,6 +6,7 @@ const GlobalSettings = z.object({
     peer_id: z.string().default(""),
     volume: z.number().default(0.5),
     subtitles_font_size_rem: z.number().default(1.25),
+    brightness: z.number().default(1.0),
     recent_playlist_items: z
         .array(
             z.object({

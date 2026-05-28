@@ -157,7 +157,7 @@ onMount(() => {
             return
         }
         const progress = temp_state.video_current_time / temp_state.video_duration
-        if (progress < 0.9 && !temp_state.video_state_paused) {
+        if (0.01 < progress && progress < 0.9 && !temp_state.video_state_paused) {
             update_progress_for_item_id(
                 temp_state.playlist[temp_state.playlist_index].url,
                 progress,
@@ -193,6 +193,7 @@ onMount(() => {
             <Toaster />
             <video
                 bind:this={temp_state.video_element}
+                style="filter: brightness({perma_state.global_settings.brightness})"
                 class="flex w-full max-h-screen bg-black"
                 muted={false}
                 playsinline
