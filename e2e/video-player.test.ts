@@ -29,13 +29,18 @@ const TEST_EMOTE = "https://cdn.7tv.app/emote/01G7YR9X5G0003Z50SB3FM5WR4/4x.avif
 // ============================================================================
 
 // Seek slider manipulation helper - avoids duplicating this code across tests
-async function seek_video_to(page: Page, targetSeconds: number) {
+async function seek_video_to(page: Page, target_percentage: number) {
     const slider = page.getByTestId("seek-slider")
-    await slider.evaluate((el, value) => {
-        const input = el as HTMLInputElement
-        input.valueAsNumber = value
-        input.dispatchEvent(new InputEvent("input", { bubbles: true }))
-    }, targetSeconds)
+
+    // Get the bounding box to calculate click position
+    const box = await slider.boundingBox()
+    if (!box) {
+        throw new Error("Seek slider not found")
+    }
+
+    // Click at calculated X position within the slider
+    const PADDING_PX = 8
+    await slider.click({ position: { x: box.width * target_percentage + PADDING_PX, y: box.height / 2 } })
 }
 
 async function get_video_duration(video: Locator) {
@@ -205,9 +210,10 @@ test.describe("solo video player", () => {
         })
 
         // Seek towards end of video to test autoplay is working
-        const target = (await get_video_duration(video)) - 2
+        const target_percentage = 0.97
+        const target_seconds = target_percentage * (await get_video_duration(video))
         await test.step("seek close to end of first video", async () => {
-            await seek_video_to(page, target)
+            await seek_video_to(page, target_percentage)
         })
 
         await test.step("check seek success, play and next vid autoplays with correct speed", async () => {
@@ -219,7 +225,10 @@ test.describe("solo video player", () => {
             // Check vid has actually seeked close to end
             await expect
                 .poll(async () => await video.evaluate((v: HTMLVideoElement) => v.currentTime))
-                .toBeGreaterThanOrEqual(target)
+                .toBeGreaterThanOrEqual(target_seconds)
+
+            // Wait for the next video to play
+            await page.waitForTimeout(2_000)
 
             // Check next vid in playlist plays
             await expect.poll(async () => video.evaluate((v: HTMLVideoElement) => v.src)).toBe(TEST_VIDEO_2.url)
@@ -404,17 +413,18 @@ test.describe("p2p video player", () => {
         await expect(video_member).toHaveJSProperty("paused", true)
 
         // Seek video to 30s
-        const target = 30
-        await seek_video_to(host_page, target)
+        const target_seconds = 30
+        const target_percentage = target_seconds / (await get_video_duration(video_host))
+        await seek_video_to(host_page, target_percentage)
 
         // Host and member both seek correctly
         await expect
             .poll(async () => await video_host.evaluate((v: HTMLVideoElement) => v.currentTime))
-            .toBeGreaterThanOrEqual(target)
+            .toBeGreaterThanOrEqual(target_seconds)
 
         await expect
             .poll(async () => await video_member.evaluate((v: HTMLVideoElement) => v.currentTime))
-            .toBeGreaterThanOrEqual(target)
+            .toBeGreaterThanOrEqual(target_seconds)
 
         // Member refreshes page (waituntil: networkidle - might not work here since video is loading)
         await member_page.reload({ waitUntil: "load" })
@@ -422,7 +432,7 @@ test.describe("p2p video player", () => {
         // Members reloads video at correct time
         await expect
             .poll(async () => await video_member.evaluate((v: HTMLVideoElement) => v.currentTime))
-            .toBeGreaterThanOrEqual(target)
+            .toBeGreaterThanOrEqual(target_seconds)
 
         // Member is still part of the group - host presses play, member video plays
         await host_page.getByTestId("player-play").click()
@@ -438,17 +448,18 @@ test.describe("p2p video player", () => {
         await expect(video_member).toHaveJSProperty("paused", true)
 
         // Seek video to 30s
-        const target = 30
-        await seek_video_to(host_page, target)
+        const target_seconds = 30
+        const target_percentage = target_seconds / (await get_video_duration(video_host))
+        await seek_video_to(host_page, target_percentage)
 
         // Host and member both seek correctly
         await expect
             .poll(async () => await video_host.evaluate((v: HTMLVideoElement) => v.currentTime))
-            .toBeGreaterThanOrEqual(target)
+            .toBeGreaterThanOrEqual(target_seconds)
 
         await expect
             .poll(async () => await video_member.evaluate((v: HTMLVideoElement) => v.currentTime))
-            .toBeGreaterThanOrEqual(target)
+            .toBeGreaterThanOrEqual(target_seconds)
 
         // Host refreshes page (waituntil: networkidle - might not work here since video is loading)
         await host_page.reload({ waitUntil: "load" })
@@ -456,7 +467,7 @@ test.describe("p2p video player", () => {
         // Host reloads video at correct time
         await expect
             .poll(async () => await video_host.evaluate((v: HTMLVideoElement) => v.currentTime))
-            .toBeGreaterThanOrEqual(target)
+            .toBeGreaterThanOrEqual(target_seconds)
 
         // Host is still part of the group - host presses play, member video plays
         await host_page.getByTestId("player-play").click()

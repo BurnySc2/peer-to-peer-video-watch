@@ -183,6 +183,7 @@ function toggle_custom_subtitles() {
                 seek_to_time(value)
             }}
             tooltip_function={format_time}
+            testid={"seek-slider"}
         />
     </div>
     <div

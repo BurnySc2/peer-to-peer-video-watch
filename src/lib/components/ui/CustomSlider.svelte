@@ -8,6 +8,7 @@ interface Props {
     on_change: (value: number) => void
     tooltip_function?: (value: number) => string
     step_fn?: (normalized: number) => number
+    testid?: string
 }
 
 function default_tooltip_formatting(value: number): string {
@@ -21,6 +22,7 @@ let {
     on_change,
     tooltip_function = default_tooltip_formatting,
     step_fn = LINEAR,
+    testid = "",
 }: Props = $props()
 
 let element_left = $state(0)
@@ -31,7 +33,6 @@ const PADDING_PX = 8
 
 // ----- Shared hover state -----
 let hover_value = $state<number | null>(null)
-let hover_percent = $state(0)
 
 // ----- Unified calculation -----
 function calc_percent(target: HTMLElement): number {
@@ -58,7 +59,6 @@ function calc_actual(normalized: number): number {
 
 // ----- Handler: update hover from mouse position -----
 function update_hover(percent: number) {
-    hover_percent = percent * 100
     hover_value = calc_actual(percent)
 }
 
@@ -115,6 +115,7 @@ let slider_input_value = $derived(value - min)
         onmouseup={handle_mouse_up}
         onpointermove={handle_pointer_move}
         onpointerleave={() => { hover_value = null }}
+        data-testid={testid}
     >
     {#if hover_value !== null}
         <!-- TODO Adjust style:left value to improve positioning -->
