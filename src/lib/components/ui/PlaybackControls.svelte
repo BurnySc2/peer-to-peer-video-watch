@@ -1,6 +1,8 @@
 <script lang="ts">
 import { onMount, untrack } from "svelte"
 import Customslider from "$lib/components/ui/CustomSlider.svelte"
+import CustomSlider from "$lib/components/ui/CustomSlider.svelte"
+import { LINEAR, LOGARITHMIC, SQUARED } from "$lib/components/ui/CustomSliderConstants"
 import { APP_CONFIG } from "$lib/config"
 import PlayIcon from "$lib/icons/PlayIcon.svelte"
 import TrashIcon from "$lib/icons/TrashIcon.svelte"
@@ -13,8 +15,6 @@ import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
 import type { Emote } from "./emotes"
 import PeerStatusRow from "./PeerStatusRow.svelte"
-import CustomSlider from "$lib/components/ui/CustomSlider.svelte"
-import { LINEAR, LOGARITHMIC, SQUARED } from "$lib/components/ui/CustomSliderConstants"
 
 interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void

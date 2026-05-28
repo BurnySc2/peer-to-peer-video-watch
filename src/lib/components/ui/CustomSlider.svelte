@@ -23,6 +23,7 @@ let {
     step_fn = LINEAR,
 }: Props = $props()
 
+let element_left = $state(0)
 let mouse_x = $state(0)
 let mouse_pressed = $state(false)
 
@@ -63,12 +64,15 @@ function update_hover(percent: number) {
 
 function handle_pointer_move(event: PointerEvent) {
     mouse_x = event.clientX
+    const target = event.currentTarget as HTMLElement
+    const bounding_rect = target.getBoundingClientRect()
+    element_left = bounding_rect.left - PADDING_PX
+
     if (event.buttons === 0) {
         // https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events#determining_button_states
         // Hotfix, sometimes mouse_up is not correctly detected
         mouse_pressed = false
     }
-    const target = event.currentTarget as HTMLElement
     const percent = calc_percent(target)
     update_hover(percent)
     if (!mouse_pressed) {
@@ -116,7 +120,7 @@ let slider_input_value = $derived(value - min)
         <!-- TODO Adjust style:left value to improve positioning -->
         <div
             class="absolute -top-6 -translate-x-1/2 bg-black text-xs px-2 py-1 rounded pointer-events-none"
-            style="left: {hover_percent}%"
+            style="left: {mouse_x - element_left}px"
         >
             {tooltip_function(hover_value)}
         </div>
