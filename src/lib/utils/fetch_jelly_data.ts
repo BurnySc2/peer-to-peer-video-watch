@@ -123,10 +123,12 @@ export async function update_progress_for_item_id(
     }
 
     // https://api.jellyfin.org/#tag/Items/operation/UpdateItemUserData
+    const [_base_url, params] = get_search_params(video_url)
     const _response = await fetch(target_url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+            Authorization: `Token="${params.api_key}"`,
         },
         body: JSON.stringify({
             PlaybackPositionTicks: video_current_time_seconds * 10_000_000,
