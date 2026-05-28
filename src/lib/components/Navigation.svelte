@@ -20,6 +20,11 @@ const is_active = (path: string) => {
             >Peer-to-peer</a
         >
         <a
+            href={resolve('/slider')}
+            class="transition-colors hover:text-gray-300 {is_active('/slider') ? 'font-bold' : ''}"
+            >Slider</a
+        >
+        <a
             href={resolve('/video-player')}
             class="transition-colors hover:text-gray-300 {is_active('/video-player') ? 'font-bold' : ''}"
             >Video player</a
