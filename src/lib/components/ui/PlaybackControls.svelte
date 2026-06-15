@@ -8,7 +8,7 @@ import PlayIcon from "$lib/icons/PlayIcon.svelte"
 import TrashIcon from "$lib/icons/TrashIcon.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { peer_count, type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
-import { PLAYBACK_SPEED_VALUES } from "$lib/types/video_player"
+import { PLAYBACK_SPEED_VALUES, solo_watch_set_player_progress } from "$lib/types/video_player"
 import { extract_title, fetch_file_data, fetch_season_data } from "$lib/utils/fetch_jelly_data"
 import { add_recent_playlist_item, update_title_playlist_items } from "$lib/utils/playlist"
 import { get_subs_url } from "$lib/utils/subtitles_fetching"
@@ -40,9 +40,11 @@ let select_playlist_items = $state<string[]>([])
 async function fetch_metadata(jellyfin_item_url: string): Promise<{
     video_title: string | null
     subtitles_original_url: string | null
+    played_progress: number
+    played_complete: boolean
 }> {
     // TODO: Refactor to external file
-    // Fetches title and subtitles
+    // Fetches title and subtitles as well as metadata
     const metadata = await fetch_file_data(jellyfin_item_url)
     const video_title = extract_title(metadata)
     const subtitles_original_url = get_subs_url(jellyfin_item_url, metadata)
@@ -51,7 +53,12 @@ async function fetch_metadata(jellyfin_item_url: string): Promise<{
     if (video_title) {
         update_title_playlist_items(jellyfin_item_url, video_title)
     }
-    return { video_title, subtitles_original_url }
+    return {
+        video_title,
+        subtitles_original_url,
+        played_progress: (metadata?.UserData.PlaybackPositionTicks ?? 0) / 10_000_000,
+        played_complete: metadata?.UserData.Played ?? false,
+    }
 }
 
 async function fetch_metadata_for_playlist() {
@@ -80,6 +87,9 @@ async function fetch_metadata_for_playlist() {
                     // Set subtitle url
                     item.subtitles_original_url = data.subtitles_original_url
                 }
+                // Update progress for solo watching
+                item.played_progress = data.played_progress
+                item.played_complete = data.played_complete
             }),
         )
     }
@@ -99,6 +109,10 @@ async function fetch_metadata_for_playlist() {
 
     // Update title and subtitle url locally
     temp_state.playlist = playlist
+
+    // Solo watch: Restore playback progress
+    solo_watch_set_player_progress()
+
     // Sync with peers
     send_playlist_set({
         playlist: temp_state.playlist,
@@ -128,6 +142,8 @@ async function add_playlist_item(_event: Event) {
         url: new_playlist_url,
         video_title: "",
         subtitles_original_url: "",
+        played_progress: 0,
+        played_complete: false,
     })
     // If video player is inactive, activate it with first video
     if (temp_state.playlist_index === -1) {

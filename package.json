@@ -23,7 +23,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "^2.4.4",
-        "@playwright/test": "^1.49.1",
+        "@playwright/test": "^1.61.0",
         "@sveltejs/adapter-static": "^3.0.8",
         "@sveltejs/kit": "^2.22.0",
         "@sveltejs/vite-plugin-svelte": "^6.0.0",
@@ -33,7 +33,7 @@
         "globals": "^16.0.0",
         "openapi-typescript": "^7.9.1",
         "peerjs": "^1.5.5",
-        "playwright": "^1.53.0",
+        "playwright": "^1.61.0",
         "svelte": "^5.0.0",
         "svelte-5-french-toast": "^2.0.6",
         "svelte-check": "^4.0.0",

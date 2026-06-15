@@ -131,13 +131,14 @@ export async function update_progress_for_item_id(
             Authorization: `Token="${params.api_key}"`,
         },
         body: JSON.stringify({
-            PlaybackPositionTicks: video_current_time_seconds * 10_000_000,
+            PlaybackPositionTicks: Math.round(video_current_time_seconds) * 10_000_000,
             Played: progress === 1 ? true : null,
         }),
     })
 }
 
-export async function get_progress_for_item_id(video_url: string): Promise<number | null> {
+export async function DEPRECATED_get_progress_for_item_id(video_url: string): Promise<number | null> {
+    // Deprecated: Progress already loaded when metadata is fetched
     const target_url = await get_user_item_url(video_url)
     if (!target_url) {
         return null

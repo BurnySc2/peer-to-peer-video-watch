@@ -1,3 +1,12 @@
+export interface JellyfinUserData {
+    IsFavorite: boolean
+    ItemId: string
+    Key: string
+    PlayCount: number
+    PlaybackPositionTicks: number
+    Played: boolean
+}
+
 export interface JellyfinItem {
     Name: string
     ServerId?: string
@@ -26,6 +35,7 @@ export interface JellyfinItem {
     MediaStreams?: MediaStream[]
     Width?: number
     Height?: number
+    UserData: JellyfinUserData
 }
 
 interface MediaSource {
