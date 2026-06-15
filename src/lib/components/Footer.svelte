@@ -3,7 +3,7 @@
         <p class="text-sm text-gray-600 dark:text-gray-400">
             Source code available on
             <a
-                href="https://github.com/BurnySc2/svelte-template"
+                href="https://github.com/BurnySc2/peer-to-peer-video-watch"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="font-medium text-blue-600 transition-colors duration-200 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
