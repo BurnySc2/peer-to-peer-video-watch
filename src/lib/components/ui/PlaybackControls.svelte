@@ -203,6 +203,25 @@ async function add_jellyfin_season(_event: Event) {
     fetch_metadata_for_playlist()
 }
 
+function remove_watched_items(_event: Event) {
+    // Removes all playlist items that have been marked as complete in jellyfin
+    let deleted_items_before_index = 0
+    const new_playlist = temp_state.playlist.filter((playlist_item, index) => {
+        if (index < temp_state.playlist_index) {
+            deleted_items_before_index += 1
+        }
+        return !playlist_item.played_complete
+    })
+
+    temp_state.playlist = new_playlist
+    temp_state.playlist_index = temp_state.playlist_index - deleted_items_before_index
+
+    send_playlist_set({
+        playlist: temp_state.playlist,
+        playlist_index: temp_state.playlist_index,
+    })
+}
+
 function delete_playlist_item(_event: Event) {
     // Delete items, set new index
     const current_playing = temp_state.playlist[temp_state.playlist_index]
@@ -639,6 +658,16 @@ onMount(() => {
             onclick={add_jellyfin_season}
         >
             Add jellyfin season
+        </button>
+    </div>
+    <div class="col-start-1 flex flex-col">
+        <button
+            title="Removes items from playlist that have been fully played or have progress marked as completed"
+            class="border border-gray-600 rounded hover:bg-red-400 p-2 select-none"
+            class:hidden={!temp_state.playlist.some(item => item.played_complete)}
+            onclick={remove_watched_items}
+        >
+            Remove watched items
         </button>
     </div>
 </div>
