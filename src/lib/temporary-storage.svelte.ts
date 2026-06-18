@@ -11,7 +11,7 @@ export const PlayListItem = z.object({
     url: z.string(),
     video_title: z.string(),
     subtitles_original_url: z.string(),
-    played_progress: z.number().min(0).max(1),
+    played_progress: z.number().min(0),
     played_complete: z.boolean(),
 })
 const TempState = z.object({
