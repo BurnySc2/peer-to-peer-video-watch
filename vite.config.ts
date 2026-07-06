@@ -3,7 +3,6 @@ import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from "vite"
 
 export default defineConfig({
-    server: { allowedHosts: ["preview1.burnysc2.xyz"] },
     plugins: [tailwindcss(), sveltekit()],
     ssr: {
         noExternal: ["peerjs"], // forces PeerJS to be externalized / skipped in SSR bundle
