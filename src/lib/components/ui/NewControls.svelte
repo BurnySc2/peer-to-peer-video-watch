@@ -1,4 +1,5 @@
 <script lang="ts">
+import { onMount } from "svelte"
 import Customslider from "$lib/components/ui/CustomSlider.svelte"
 import BackIcon from "$lib/icons/BackIcon.svelte"
 import ForwardIcon from "$lib/icons/ForwardIcon.svelte"
@@ -8,6 +9,7 @@ import PlayIcon from "$lib/icons/PlayIcon.svelte"
 import { p2p_send_ready_check } from "$lib/peer_handling/peer_send.svelte"
 import { peer_count, temp_state } from "$lib/temporary-storage.svelte"
 import { format_time } from "$lib/utils/format_time"
+import { register_keybinds } from "$lib/utils/keybinds"
 import Emotes from "./Emotes.svelte"
 
 interface Props {
@@ -42,7 +44,7 @@ let current_remaining_time = $derived(
 )
 let total_time = $derived(format_time(temp_state.video_duration))
 
-function local_set_play_pause() {
+function local_set_play_pause(): void {
     if (temp_state.video_state_paused) {
         temp_state.video_state_paused = false
         temp_state.is_sleeping = false
@@ -97,6 +99,19 @@ function toggle_custom_subtitles() {
     temp_state.subtitles.enabled = !temp_state.subtitles.enabled
     console.log("Subtitles enabled:", temp_state.subtitles.enabled)
 }
+
+onMount(() => {
+    const keybind_cleanup = register_keybinds({
+        toggle_play_pause: local_set_play_pause,
+        toggle_fullscreen,
+        seek_forward,
+        seek_back,
+    })
+
+    return () => {
+        keybind_cleanup
+    }
+})
 </script>
 
 {#if temp_state.playlist[temp_state.playlist_index]?.video_title}
