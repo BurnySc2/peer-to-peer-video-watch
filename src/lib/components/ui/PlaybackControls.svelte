@@ -592,7 +592,8 @@ onMount(() => {
                 <label
                     class="select-none p-2"
                     for="select-playlist"
-                    >Current playlist</label
+                    >Current playlist
+                    {temp_state.playlist.length > 0? `(${temp_state.playlist.length} item${temp_state.playlist.length > 1 ? "s" : ""})` : ""}</label
                 >
                 <select
                     class="border-t border-gray-600 p-1 flex-1"
