@@ -21,7 +21,6 @@ export function register_keybinds({ toggle_play_pause, toggle_fullscreen, seek_f
                 toggle_fullscreen()
                 break
             case "arrowright":
-                console.log("right arrow")
                 e.preventDefault()
                 seek_forward()
                 break
