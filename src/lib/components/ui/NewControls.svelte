@@ -106,6 +106,7 @@ onMount(() => {
         toggle_fullscreen,
         seek_forward,
         seek_back,
+        toggle_custom_subtitles,
     })
 
     return () => {

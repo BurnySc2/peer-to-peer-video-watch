@@ -3,9 +3,16 @@ type KeybindActions = {
     toggle_fullscreen: () => void
     seek_forward: () => void
     seek_back: () => void
+    toggle_custom_subtitles: () => void
 }
 
-export function register_keybinds({ toggle_play_pause, toggle_fullscreen, seek_forward, seek_back }: KeybindActions) {
+export function register_keybinds({
+    toggle_play_pause,
+    toggle_fullscreen,
+    seek_forward,
+    seek_back,
+    toggle_custom_subtitles,
+}: KeybindActions) {
     function handle_keydown(e: KeyboardEvent) {
         const tag = (e.target as HTMLElement).tagName.toLocaleLowerCase()
         if (tag === "input" || tag === "textarea" || (e.target as HTMLElement).isContentEditable) {
@@ -27,6 +34,10 @@ export function register_keybinds({ toggle_play_pause, toggle_fullscreen, seek_f
             case "arrowleft":
                 e.preventDefault()
                 seek_back()
+                break
+            case "c":
+                e.preventDefault()
+                toggle_custom_subtitles()
                 break
         }
     }
