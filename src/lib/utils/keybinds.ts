@@ -14,8 +14,13 @@ export function register_keybinds({
     toggle_custom_subtitles,
 }: KeybindActions) {
     function handle_keydown(e: KeyboardEvent) {
-        const tag = (e.target as HTMLElement).tagName.toLocaleLowerCase()
-        if (tag === "input" || tag === "textarea" || (e.target as HTMLElement).isContentEditable) {
+        const el = e.target as HTMLElement
+        if (
+            el.tagName === "TEXTAREA" ||
+            el.isContentEditable ||
+            (el.tagName === "INPUT" &&
+                ["text", "email", "password", "search", "url", "tel"].includes((el as HTMLInputElement).type))
+        ) {
             return
         }
         switch (e.key.toLocaleLowerCase()) {
