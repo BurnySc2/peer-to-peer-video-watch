@@ -18,8 +18,7 @@ export function register_keybinds({
         if (
             el.tagName === "TEXTAREA" ||
             el.isContentEditable ||
-            (el.tagName === "INPUT" &&
-                ["text", "email", "password", "search", "url", "tel"].includes((el as HTMLInputElement).type))
+            (el.tagName === "INPUT" && (el as HTMLInputElement).type !== "range")
         ) {
             return
         }
