@@ -187,14 +187,16 @@ onMount(() => {
             <Sleeping />
         {:else}
             <Toaster />
+            <!-- svelte-ignore a11y_media_has_caption -->
+            <!-- biome-ignore lint/a11y/useMediaCaption -->
             <video
                 bind:this={temp_state.video_element}
                 style="filter: brightness({perma_state.global_settings.brightness})"
                 class="flex w-full max-h-screen bg-black"
-                muted={false}
                 playsinline
                 ontimeupdate={handle_subtitle_update}
                 onloadeddata={handle_video_loaded}
+                bind:muted={temp_state.is_muted}
                 bind:volume={perma_state.global_settings.volume}
                 bind:playbackRate={temp_state.video_playback_speed}
                 bind:paused={temp_state.video_state_paused}

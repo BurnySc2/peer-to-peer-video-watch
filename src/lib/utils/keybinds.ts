@@ -4,6 +4,7 @@ type KeybindActions = {
     seek_forward: () => void
     seek_back: () => void
     toggle_custom_subtitles: () => void
+    toggle_mute: () => void
 }
 
 export function register_keybinds({
@@ -12,6 +13,7 @@ export function register_keybinds({
     seek_forward,
     seek_back,
     toggle_custom_subtitles,
+    toggle_mute,
 }: KeybindActions) {
     function handle_keydown(e: KeyboardEvent) {
         const el = e.target as HTMLElement
@@ -42,6 +44,10 @@ export function register_keybinds({
             case "c":
                 e.preventDefault()
                 toggle_custom_subtitles()
+                break
+            case "m":
+                e.preventDefault()
+                toggle_mute()
                 break
         }
     }

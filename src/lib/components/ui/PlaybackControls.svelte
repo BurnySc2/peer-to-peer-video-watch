@@ -427,12 +427,27 @@ onMount(() => {
                 class="relative px-2"
                 role="presentation"
             >
-                <Customslider
-                    min={0}
-                    max={1}
-                    bind:value={perma_state.global_settings.volume}
-                    on_change={(value: number) => {perma_state.global_settings.volume = value}}
-                />
+                {#if temp_state.is_muted}
+                    <Customslider
+                        min={0}
+                        max={1}
+                        value={0}
+                        on_change={(value: number) => {
+                        perma_state.global_settings.volume = value
+                        temp_state.is_muted = false
+                    }}
+                    />
+                {:else}
+                    <Customslider
+                        min={0}
+                        max={1}
+                        bind:value={perma_state.global_settings.volume}
+                        on_change={(value: number) => {
+                        perma_state.global_settings.volume = value
+                        temp_state.is_muted = false
+                    }}
+                    />
+                {/if}
             </div>
         </div>
         <div class="flex flex-col border border-gray-600 rounded">

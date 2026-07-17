@@ -100,6 +100,10 @@ function toggle_custom_subtitles() {
     console.log("Subtitles enabled:", temp_state.subtitles.enabled)
 }
 
+function toggle_mute() {
+    temp_state.is_muted = !temp_state.is_muted
+}
+
 onMount(() => {
     const keybind_cleanup = register_keybinds({
         toggle_play_pause: local_set_play_pause,
@@ -107,6 +111,7 @@ onMount(() => {
         seek_forward,
         seek_back,
         toggle_custom_subtitles,
+        toggle_mute,
     })
 
     return () => {
