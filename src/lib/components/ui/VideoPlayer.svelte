@@ -188,7 +188,7 @@ onMount(() => {
         {:else}
             <Toaster />
             <!-- svelte-ignore a11y_media_has_caption -->
-            <!-- biome-ignore lint/a11y/useMediaCaption -->
+            <!-- biome-ignore lint/a11y/useMediaCaption: custom subtitles handled separately -->
             <video
                 bind:this={temp_state.video_element}
                 style="filter: brightness({perma_state.global_settings.brightness})"
