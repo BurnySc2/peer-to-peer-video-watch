@@ -16,7 +16,7 @@ export function register_keybinds({
     toggle_mute,
 }: KeybindActions) {
     function handle_keydown(e: KeyboardEvent) {
-        if (e.repeat) {
+        if (e.repeat && !["arrowright", "arrowleft"].includes(e.key.toLocaleLowerCase())) {
             return
         }
         const el = e.target as HTMLElement
