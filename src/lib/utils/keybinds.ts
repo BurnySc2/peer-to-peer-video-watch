@@ -16,43 +16,41 @@ export function register_keybinds({
     toggle_mute,
 }: KeybindActions) {
     function handle_keydown(e: KeyboardEvent) {
-        if (e.repeat && !["arrowright", "arrowleft"].includes(e.key.toLocaleLowerCase())) {
-            return
+        const allow_repeat = ["arrowright", "arrowleft"]
+        const key_action_mapping = {
+            " ": toggle_play_pause,
+            f: toggle_fullscreen,
+            arrowright: seek_forward,
+            arrowleft: seek_back,
+            c: toggle_custom_subtitles,
+            m: toggle_mute,
         }
+
         const el = e.target as HTMLElement
         if (
             el.tagName === "TEXTAREA" ||
             el.isContentEditable ||
             (el.tagName === "INPUT" && (el as HTMLInputElement).type !== "range")
         ) {
+            // Input element selected, ignore except range / sliders
             return
         }
-        switch (e.key.toLocaleLowerCase()) {
-            case " ":
-                e.preventDefault()
-                toggle_play_pause()
-                break
-            case "f":
-                e.preventDefault()
-                toggle_fullscreen()
-                break
-            case "arrowright":
-                e.preventDefault()
-                seek_forward()
-                break
-            case "arrowleft":
-                e.preventDefault()
-                seek_back()
-                break
-            case "c":
-                e.preventDefault()
-                toggle_custom_subtitles()
-                break
-            case "m":
-                e.preventDefault()
-                toggle_mute()
-                break
+
+        const key_pressed = e.key.toLocaleLowerCase() as keyof typeof key_action_mapping
+        if (!Object.keys(key_action_mapping).includes(key_pressed)) {
+            // Key has no action mapped
+            return
         }
+
+        // Key detected, handle action
+        e.preventDefault()
+        if (e.repeat && !allow_repeat.includes(key_pressed)) {
+            // Ignore held down keys
+            return
+        }
+        // Run action
+        const action = key_action_mapping[key_pressed]
+        action()
     }
 
     window.addEventListener("keydown", handle_keydown)
