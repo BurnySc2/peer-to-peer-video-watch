@@ -16,6 +16,9 @@ export function register_keybinds({
     toggle_mute,
 }: KeybindActions) {
     function handle_keydown(e: KeyboardEvent) {
+        if (e.repeat) {
+            return
+        }
         const el = e.target as HTMLElement
         if (
             el.tagName === "TEXTAREA" ||
