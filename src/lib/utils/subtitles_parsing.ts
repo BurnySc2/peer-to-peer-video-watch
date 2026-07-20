@@ -63,7 +63,7 @@ let next_subtitle_end: number | null = null
 function initialise_subtitles(subtitles: SubtitleItem[]) {
     for (let i = 0; i <= subtitles.length; i++) {
         const sub = subtitles[i]
-        if (temp_state.video_current_time + temp_state.subtitles.offset <= sub.end_s) {
+        if (temp_state.video_current_time - temp_state.subtitles.offset <= sub.end_s) {
             current_subtitle_id = i
             break
         }
@@ -100,7 +100,7 @@ export function update_current_subtitle(subtitles: null | SubtitleItem[] = null)
         return ""
     }
 
-    const current_time_with_offset = temp_state.video_current_time + temp_state.subtitles.offset
+    const current_time_with_offset = temp_state.video_current_time - temp_state.subtitles.offset
     if (prev_vid_subtitle_time === null) {
         prev_vid_subtitle_time = current_time_with_offset
     }
