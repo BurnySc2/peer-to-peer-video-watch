@@ -463,7 +463,7 @@ onMount(() => {
             <label
                 class="text-center select-none"
                 for="subtitle_offset"
-                >Subs delay</label
+                >Add video delay</label
             >
             <input
                 type="number"
