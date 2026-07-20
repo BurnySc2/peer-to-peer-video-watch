@@ -103,7 +103,7 @@ test.describe("solo video player", () => {
             await expect(page.locator("video")).toHaveCount(0)
             await expect(page.getByText(/playback rate/i)).not.toBeAttached()
             await expect(page.getByText(/volume/i)).not.toBeAttached()
-            await expect(page.getByText(/subs offset/i)).not.toBeAttached()
+            await expect(page.getByText(/add subs delay/i)).not.toBeAttached()
             await expect(page.getByText(/subs size/i)).not.toBeAttached()
             await expect(page.getByText(/autoplay/i)).not.toBeAttached()
             await expect(page.getByText(/add emote/i)).not.toBeAttached()
@@ -132,7 +132,7 @@ test.describe("solo video player", () => {
         await test.step("lower video controls now visible", async () => {
             await expect(page.getByText(/playback rate/i)).toBeVisible()
             await expect(page.getByText(/volume/i)).toBeVisible()
-            await expect(page.getByText(/subs offset/i)).toBeVisible()
+            await expect(page.getByText(/add subs delay/i)).toBeVisible()
             await expect(page.getByText(/subs size/i)).toBeVisible()
             await expect(page.getByText(/autoplay/i)).toBeVisible()
             await expect(page.getByText(/add emote/i)).toBeVisible()
