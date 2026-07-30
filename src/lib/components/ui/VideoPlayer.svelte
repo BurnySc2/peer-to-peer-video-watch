@@ -183,9 +183,11 @@ onMount(() => {
             <div>Peers: {peer_count()}</div>
         </div>
     {:else}
-        {#if temp_state.is_sleeping}
-            <Sleeping />
-        {:else}
+        <div class:hidden={!temp_state.is_sleeping}><Sleeping /></div>
+        <div
+            class="w-full h-full"
+            class:hidden={temp_state.is_sleeping}
+        >
             <Toaster />
             <!-- svelte-ignore a11y_media_has_caption -->
             <!-- biome-ignore lint/a11y/useMediaCaption: custom subtitles handled separately -->
@@ -213,7 +215,7 @@ onMount(() => {
                 {subtitle_text}
                 enabled={temp_state.subtitles.enabled}
             />
-        {/if}
+        </div>
         <NewControls
             {send_video_play}
             {send_video_pause}
