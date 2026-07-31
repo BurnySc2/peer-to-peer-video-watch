@@ -367,6 +367,10 @@ function set_sleep_timer(sleep_time: number) {
             timer = undefined
             temp_state.video_state_paused = true
             temp_state.is_sleeping = true
+            if (peer_count()) {
+                // Client is sleeping, don't ask peers for readycheck for next video
+                temp_state.autoplay = false
+            }
             console.log("Sleep timer triggered")
             return
         }
