@@ -105,6 +105,10 @@ async function handle_video_loaded() {
     // Reset catch up
     temp_state.video_p2p_max_time = 0
     temp_state.is_catching_up = false
+    // End sleep if solo watching
+    if (!peer_count()) {
+        temp_state.is_sleeping = false
+    }
 
     // Solo watch: Restore playback progress
     solo_watch_set_player_progress()
@@ -190,7 +194,7 @@ onMount(() => {
             <Sleeping />
         </div>
         <div
-            class="w-full h-full"
+            class="flex w-full h-full"
             class:hidden={temp_state.is_sleeping}
         >
             <Toaster />
