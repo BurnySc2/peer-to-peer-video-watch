@@ -194,7 +194,7 @@ onMount(() => {
             <Sleeping />
         </div>
         <div
-            class="w-full h-full"
+            class="flex w-full h-full"
             class:hidden={temp_state.is_sleeping}
         >
             <Toaster />
