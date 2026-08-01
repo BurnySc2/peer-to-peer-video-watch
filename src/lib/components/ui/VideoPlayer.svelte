@@ -187,12 +187,9 @@ onMount(() => {
             <div>Peers: {peer_count()}</div>
         </div>
     {:else}
-        <div
-            class="flex w-full h-full"
-            class:hidden={!temp_state.is_sleeping}
-        >
+        {#if temp_state.is_sleeping}
             <Sleeping />
-        </div>
+        {/if}
         <div
             class="flex w-full h-full"
             class:hidden={temp_state.is_sleeping}
