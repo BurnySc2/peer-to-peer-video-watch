@@ -190,38 +190,33 @@ onMount(() => {
         {#if temp_state.is_sleeping}
             <Sleeping />
         {/if}
-        <div
-            class="flex w-full h-full"
-            class:hidden={temp_state.is_sleeping}
+        <Toaster />
+        <!-- svelte-ignore a11y_media_has_caption -->
+        <!-- biome-ignore lint/a11y/useMediaCaption: custom subtitles handled separately -->
+        <video
+            bind:this={temp_state.video_element}
+            style="filter: brightness({perma_state.global_settings.brightness})"
+            class="flex w-full max-h-screen bg-black"
+            playsinline
+            ontimeupdate={handle_subtitle_update}
+            onloadeddata={handle_video_loaded}
+            bind:muted={temp_state.is_muted}
+            bind:volume={perma_state.global_settings.volume}
+            bind:playbackRate={temp_state.video_playback_speed}
+            bind:paused={temp_state.video_state_paused}
+            bind:currentTime={temp_state.video_current_time}
+            bind:duration={temp_state.video_duration}
+            src={temp_state.playlist[temp_state.playlist_index].url}
+            oncanplay={local_can_play}
+            onended={handle_video_end}
         >
-            <Toaster />
-            <!-- svelte-ignore a11y_media_has_caption -->
-            <!-- biome-ignore lint/a11y/useMediaCaption: custom subtitles handled separately -->
-            <video
-                bind:this={temp_state.video_element}
-                style="filter: brightness({perma_state.global_settings.brightness})"
-                class="flex w-full max-h-screen bg-black"
-                playsinline
-                ontimeupdate={handle_subtitle_update}
-                onloadeddata={handle_video_loaded}
-                bind:muted={temp_state.is_muted}
-                bind:volume={perma_state.global_settings.volume}
-                bind:playbackRate={temp_state.video_playback_speed}
-                bind:paused={temp_state.video_state_paused}
-                bind:currentTime={temp_state.video_current_time}
-                bind:duration={temp_state.video_duration}
-                src={temp_state.playlist[temp_state.playlist_index].url}
-                oncanplay={local_can_play}
-                onended={handle_video_end}
-            >
-                Your browser does not support the video tag.
-            </video>
-            <ReadyCheck {send_video_play} />
-            <Subtitles
-                {subtitle_text}
-                enabled={temp_state.subtitles.enabled}
-            />
-        </div>
+            Your browser does not support the video tag.
+        </video>
+        <ReadyCheck {send_video_play} />
+        <Subtitles
+            {subtitle_text}
+            enabled={temp_state.subtitles.enabled}
+        />
         <NewControls
             {send_video_play}
             {send_video_pause}
