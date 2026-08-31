@@ -1,3 +1,6 @@
+import { perma_state } from "$lib/persistent-storage.svelte"
+import { temp_state } from "$lib/temporary-storage.svelte"
+
 type KeybindActions = {
     toggle_play_pause: () => void
     toggle_fullscreen: () => void
@@ -5,6 +8,21 @@ type KeybindActions = {
     seek_back: () => void
     toggle_custom_subtitles: () => void
     toggle_mute: () => void
+}
+
+const VOLUME_STEP_VALUE = 0.05
+function increase_volume() {
+    if (temp_state.is_muted) {
+        temp_state.is_muted = false
+    }
+    perma_state.global_settings.volume = Math.min(perma_state.global_settings.volume + VOLUME_STEP_VALUE, 1)
+}
+
+function decrease_volume() {
+    if (temp_state.is_muted) {
+        temp_state.is_muted = false
+    }
+    perma_state.global_settings.volume = Math.max(perma_state.global_settings.volume - VOLUME_STEP_VALUE, 0)
 }
 
 export function register_keybinds({
@@ -16,7 +34,7 @@ export function register_keybinds({
     toggle_mute,
 }: KeybindActions) {
     function handle_keydown(e: KeyboardEvent) {
-        const allow_repeat = ["arrowright", "arrowleft"]
+        const allow_repeat = ["arrowright", "arrowleft", "arrowup", "arrowdown"]
         const key_action_mapping = {
             " ": toggle_play_pause,
             f: toggle_fullscreen,
@@ -24,6 +42,8 @@ export function register_keybinds({
             arrowleft: seek_back,
             c: toggle_custom_subtitles,
             m: toggle_mute,
+            arrowup: increase_volume,
+            arrowdown: decrease_volume,
         }
 
         const el = e.target as HTMLElement
