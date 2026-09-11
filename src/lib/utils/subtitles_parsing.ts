@@ -87,7 +87,7 @@ export function reset_subtitle_state() {
 }
 
 export function update_current_subtitle(subtitles: null | SubtitleItem[] = null): string {
-    if (!subtitles || !subtitles.length) {
+    if (!subtitles?.length) {
         return ""
     }
 

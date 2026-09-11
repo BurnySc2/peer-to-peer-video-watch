@@ -133,10 +133,10 @@ onMount(() => {
     {onMouseEnterControls}
     {onMouseLeaveControls}
 />
+<!-- svelte-ignore a11y_interactive_supports_focus: toolbar container only tracks pointer hover for controls auto-hide, keyboard users interact with inner buttons and slider directly -->
 <div
     role="toolbar"
     aria-label="Video playback controls"
-    tabindex="0"
     class="absolute z-20 bottom-0 left-0 right-0 bg-black/60 p-2 flex gap-2 w-full transition-opacity duration-500"
     style="opacity: {controls_opacity};"
     onpointerenter={onMouseEnterControls}
@@ -190,9 +190,10 @@ onMount(() => {
     >
         {total_time}
     </div>
+    <!-- svelte-ignore a11y_no_static_element_interactions: tooltip-only hover for seek bar, keyboard users use inner slider input -->
+    <!-- biome-ignore lint/a11y/noStaticElementInteractions: tooltip-only hover for seek bar, keyboard users use inner slider input -->
     <div
         class="relative w-full mx-8"
-        role="presentation"
         onmousemove={handle_seek_hover}
         onmouseleave={() => seek_hover_value = null}
     >
@@ -210,7 +211,6 @@ onMount(() => {
     <div
         id="remaining-time"
         class="select-none mr-4 min-w-14 max-w-14 text-right"
-        aria-label="Remaining time"
         data-testid="remaining-time"
     >
         ({current_remaining_time})
