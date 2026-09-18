@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount, untrack } from "svelte"
+import { onMount } from "svelte"
 import Customslider from "$lib/components/ui/CustomSlider.svelte"
 import CustomSlider from "$lib/components/ui/CustomSlider.svelte"
 import { LINEAR, LOGARITHMIC, SQUARED } from "$lib/components/ui/CustomSliderConstants"
@@ -378,12 +378,28 @@ function set_sleep_timer(sleep_time: number) {
 }
 let show_dropdown = $state(false)
 
-$effect(() => {
-    send_video_set_playback_rate({
-        value: temp_state.video_target_playback_speed,
-        time: untrack(() => temp_state.video_current_time),
-    })
-})
+// Guarded intent broadcast (Option A):
+// Only explicit user selection broadcasts. Remote rate changes applied via
+// apply_remote_rate in peer_setup_connection never reach this path, so no feedback loop.
+// Dedup on global target equality only, no cross-module sync needed.
+function on_rate_select_local(new_rate: number): void {
+    if (new_rate === temp_state.video_target_playback_speed) {
+        return
+    }
+    temp_state.video_target_playback_speed = new_rate
+    if (!peer_count()) {
+        temp_state.video_playback_speed = new_rate
+    } else if (!temp_state.is_catching_up) {
+        // Optimistic local apply avoids echo dependency; preserve catchup speed while catching up.
+        temp_state.video_playback_speed = new_rate
+    }
+    if (peer_count()) {
+        send_video_set_playback_rate({
+            value: new_rate,
+            time: temp_state.video_current_time,
+        })
+    }
+}
 
 let now = $state(0)
 onMount(() => {
@@ -409,10 +425,7 @@ onMount(() => {
                 bind:value={
                     () => temp_state.video_target_playback_speed,
                     (v: number) => {
-                        temp_state.video_target_playback_speed = v
-                        if (!peer_count()) {
-                            temp_state.video_playback_speed = v
-                        }
+                        on_rate_select_local(Number(v))
                     }
                 }
             >

@@ -8,6 +8,25 @@ import { get_speedup_factor, should_start_catching_up, should_stop_catching_up }
 import { connection_send_validated } from "./peer_send.svelte"
 
 let last_seek_toast_time = 0
+
+// Guarded remote apply (Option A):
+// PlaybackControls only broadcasts from explicit user intent
+// (on_rate_select_local), so remote apply never rebroadcasts by construction.
+function apply_remote_rate(incoming_value: number): boolean {
+    // Reject out of range values, max matches PLAYBACK_SPEED_VALUES upper bound.
+    if (!Number.isFinite(incoming_value) || incoming_value <= 0 || incoming_value > 4) {
+        return false
+    }
+    if (incoming_value === temp_state.video_target_playback_speed) {
+        return false
+    }
+    temp_state.video_target_playback_speed = incoming_value
+    // Preserve existing behavior: only adjust immediately when not catching up
+    if (!temp_state.is_catching_up) {
+        temp_state.video_playback_speed = temp_state.video_target_playback_speed
+    }
+    return true
+}
 export function setup_connection(peer: Peer, conn: DataConnection, options: TSetupOptions) {
     conn.on("open", () => {
         if (options.send_init) {
@@ -38,7 +57,11 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
             temp_state.peer_connections[peer_id].last_seen = Date.now()
         }
 
-        const data_validated: TMessage = Message.parse(data)
+        const parsed = Message.safeParse(data)
+        if (!parsed.success) {
+            return
+        }
+        const data_validated: TMessage = parsed.data
         switch (data_validated.type) {
             case "init_connect": {
                 // const peers_connected = Object.keys(temp_state.peer_connections)
@@ -53,6 +76,8 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 // Sync local data
                 temp_state.playlist = data_validated.playlist
                 temp_state.playlist_index = data_validated.playlist_index
+                // Keep direct assign here instead of apply_remote_rate to preserve join behavior:
+                // join must set target only and leave video_playback_speed to catch-up logic.
                 temp_state.video_target_playback_speed = data_validated.video_target_playback_speed
                 temp_state.video_current_time = data_validated.video_current_time
                 temp_state.video_state_paused = data_validated.video_state_paused
@@ -112,10 +137,9 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 break
             case "video_set_playback_rate":
                 console.log("Receiving playback speed ", data_validated.value)
-                temp_state.video_target_playback_speed = data_validated.value
-                // If we're not catching up, adjust playback speed immediately (instead of waiting for current_time_interval to do it)
-                if (!temp_state.is_catching_up) {
-                    temp_state.video_playback_speed = temp_state.video_target_playback_speed
+                // Guarded apply: equality check inside, never rebroadcasts (see apply_remote_rate)
+                if (!apply_remote_rate(data_validated.value)) {
+                    break
                 }
                 toast(`Playback rate change to ${data_validated.value}`, {
                     icon: "⏫",
