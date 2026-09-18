@@ -237,6 +237,17 @@ function remove_peer(peer_id: string) {
 }
 
 let reconnecting = false
+let active_reconnect_interval: ReturnType<typeof setInterval> | null = null
+
+export function stop_reconnect_loop() {
+    // Stop any pending host reconnect attempts
+    if (active_reconnect_interval !== null) {
+        clearInterval(active_reconnect_interval)
+        active_reconnect_interval = null
+    }
+    reconnecting = false
+}
+
 function start_reconnect_loop(peer: Peer, room_id: string) {
     // Only host reconnecting handled, since members will reconnect naturally via URL room_id
     if (reconnecting) {
@@ -246,14 +257,18 @@ function start_reconnect_loop(peer: Peer, room_id: string) {
 
     if (!room_id) {
         console.log("Cannot reconnect - no room id")
+        reconnecting = false
         return
     }
     let attempts = 0
-    const reconnect_interval = setInterval(() => {
+    active_reconnect_interval = setInterval(() => {
         attempts += 1
         console.log("Attempting to reconnect to host", attempts)
         if (attempts > 30) {
-            clearInterval(reconnect_interval)
+            if (active_reconnect_interval !== null) {
+                clearInterval(active_reconnect_interval)
+                active_reconnect_interval = null
+            }
             reconnecting = false
             console.log("Max reconnect attempts reached")
             return
@@ -264,7 +279,10 @@ function start_reconnect_loop(peer: Peer, room_id: string) {
             console.log("Host reconnected")
             setup_connection(peer, conn, { send_init: false })
 
-            clearInterval(reconnect_interval)
+            if (active_reconnect_interval !== null) {
+                clearInterval(active_reconnect_interval)
+                active_reconnect_interval = null
+            }
             reconnecting = false
         })
     }, 2000)
