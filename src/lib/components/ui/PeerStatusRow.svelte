@@ -1,4 +1,6 @@
 <script lang="ts">
+import { peer_age_seconds, peer_status_for } from "./playback_controls/peer_status_helpers"
+
 interface Props {
     peer_id: string
     last_seen: number
@@ -7,8 +9,8 @@ interface Props {
 
 let { peer_id, last_seen, now }: Props = $props()
 
-let age = $derived(1 + Math.floor((now - last_seen) / 1000))
-let status = $derived(age < 6 ? "green" : age < 11 ? "orange" : "red")
+let age = $derived(peer_age_seconds(now, last_seen))
+let status = $derived(peer_status_for(age))
 </script>
 
 <div class="flex w-full items-center gap-2 justify-center">
