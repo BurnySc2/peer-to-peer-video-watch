@@ -17,6 +17,7 @@ import {
     p2p_send_video_seek_to,
     p2p_send_video_set_playback_rate,
 } from "$lib/peer_handling/peer_send.svelte"
+import { sweep_stale_peers } from "$lib/peer_handling/peer_setup_connection.svelte"
 import { teardown_room } from "$lib/peer_handling/peer_teardown.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { get_search_params } from "$lib/utils/url_utils"
@@ -51,21 +52,26 @@ onMount(() => {
     handle_peer_on_connection(peer)
 
     // Broadcast current time to keep peers in sync (this may adjust playback rate)
-    timer_sync_time = setInterval(broadcast_current_time_for_sync, VIDEO_SYNC_INTERVAL_MS)
+    // and evict stale peers so peer_count drops instead of sticking red forever.
+    timer_sync_time = setInterval(() => {
+        broadcast_current_time_for_sync()
+        sweep_stale_peers()
+    }, VIDEO_SYNC_INTERVAL_MS)
     return () => {
         if (timer_sync_time !== undefined) {
             clearInterval(timer_sync_time)
         }
-        teardown_room(peer)
+        teardown_room(peer, { preserve_peer_id: true })
     }
 })
 
 onDestroy(() => {
     // Teardown P2P state when leaving the room (idempotent with onMount cleanup)
+    // Preserve peer id so reload rejoins with same identity; solo/list pages wipe it.
     if (timer_sync_time !== undefined) {
         clearInterval(timer_sync_time)
     }
-    teardown_room(peer)
+    teardown_room(peer, { preserve_peer_id: true })
 })
 
 beforeNavigate(() => {
@@ -73,7 +79,7 @@ beforeNavigate(() => {
     if (timer_sync_time !== undefined) {
         clearInterval(timer_sync_time)
     }
-    teardown_room(peer)
+    teardown_room(peer, { preserve_peer_id: true })
 })
 </script>
 

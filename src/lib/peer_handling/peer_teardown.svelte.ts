@@ -6,6 +6,9 @@ import { stop_reconnect_loop } from "./peer_setup_connection.svelte"
 export type TeardownOptions = {
     // Extra interval ids the caller wants cleared during teardown
     intervals?: Array<number>
+    // Keep saved peer id (room reload keeps identity so host can rejoin;
+    // solo/list pages omit it to get a fresh identity)
+    preserve_peer_id?: boolean
 }
 
 // Central P2P teardown used when leaving a room.
@@ -77,6 +80,9 @@ export function teardown_room(peer: Peer | null | undefined, options?: TeardownO
     }
     temp_state.emote_state = []
 
-    // Unload saved peer id so the next room gets a fresh identity
-    perma_state.global_settings.peer_id = ""
+    // Unload saved peer id so the next room gets a fresh identity,
+    // unless caller preserves it for reload rejoin
+    if (!options?.preserve_peer_id) {
+        perma_state.global_settings.peer_id = ""
+    }
 }

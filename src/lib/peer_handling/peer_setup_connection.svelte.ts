@@ -8,8 +8,33 @@ import { get_speedup_factor, should_start_catching_up, should_stop_catching_up }
 import { connection_send_validated } from "./peer_send.svelte"
 
 let last_seek_toast_time = 0
+// Timeout for stale peers: PeerStatusRow shows red at >=11s, sync ping runs every 5s,
+// so 15s tolerates 3 missed pings before evicting.
+export const PEER_TIMEOUT_MS = 15000
 export function setup_connection(peer: Peer, conn: DataConnection, options: TSetupOptions) {
-    conn.on("open", () => {
+    let open_handled = false
+    const handle_open = () => {
+        // Run once, also covers already-open conns (reconnect loop calls setup inside open)
+        if (open_handled) {
+            return
+        }
+        open_handled = true
+        // Gate peer_connections insert on open only, so connecting to a dead
+        // room does not inflate peer_count before the connection is usable.
+        // Keep duplicate-connection guard, but only after open.
+        const existing = temp_state.peer_connections[conn.peer]
+        if (existing && existing.conn !== conn) {
+            console.log("Duplicate connection, closing old one ", conn.peer)
+            try {
+                existing.conn.close()
+            } catch {
+                // Ignore close errors for duplicate connection
+            }
+        }
+        temp_state.peer_connections[conn.peer] = {
+            conn,
+            last_seen: Date.now(),
+        }
         if (options.send_init) {
             if (temp_state.playlist.length === 0) {
                 console.log("State empty, requesting from peer")
@@ -28,7 +53,13 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
                 })
             }
         }
-    })
+    }
+    conn.on("open", handle_open)
+    // Reconnect loop calls setup_connection inside an open handler where
+    // conn is already open, so run immediately in that case (guarded once).
+    if (conn.open) {
+        handle_open()
+    }
 
     // biome-ignore lint/suspicious/noExplicitAny: data may be anything
     conn.on("data", (data: any) => {
@@ -203,7 +234,12 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
         const is_host_connection = conn.peer === room_id
 
         if (!is_host && is_host_connection) {
-            start_reconnect_loop(peer, room_id)
+            // Do not auto-reconnect after intentional teardown (peer destroyed)
+            if (peer.destroyed) {
+                console.log("Not reconnecting - peer destroyed after intentional teardown")
+            } else {
+                start_reconnect_loop(peer, room_id)
+            }
         }
     })
 
@@ -217,17 +253,33 @@ export function setup_connection(peer: Peer, conn: DataConnection, options: TSet
             temp_state.video_playback_speed = temp_state.video_target_playback_speed
         }
     })
+}
 
-    // Prevent duplicate connections if peers connect at same time
-    if (temp_state.peer_connections[conn.peer]) {
-        console.log("Duplicate connection, closing old one ", conn.peer)
-        temp_state.peer_connections[conn.peer].conn.close()
+export function sweep_stale_peers(max_age_ms: number = PEER_TIMEOUT_MS): string[] {
+    // Evict peers with no data for longer than max_age_ms. Idempotent.
+    const now = Date.now()
+    const evicted: string[] = []
+    for (const [peer_id, meta] of Object.entries(temp_state.peer_connections)) {
+        if (now - meta.last_seen > max_age_ms) {
+            console.log(`Evicting stale peer ${peer_id}, last seen ${(now - meta.last_seen) / 1000}s ago`)
+            try {
+                meta.conn.close()
+            } catch {
+                // Ignore close errors during sweep
+            }
+            remove_peer(peer_id)
+            evicted.push(peer_id)
+        }
     }
-    // Add to our list of active connections
-    temp_state.peer_connections[conn.peer] = {
-        conn,
-        last_seen: Date.now(),
+    if (evicted.length > 0) {
+        temp_state.ready_peers = temp_state.ready_peers.filter((ready_id) => !evicted.includes(ready_id))
+        if (!peer_count() && temp_state.video_playback_speed !== temp_state.video_target_playback_speed) {
+            console.log("No peers remaining, stopping catch up")
+            temp_state.video_playback_speed = temp_state.video_target_playback_speed
+            temp_state.is_catching_up = false
+        }
     }
+    return evicted
 }
 
 function remove_peer(peer_id: string) {
