@@ -101,10 +101,10 @@ $effect(() => {
         >
     </div>
 {/each}
+<!-- svelte-ignore a11y_interactive_supports_focus: toolbar container only tracks pointer hover for controls auto-hide, keyboard users interact with inner buttons directly -->
 <div
     role="toolbar"
     aria-label="Emoji controls"
-    tabindex="0"
     onpointerenter={onMouseEnterControls}
     onpointerleave={onMouseLeaveControls}
 >

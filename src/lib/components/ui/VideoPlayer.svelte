@@ -173,6 +173,7 @@ onMount(() => {
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- biome-ignore lint/a11y/noStaticElementInteractions: player container handles pointerdown for controls auto-hide, keyboard handled by inner controls -->
 <div
     bind:this={player_container}
     class="relative flex w-full h-full"

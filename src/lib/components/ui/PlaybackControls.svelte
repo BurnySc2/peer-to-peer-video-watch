@@ -406,14 +406,15 @@ onMount(() => {
             <select
                 class="border-t border-gray-600 p-1 text-center"
                 id="playback_speed"
-                bind:value={// biome-ignore lint/complexity/noCommaOperator: don't fix https://svelte.dev/docs/svelte/bind#Function-bindings
-                    () => temp_state.video_target_playback_speed ,
+                bind:value={
+                    () => temp_state.video_target_playback_speed,
                     (v: number) => {
                         temp_state.video_target_playback_speed = v
                         if (!peer_count()) {
                             temp_state.video_playback_speed = v
                         }
-                    }}
+                    }
+                }
             >
                 {#each PLAYBACK_SPEED_VALUES as ps}
                     <option
@@ -584,33 +585,30 @@ onMount(() => {
             onfocus={() => show_dropdown = true}
             onblur={() => {setTimeout(() => {
                 show_dropdown = false
-            }, 100);}}
+            }, 200);}}
             oninput={() => show_dropdown = false}
             bind:value={input_new_playlist_url}
         >
         {#if show_dropdown && perma_state.global_settings.recent_playlist_items.length}
             <div class="absolute left-0 right-0 mt-12 bg-white border text-black rounded">
                 {#each perma_state.global_settings.recent_playlist_items as item}
-                    <div
-                        class="p-2 hover:bg-gray-100 cursor-pointer truncate"
-                        onmousedown={() => {input_new_playlist_url = item.url}}
-                        aria-label="Select URL"
-                        role="button"
-                        tabindex="0"
+                    <button
+                        type="button"
+                        class="block w-full p-2 hover:bg-gray-100 cursor-pointer truncate text-left"
+                        onclick={() => {input_new_playlist_url = item.url}}
                         title={item.title || item.url}
                     >
                         {item.title || item.url}
-                    </div>
+                    </button>
                 {/each}
-                <div
-                    class="p-2 hover:bg-red-100 cursor-pointer truncate text-center"
-                    onmousedown={handle_clear_recent_items}
-                    aria-label="Select URL"
-                    role="button"
-                    tabindex="0"
+                <button
+                    type="button"
+                    class="block w-full p-2 hover:bg-red-100 cursor-pointer truncate text-center"
+                    onclick={handle_clear_recent_items}
+                    aria-label="Clear recent items"
                 >
                     Clear recent items
-                </div>
+                </button>
             </div>
         {/if}
     </div>
