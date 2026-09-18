@@ -14,7 +14,7 @@ function join_room() {
     if (!input_room_id) {
         return
     }
-    goto(`/room/${input_room_id}`)
+    goto(`/room?room_id=${input_room_id}`)
 }
 </script>
 
