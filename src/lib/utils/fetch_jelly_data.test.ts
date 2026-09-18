@@ -87,7 +87,7 @@ describe("extract_title test", () => {
     })
 })
 
-describe("fetch_file_data test", () => {
+describe("fetch file data test", () => {
     it.each([
         ["", null],
         ["bad_url", null],
@@ -127,7 +127,7 @@ describe("fetch_file_data test", () => {
     })
 })
 
-describe("fetch_season_data test", () => {
+describe("fetch season data test", () => {
     beforeEach(() => {
         vi.restoreAllMocks()
     })
@@ -205,7 +205,7 @@ describe("get_me test", () => {
     })
 })
 
-describe("update_progress_for_item_id test", () => {
+describe("update progress for item id test", () => {
     beforeEach(() => {
         vi.restoreAllMocks()
         temp_state.jellyfin_my_id = null

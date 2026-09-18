@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { extract_jellyfin_item_id, get_search_params, is_valid_url } from "./url_utils"
 
-describe("is_valid_url", () => {
+describe("is valid url", () => {
     it.each([
         ["sometext", false],
         ["httpsometext.com", false],
@@ -12,7 +12,7 @@ describe("is_valid_url", () => {
     })
 })
 
-describe("get_search_params", () => {
+describe("get search params", () => {
     it.each([
         ["https://example.com", "https://example.com", "/", {}],
         [
@@ -39,7 +39,7 @@ describe("get_search_params", () => {
     })
 })
 
-describe("extract_jellyfin_item_id", () => {
+describe("extract jellyfin item id", () => {
     it.each([
         [new URL("https://sub.example.org/category/some_id/more_path"), "some_id"],
         [new URL("https://sub.example.org/other"), undefined],
