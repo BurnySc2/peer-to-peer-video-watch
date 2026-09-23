@@ -1,4 +1,4 @@
-# Peer to Peer Video Player platform
+# Peer to Peer Video Player Platform
 
 A svelte based peer-to-peer video watching platform using PeerJS.
 Users share a direct video URL and synchronise playback in real time.
@@ -43,6 +43,11 @@ End-to-end tests are covered by Playwright for key user flows:
 - Ready check
 - Autoplay
 - Host and member reconnecting
+
+Run tests:
+```sh
+npm run test
+```
 
 ## Installation
 
