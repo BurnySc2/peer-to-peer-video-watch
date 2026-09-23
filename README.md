@@ -1,18 +1,37 @@
-# sv
+# Peer to Peer video platform
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A svelte based peer-to-peer video watching platform using PeerJS.
+Users share a direct video URL and synchronise playback in real time.
 
-## Creating a project
+Jellyfin URLs include additional integration features, such as expanding a single episode into an entire season playlist.
 
+![Main UI](screenshots/main_view.png)
+
+## Features
+
+- Synchronised video playback; play/pause/seek/playback speed
+- Custom built video controls
+- Custom built subtitles parser, including size and offset controls;
+![Main UI](screenshots/ready_check.png)
+- "Ready check" function - check connected peers are ready before video plays
+- Emote system - send emoji reactions to connected peers, overlaying on video
+- Autoplay and Sleep timer functionality
+
+## Tech Stack
+
+- SvelteKit
+- TypeScript
+- PeerJS
+- TailwindCSS
+
+## Installation
+
+Install with npm:
 ```sh
-# create a new project using latest sveltekit template
-npx sv create my-app --template minimal --types ts --install npm
+npm install
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install`, start a development server:
-
+Run local version
 ```sh
 npm run dev
 ```
@@ -31,7 +50,7 @@ to update the types of the endpoints.
 
 ## Building
 
-To create a production version of your app:
+To create a production version:
 
 ```sh
 npm run build
