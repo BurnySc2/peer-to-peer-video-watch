@@ -114,7 +114,36 @@ describe("fetch_file_data test", () => {
 
         const result = await fetch_file_data(url)
         expect(result).toStrictEqual(mock_item)
-        expect(fetch).toHaveBeenCalledWith("https://vodching.example/Items/123456?param=abc&another=def")
+        expect(fetch).toHaveBeenCalledWith("https://vodching.example/Items/123456", { headers: {} })
+    })
+
+    it.each([
+        ["https://vodching.example/Items/123456/Download?api_key=abc", "abc"],
+        ["https://vodching.example/Items/123456/Download?ApiKey=abc", "abc"],
+        ["https://vodching.example/Items/123456/Download?API_KEY=abc", "abc"],
+        ["https://vodching.example/Items/123456/Download?apikey=abc", "abc"],
+    ])("sends auth header for %s", async (url, key) => {
+        const mock_item = { Name: "Some movie" }
+        vi.spyOn(globalThis, "fetch").mockResolvedValue({
+            ok: true,
+            json: async () => mock_item,
+        } as Response)
+
+        const result = await fetch_file_data(url)
+        expect(result).toStrictEqual(mock_item)
+        expect(fetch).toHaveBeenCalledWith("https://vodching.example/Items/123456", {
+            headers: { Authorization: `MediaBrowser Token="${key}"` },
+        })
+    })
+
+    it("sends empty headers when no api key present", async () => {
+        vi.spyOn(globalThis, "fetch").mockResolvedValue({
+            ok: true,
+            json: async () => ({}),
+        } as Response)
+
+        await fetch_file_data("https://vodching.example/Items/123456/Download?param=abc&another=def")
+        expect(fetch).toHaveBeenCalledWith("https://vodching.example/Items/123456", { headers: {} })
     })
 
     it("returns null when fetch fails", async () => {
@@ -144,12 +173,12 @@ describe("fetch_season_data test", () => {
     it("returns only TPlaylistItems in given SeasonId, for a series, when fetch succeeds", async () => {
         const mock_result = [
             {
-                url: "https://vodching.example/Items/item_id_one/Download?api_key=abc",
+                url: "https://vodching.example/Items/item_id_one/Download?ApiKey=abc",
                 video_title: "",
                 subtitles_original_url: "",
             } as TPlayListItem,
             {
-                url: "https://vodching.example/Items/item_id_two/Download?api_key=abc",
+                url: "https://vodching.example/Items/item_id_two/Download?ApiKey=abc",
                 video_title: "",
                 subtitles_original_url: "",
             } as TPlayListItem,
@@ -158,18 +187,18 @@ describe("fetch_season_data test", () => {
 
         const result = await fetch_season_data(url, "series_id", "a_season_id")
         expect(result).toStrictEqual(mock_result)
-        expect(fetch).toHaveBeenCalledWith(
-            "https://vodching.example/Shows/series_id/Episodes?sortBy=IndexNumber&api_key=abc",
-        )
+        expect(fetch).toHaveBeenCalledWith("https://vodching.example/Shows/series_id/Episodes?sortBy=IndexNumber", {
+            headers: { Authorization: 'MediaBrowser Token="abc"' },
+        })
     })
 
     it("returns all TPlaylistItems for series, when season_id is null", async () => {
         vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, json: async () => mock_item } as Response)
         const result = await fetch_season_data(url, "series_id", null)
         expect(result.length).toBe(mock_item.Items.length)
-        expect(fetch).toHaveBeenCalledWith(
-            "https://vodching.example/Shows/series_id/Episodes?sortBy=IndexNumber&api_key=abc",
-        )
+        expect(fetch).toHaveBeenCalledWith("https://vodching.example/Shows/series_id/Episodes?sortBy=IndexNumber", {
+            headers: { Authorization: 'MediaBrowser Token="abc"' },
+        })
     })
 
     it("returns empty array on network failure", async () => {
@@ -196,8 +225,11 @@ describe("get_me test", () => {
         vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, json: async () => mock_result } as Response)
         const result = await get_me(url)
         expect(result).toStrictEqual(mock_result)
-        expect(fetch).toHaveBeenCalledWith("https://vodching.example/Users/Me?api_key=abc")
+        expect(fetch).toHaveBeenCalledWith("https://vodching.example/Users/Me", {
+            headers: { Authorization: 'MediaBrowser Token="abc"' },
+        })
     })
+
     it("returns null on network failure", async () => {
         vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("network failure"))
         const result = await get_me(url)
@@ -213,7 +245,7 @@ describe("update_progress_for_item_id test", () => {
 
     const input_url = "https://vodching.example/Items/123456/Download?api_key=abc&another=def"
 
-    const expected_post_url = "https://vodching.example/UserItems/123456/UserData?userId=user_123&api_key=abc"
+    const expected_post_url = "https://vodching.example/UserItems/123456/UserData?userId=user_123"
 
     it("posts progress when id is known", async () => {
         const input_progress = 0.3
@@ -222,7 +254,7 @@ describe("update_progress_for_item_id test", () => {
         const fetch_mock = vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true } as Response)
         const body_mock = JSON.stringify({
             PlaybackPositionTicks: 30 * 10_000_000,
-            Played: null,
+            Played: false,
         })
         await update_progress_for_item_id(input_url, input_progress, 30)
 
@@ -231,6 +263,10 @@ describe("update_progress_for_item_id test", () => {
         expect(url).toBe(expected_post_url)
         expect(options?.method).toBe("POST")
         expect(options?.body).toStrictEqual(body_mock)
+        expect(options?.headers).toStrictEqual({
+            "Content-Type": "application/json",
+            Authorization: 'MediaBrowser Token="abc"',
+        })
     })
     it("marks video as played when progress is 1", async () => {
         const input_progress = 1
@@ -247,6 +283,10 @@ describe("update_progress_for_item_id test", () => {
 
         expect(url).toBe(expected_post_url)
         expect(options?.body).toStrictEqual(body_mock)
+        expect(options?.headers).toStrictEqual({
+            "Content-Type": "application/json",
+            Authorization: 'MediaBrowser Token="abc"',
+        })
     })
     // TODO - how to mock get_me?
     // it("fetches user_id if missing", async () => {

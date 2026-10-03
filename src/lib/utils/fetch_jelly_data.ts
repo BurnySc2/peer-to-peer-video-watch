@@ -1,7 +1,7 @@
 import { type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
 import type { JellyfinUser } from "$lib/types/jellyfin_user"
-import { extract_jellyfin_item_id, get_search_params, is_valid_url } from "./url_utils"
+import { build_auth_headers, extract_jellyfin_item_id, get_api_key, get_search_params, is_valid_url } from "./url_utils"
 
 export function extract_title(data: JellyfinItem | null) {
     if (!data) {
@@ -30,12 +30,12 @@ export async function fetch_file_data(url: string) {
     if (!url.includes("vodching") || !is_valid_url(url)) {
         return null
     }
-    const [base_url, _params] = get_search_params(url)
+    const [base_url, params] = get_search_params(url)
     const item_id = extract_jellyfin_item_id(base_url)
-    const new_url = `${base_url.origin}/Items/${item_id}${base_url.search}`
+    const new_url = `${base_url.origin}/Items/${item_id}`
 
     try {
-        const res = await fetch(new_url)
+        const res = await fetch(new_url, { headers: build_auth_headers(get_api_key(params)) })
         const data: JellyfinItem = await res.json()
         return data
     } catch (err) {
@@ -50,17 +50,19 @@ export async function fetch_season_data(
     season_id: string | null,
 ): Promise<TPlayListItem[]> {
     const [url_data, params] = get_search_params(url)
-    const api_url = `${url_data.origin}/Shows/${series_id}/Episodes?sortBy=IndexNumber&api_key=${params.api_key}`
+    const api_key = get_api_key(params)
+    const api_url = `${url_data.origin}/Shows/${series_id}/Episodes?sortBy=IndexNumber`
 
     try {
-        const res = await fetch(api_url)
+        const res = await fetch(api_url, { headers: build_auth_headers(api_key) })
         // TODO: Add types
         const data = await res.json()
         const data_mapped: TPlayListItem[] = data.Items.filter(
             (item: JellyfinItem) => season_id === null || season_id === item.SeasonId,
         ).map((item: JellyfinItem) => {
+            const base = `${url_data.origin}/Items/${item.Id}/Download`
             return {
-                url: `${url_data.origin}/Items/${item.Id}/Download?api_key=${params.api_key}`,
+                url: api_key ? `${base}?ApiKey=${api_key}` : base,
                 video_title: "",
                 subtitles_original_url: "",
             } as TPlayListItem
@@ -75,13 +77,14 @@ export async function fetch_season_data(
 export async function get_me(video_url: string): Promise<JellyfinUser | null> {
     // Requests info about the user
     const [base_url, params] = get_search_params(video_url)
-    if (params.api_key === undefined) {
+    const api_key = get_api_key(params)
+    if (api_key === undefined) {
         return null
     }
     // https://api.jellyfin.org/#tag/User/operation/GetCurrentUser
-    const target_url = `${base_url.origin}/Users/Me?api_key=${params.api_key}`
+    const target_url = `${base_url.origin}/Users/Me`
     try {
-        const response = await fetch(target_url)
+        const response = await fetch(target_url, { headers: build_auth_headers(api_key) })
         if (response.ok) {
             const data = (await response.json()) as JellyfinUser
             return data
@@ -96,7 +99,7 @@ async function get_user_item_url(video_url: string): Promise<string | null> {
     // Both update_progress_for_item_id and get_progress_for_item_id need the same URL and userId.
     // This helper avoids duplicating the item_id extraction and jellyfin_my_id resolution logic.
     // Returns null if the userId cannot be resolved (e.g., non-jellyfin URL or API error).
-    const [base_url, params] = get_search_params(video_url)
+    const [base_url] = get_search_params(video_url)
     const item_id = extract_jellyfin_item_id(base_url)
 
     if (temp_state.jellyfin_my_id === null) {
@@ -107,7 +110,7 @@ async function get_user_item_url(video_url: string): Promise<string | null> {
         temp_state.jellyfin_my_id = me.Id
     }
 
-    return `${base_url.origin}/UserItems/${item_id}/UserData?userId=${temp_state.jellyfin_my_id}&api_key=${params.api_key}`
+    return `${base_url.origin}/UserItems/${item_id}/UserData?userId=${temp_state.jellyfin_my_id}`
 }
 
 export async function update_progress_for_item_id(
@@ -124,15 +127,16 @@ export async function update_progress_for_item_id(
 
     // https://api.jellyfin.org/#tag/Items/operation/UpdateItemUserData
     const [_base_url, params] = get_search_params(video_url)
+    const api_key = get_api_key(params)
     const _response = await fetch(target_url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Token="${params.api_key}"`,
+            ...build_auth_headers(api_key),
         },
         body: JSON.stringify({
             PlaybackPositionTicks: Math.round(video_current_time_seconds) * 10_000_000,
-            Played: progress === 1 ? true : null,
+            Played: progress === 1,
         }),
     })
 }
@@ -146,7 +150,8 @@ export async function DEPRECATED_get_progress_for_item_id(video_url: string): Pr
 
     // https://api.jellyfin.org/#tag/Items/operation/GetItemUserData
     try {
-        const response = await fetch(target_url)
+        const [_base_url, params] = get_search_params(video_url)
+        const response = await fetch(target_url, { headers: build_auth_headers(get_api_key(params)) })
         if (response.ok) {
             const data = await response.json()
             return data.PlayedPercentage !== null ? data.PlayedPercentage / 100 : null
