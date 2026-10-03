@@ -20,3 +20,20 @@ export function get_search_params(url_string: string): [URL, Record<string, stri
 export function extract_jellyfin_item_id(url: URL): string {
     return url.pathname.split("/")[2]
 }
+
+export function get_api_key(params: Record<string, string>): string | undefined {
+    for (const [k, v] of Object.entries(params)) {
+        const lower = k.toLowerCase()
+        if (lower === "api_key" || lower === "apikey") {
+            return v
+        }
+    }
+    return undefined
+}
+
+export function build_auth_headers(api_key: string | undefined): HeadersInit {
+    if (!api_key) {
+        return {}
+    }
+    return { Authorization: `MediaBrowser Token="${api_key}"` }
+}
