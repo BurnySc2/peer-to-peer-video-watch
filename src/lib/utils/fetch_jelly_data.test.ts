@@ -5,7 +5,6 @@ import type { JellyfinItem } from "$lib/types/jellyfin_item"
 import {
     extract_title,
     fetch_file_data,
-    fetch_folder_videos,
     fetch_season_data,
     get_me,
     update_progress_for_item_id,
