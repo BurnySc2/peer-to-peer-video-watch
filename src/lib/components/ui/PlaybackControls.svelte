@@ -10,7 +10,8 @@ import { perma_state } from "$lib/persistent-storage.svelte"
 import { peer_count, type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import { PLAYBACK_SPEED_VALUES, solo_watch_set_player_progress } from "$lib/types/video_player"
 import { extract_title, fetch_file_data, fetch_folder_videos, fetch_season_data } from "$lib/utils/fetch_jelly_data"
-import { add_recent_playlist_item, update_title_playlist_items } from "$lib/utils/playlist"
+import { format_time } from "$lib/utils/format_time"
+import { add_recent_playlist_item, calc_playlist_remaining, update_title_playlist_items } from "$lib/utils/playlist"
 import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
 import type { Emote } from "./emotes"
@@ -42,6 +43,7 @@ async function fetch_metadata(jellyfin_item_url: string): Promise<{
     subtitles_original_url: string | null
     played_progress: number
     played_complete: boolean
+    duration_sec: number | null
 }> {
     // TODO: Refactor to external file
     // Fetches title and subtitles as well as metadata
@@ -53,11 +55,21 @@ async function fetch_metadata(jellyfin_item_url: string): Promise<{
     if (video_title) {
         update_title_playlist_items(jellyfin_item_url, video_title)
     }
+    // Tick location varies by endpoint: top-level item or first media source; null covers non-Jellyfin
+    const ticks =
+        (metadata as unknown as { RunTimeTicks?: unknown } | null)?.RunTimeTicks ??
+        metadata?.MediaSources?.[0]?.RunTimeTicks
+    let duration_sec: number | null = null
+    if (typeof ticks === "number" && Number.isFinite(ticks) && ticks > 0) {
+        const seconds = ticks / 10_000_000
+        duration_sec = Number.isFinite(seconds) && seconds > 0 ? seconds : null
+    }
     return {
         video_title,
         subtitles_original_url,
-        played_progress: (metadata?.UserData.PlaybackPositionTicks ?? 0) / 10_000_000,
-        played_complete: metadata?.UserData.Played ?? false,
+        played_progress: (metadata?.UserData?.PlaybackPositionTicks ?? 0) / 10_000_000,
+        played_complete: metadata?.UserData?.Played ?? false,
+        duration_sec,
     }
 }
 
@@ -69,7 +81,7 @@ async function fetch_metadata_for_playlist() {
 
     // Filter items that need metadata
     const items_needing_metadata = playlist.filter(
-        (item) => item.video_title === "" || item.subtitles_original_url === "",
+        (item) => item.video_title === "" || item.subtitles_original_url === "" || item.duration_sec == null,
     )
 
     // Process in batches
@@ -90,6 +102,11 @@ async function fetch_metadata_for_playlist() {
                 // Update progress for solo watching
                 item.played_progress = data.played_progress
                 item.played_complete = data.played_complete
+                if (data.duration_sec != null) {
+                    item.duration_sec = data.duration_sec
+                } else if (item.duration_sec === undefined) {
+                    item.duration_sec = null
+                }
             }),
         )
     }
@@ -144,6 +161,7 @@ async function add_playlist_item(_event: Event) {
         subtitles_original_url: "",
         played_progress: 0,
         played_complete: false,
+        duration_sec: null,
     })
     // If video player is inactive, activate it with first video
     if (temp_state.playlist_index === -1) {
@@ -409,6 +427,16 @@ onMount(() => {
 
     return () => clearInterval(interval)
 })
+
+const playlist_remaining = $derived.by(() => {
+    return calc_playlist_remaining(
+        temp_state.playlist,
+        temp_state.playlist_index,
+        temp_state.video_duration,
+        temp_state.video_current_time,
+        temp_state.video_target_playback_speed,
+    )
+})
 </script>
 
 <div class="grid grid-cols-5 gap-4 max-w-1/2 pb-2">
@@ -494,8 +522,8 @@ onMount(() => {
                 value={temp_state.subtitles.offset}
                 onfocus={(e) => e.currentTarget.select()}
                 oninput={(e) => {
-                set_subtitle_offset((e.target as HTMLInputElement).value)
-            }}
+                    set_subtitle_offset((e.target as HTMLInputElement).value)
+                }}
             >
         </div>
         <div class="flex flex-col border border-gray-600 rounded">
@@ -536,7 +564,9 @@ onMount(() => {
                 >
                 <button
                     class="border border-gray-600 rounded hover:bg-blue-400 px-2 py-1 text-xs select-none"
-                    onclick={() => {perma_state.global_settings.brightness = 1}}
+                    onclick={() => {
+                        perma_state.global_settings.brightness = 1
+                    }}
                 >
                     Reset
                 </button>
@@ -549,7 +579,9 @@ onMount(() => {
                     min={0}
                     max={5}
                     bind:value={perma_state.global_settings.brightness}
-                    on_change={(value: number) => {perma_state.global_settings.brightness = value}}
+                    on_change={(value: number) => {
+                        perma_state.global_settings.brightness = value
+                    }}
                     step_fn={LINEAR}
                 />
             </div>
@@ -569,7 +601,7 @@ onMount(() => {
                 data-testid="add-emote"
                 placeholder="Paste emote"
                 class="border-t border-gray-600 max-w-full transition-colors duration-300 text-center p-1
-           {flash ? 'bg-blue-200' : ''}"
+           {flash ? "bg-blue-200" : ""}"
                 bind:value={emote_input}
                 oninput={handle_emote_submit}
             >
@@ -578,7 +610,7 @@ onMount(() => {
             <label
                 class="text-center"
                 for="sleep_timer"
-                >{remaining ? `Sleep timer active`: "Sleep timer (mins)"}</label
+                >{remaining ? `Sleep timer active` : "Sleep timer (mins)"}</label
             >
             <input
                 type="number"
@@ -587,8 +619,8 @@ onMount(() => {
                 step="5"
                 value={remaining}
                 oninput={(e) => {
-                set_sleep_timer(Number((e.target as HTMLInputElement).value))
-            }}
+                    set_sleep_timer(Number((e.target as HTMLInputElement).value))
+                }}
             >
         </div>
     {/if}
@@ -598,11 +630,13 @@ onMount(() => {
             class="border border-gray-600 rounded p-2 text-center"
             type="url"
             placeholder="New playlist item"
-            onfocus={() => show_dropdown = true}
-            onblur={() => {setTimeout(() => {
-                show_dropdown = false
-            }, 200);}}
-            oninput={() => show_dropdown = false}
+            onfocus={() => (show_dropdown = true)}
+            onblur={() => {
+                setTimeout(() => {
+                    show_dropdown = false
+                }, 200)
+            }}
+            oninput={() => (show_dropdown = false)}
             bind:value={input_new_playlist_url}
         >
         {#if show_dropdown && perma_state.global_settings.recent_playlist_items.length}
@@ -611,7 +645,9 @@ onMount(() => {
                     <button
                         type="button"
                         class="block w-full p-2 hover:bg-gray-100 cursor-pointer truncate text-left"
-                        onclick={() => {input_new_playlist_url = item.url}}
+                        onclick={() => {
+                            input_new_playlist_url = item.url
+                        }}
                         title={item.title || item.url}
                     >
                         {item.title || item.url}
@@ -635,7 +671,9 @@ onMount(() => {
                     class="select-none p-2"
                     for="select-playlist"
                     >Current playlist
-                    {temp_state.playlist.length > 0? `(${temp_state.playlist.length} item${temp_state.playlist.length > 1 ? "s" : ""})` : ""}</label
+                    {temp_state.playlist.length > 0
+                        ? `(${temp_state.playlist.length} item${temp_state.playlist.length > 1 ? "s" : ""})`
+                        : ""}</label
                 >
                 <select
                     class="border-t border-gray-600 p-1 flex-1"
@@ -647,6 +685,15 @@ onMount(() => {
                         <option value={item.url}>{item.video_title || item.url}</option>
                     {/each}
                 </select>
+                {#if playlist_remaining.visible}
+                    <div class="border-t border-gray-600 p-1 text-sm select-none">
+                        Remaining playtime: {format_time(playlist_remaining.remaining_sec)} @ {playlist_remaining.rate}x
+                        {#if playlist_remaining.unknown_count > 0}
+                            (+{playlist_remaining.unknown_count}
+                            unknown)
+                        {/if}
+                    </div>
+                {/if}
             </div>
         {:else}
             <span>Current playlist empty</span>
@@ -707,7 +754,7 @@ onMount(() => {
         <button
             title="Removes items from playlist that have been fully played or have progress marked as completed"
             class="border border-gray-600 rounded hover:bg-red-400 p-2 select-none"
-            class:hidden={!temp_state.playlist.some(item => item.played_complete)}
+            class:hidden={!temp_state.playlist.some((item) => item.played_complete)}
             onclick={remove_watched_items}
         >
             Remove watched items
