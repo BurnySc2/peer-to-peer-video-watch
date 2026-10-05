@@ -5,6 +5,7 @@ import type { JellyfinItem } from "$lib/types/jellyfin_item"
 import {
     extract_title,
     fetch_file_data,
+    fetch_folder_videos,
     fetch_season_data,
     get_me,
     update_progress_for_item_id,
@@ -176,11 +177,15 @@ describe("fetch_season_data test", () => {
                 url: "https://vodching.example/Items/item_id_one/Download?ApiKey=abc",
                 video_title: "",
                 subtitles_original_url: "",
+                played_progress: 0,
+                played_complete: false,
             } as TPlayListItem,
             {
                 url: "https://vodching.example/Items/item_id_two/Download?ApiKey=abc",
                 video_title: "",
                 subtitles_original_url: "",
+                played_progress: 0,
+                played_complete: false,
             } as TPlayListItem,
         ]
         vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, json: async () => mock_item } as Response)

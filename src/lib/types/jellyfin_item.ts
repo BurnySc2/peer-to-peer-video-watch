@@ -28,6 +28,7 @@ export interface JellyfinItem {
     ParentIndexNumber?: number
     ParentId?: string
     Type?: string
+    IsFolder?: boolean
     SeasonId?: string
     SeasonName?: string
     SeriesId?: string

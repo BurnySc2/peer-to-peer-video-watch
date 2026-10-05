@@ -9,7 +9,7 @@ import TrashIcon from "$lib/icons/TrashIcon.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { peer_count, type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import { PLAYBACK_SPEED_VALUES, solo_watch_set_player_progress } from "$lib/types/video_player"
-import { extract_title, fetch_file_data, fetch_season_data } from "$lib/utils/fetch_jelly_data"
+import { extract_title, fetch_file_data, fetch_folder_videos, fetch_season_data } from "$lib/utils/fetch_jelly_data"
 import { add_recent_playlist_item, update_title_playlist_items } from "$lib/utils/playlist"
 import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
@@ -177,12 +177,28 @@ async function add_jellyfin_season(_event: Event) {
         return
     }
     const series_id = metadata.SeriesId
-    const season_id = metadata.SeasonId ?? null
-    if (!series_id) {
-        // No data available, invalid url or is movie
+    let episodes: TPlayListItem[]
+    if (series_id) {
+        const season_id = metadata.SeasonId ?? null
+        episodes = await fetch_season_data(new_playlist_url, series_id, season_id)
+    } else {
+        let folder_id: string | null = null
+        const is_folder =
+            metadata.IsFolder === true ||
+            ["Folder", "BoxSet", "CollectionFolder", "Playlist", "PhotoAlbum"].includes(metadata.Type ?? "")
+        if (is_folder) {
+            folder_id = metadata.Id ?? null
+        } else if ((metadata.Type === "Video" || metadata.Type === "Movie") && metadata.ParentId) {
+            folder_id = metadata.ParentId ?? null
+        }
+        if (!folder_id) {
+            return
+        }
+        episodes = await fetch_folder_videos(new_playlist_url, folder_id)
+    }
+    if (!episodes || episodes.length === 0) {
         return
     }
-    const episodes = await fetch_season_data(new_playlist_url, series_id, season_id)
 
     // Update playlist and index locally
     const urls_in_playlist = new Set(temp_state.playlist.map((i) => i.url))
