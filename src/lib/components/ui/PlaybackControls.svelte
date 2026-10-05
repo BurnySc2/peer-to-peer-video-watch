@@ -277,6 +277,7 @@ function set_playlist_index() {
         return
     }
     temp_state.playlist_index = target_index
+    temp_state.video_duration = Number.NaN
     temp_state.video_current_time = 0
     temp_state.video_p2p_max_time = 0
     temp_state.video_state_paused = true
