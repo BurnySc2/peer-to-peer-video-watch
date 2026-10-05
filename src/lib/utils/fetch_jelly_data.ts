@@ -51,12 +51,18 @@ export async function fetch_season_data(
 ): Promise<TPlayListItem[]> {
     const [url_data, params] = get_search_params(url)
     const api_key = get_api_key(params)
-    const api_url = `${url_data.origin}/Shows/${series_id}/Episodes?sortBy=IndexNumber`
+    const api_url = `${url_data.origin}/Shows/${encodeURIComponent(series_id)}/Episodes?sortBy=IndexNumber`
 
     try {
         const res = await fetch(api_url, { headers: build_auth_headers(api_key) })
+        if (!res.ok) {
+            return []
+        }
         // TODO: Add types
         const data = await res.json()
+        if (!Array.isArray(data?.Items)) {
+            return []
+        }
         const data_mapped: TPlayListItem[] = data.Items.filter(
             (item: JellyfinItem) => season_id === null || season_id === item.SeasonId,
         ).map((item: JellyfinItem) => {
@@ -65,7 +71,43 @@ export async function fetch_season_data(
                 url: api_key ? `${base}?ApiKey=${api_key}` : base,
                 video_title: "",
                 subtitles_original_url: "",
-            } as TPlayListItem
+                played_progress: 0,
+                played_complete: false,
+            }
+        })
+        return data_mapped
+    } catch (err) {
+        console.warn("Metadata fetch failed:", err)
+    }
+    return []
+}
+
+export async function fetch_folder_videos(url: string, folder_id: string): Promise<TPlayListItem[]> {
+    const [url_data, params] = get_search_params(url)
+    const api_key = get_api_key(params)
+    const api_url = `${url_data.origin}/Items?ParentId=${encodeURIComponent(folder_id)}&Recursive=true&IncludeItemTypes=Movie,Video,Episode&Limit=500&SortBy=SortName&SortOrder=Ascending`
+
+    try {
+        const res = await fetch(api_url, { headers: build_auth_headers(api_key) })
+        if (!res.ok) {
+            return []
+        }
+        const data = await res.json()
+        if (!Array.isArray(data?.Items)) {
+            return []
+        }
+        if (data.TotalRecordCount != null && data.Items.length < data.TotalRecordCount) {
+            console.warn(`Folder truncated: got ${data.Items.length} of ${data.TotalRecordCount}, increase Limit`)
+        }
+        const data_mapped: TPlayListItem[] = data.Items.map((item: JellyfinItem) => {
+            const base = `${url_data.origin}/Items/${item.Id}/Download`
+            return {
+                url: api_key ? `${base}?ApiKey=${api_key}` : base,
+                video_title: "",
+                subtitles_original_url: "",
+                played_progress: 0,
+                played_complete: false,
+            }
         })
         return data_mapped
     } catch (err) {
