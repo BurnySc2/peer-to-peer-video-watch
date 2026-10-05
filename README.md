@@ -1,37 +1,69 @@
-# sv
+# Peer to Peer Video Player Platform
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A svelte based peer-to-peer video watching platform using PeerJS.
+Users share a direct video URL and synchronise playback in real time.
 
-## Creating a project
+Jellyfin URLs include additional integration features, such as expanding a single episode into an entire season playlist.
 
+![Main UI](screenshots/main_view.png)
+
+## Features
+
+- Synchronised video playback - play/pause/seek/playback speed
+- Peer status display (pictured)
+- Custom built video controls
+- Custom built subtitles parser, including size and offset controls
+- "Ready check" function (pictured) - check connected peers are ready before video plays
+- Emote system - send emoji reactions to connected peers
+- Autoplay
+- Sleep timer
+
+![Main UI](screenshots/ready_check.png)
+
+![Main UI](screenshots/peer_status.png)
+
+## Tech Stack
+
+- SvelteKit
+- TypeScript
+- PeerJS
+- TailwindCSS
+
+## Testing
+
+The project includes a combination of unit and end-to-end tests focused on critical functionality.
+
+Core logic is covered by Vite unit tests.
+
+End-to-end tests are covered by Playwright for key user flows:
+- Creating and joining a room
+- Playlist and video loading
+- Multi-peer synchronisation for video playback and playback controls
+- Emote adding, sending and receiving
+- Ready check
+- Autoplay
+- Host and member reconnecting
+
+Run tests:
 ```sh
-# create a new project using latest sveltekit template
-npx sv create my-app --template minimal --types ts --install npm
+npm run test
 ```
 
-## Developing
+## Installation
 
-Once you've created a project and installed dependencies with `npm install`, start a development server:
+Install with npm:
+```sh
+npm install
+```
 
+Run local version:
 ```sh
 npm run dev
 ```
 
-### Update typescript types
-
-There may be a problem keeping the types up to date with the backend api.
-
-While backend is running under, you can run
-
-```sh
-npx openapi-typescript http://localhost:8000/schema/openapi.json --output src/lib/types/api.ts
-```
-
-to update the types of the endpoints.
-
 ## Building
 
-To create a production version of your app:
+To create a production version:
 
 ```sh
 npm run build
@@ -39,4 +71,3 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
