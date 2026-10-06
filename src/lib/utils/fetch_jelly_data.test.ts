@@ -178,6 +178,7 @@ describe("fetch_season_data test", () => {
                 subtitles_original_url: "",
                 played_progress: 0,
                 played_complete: false,
+                duration_sec: null,
             } as TPlayListItem,
             {
                 url: "https://vodching.example/Items/item_id_two/Download?ApiKey=abc",
@@ -185,6 +186,7 @@ describe("fetch_season_data test", () => {
                 subtitles_original_url: "",
                 played_progress: 0,
                 played_complete: false,
+                duration_sec: null,
             } as TPlayListItem,
         ]
         vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, json: async () => mock_item } as Response)

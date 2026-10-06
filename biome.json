@@ -33,6 +33,7 @@
             "bracketSpacing": true,
             "jsxQuoteStyle": "double",
             "quoteProperties": "asNeeded",
+            "quoteStyle": "double",
             "semicolons": "asNeeded",
             "trailingCommas": "all"
         }
