@@ -31,7 +31,7 @@ const is_active = (path: string) => {
         >
         <a
             href={resolve('/rooms')}
-            class="transition-colors hover:text-gray-300 {is_active('/rooms') ? 'font-bold' : ''}"
+            class="transition-colors hover:text-gray-300 {is_active('/rooms') || is_active('/room') ? 'font-bold' : ''}"
             >Rooms</a
         >
     </div>
