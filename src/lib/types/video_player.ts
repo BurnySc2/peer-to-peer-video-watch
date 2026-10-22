@@ -5,14 +5,24 @@ export const PLAYBACK_SPEED_VALUES = [
 ]
 
 export function solo_watch_set_player_progress() {
-    // If watching solo, set the video element progress to the (previous) progress of the playlist item for resume watching
-    if (!peer_count()) {
-        const playlist_item = temp_state.playlist[temp_state.playlist_index]
-        if (playlist_item.played_progress <= 0) {
-            return
-        }
-        if (temp_state.video_element) {
-            temp_state.video_element.currentTime = playlist_item.played_progress
-        }
+    // Resume only on fresh load or index switch
+    if (peer_count()) {
+        return
+    }
+    const playlist_item = temp_state.playlist[temp_state.playlist_index]
+    if (!playlist_item) {
+        // Invalid playlist item
+        return
+    }
+    if (playlist_item.played_progress <= 0) {
+        // Invalid or no played_progress
+        return
+    }
+    if (1 < temp_state.video_current_time) {
+        // Video time already resumed
+        return
+    }
+    if (temp_state.video_element) {
+        temp_state.video_element.currentTime = playlist_item.played_progress
     }
 }
