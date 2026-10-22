@@ -1,6 +1,7 @@
 <script lang="ts">
 import Peer from "peerjs"
-import { onMount } from "svelte"
+import { onDestroy, onMount } from "svelte"
+import { beforeNavigate } from "$app/navigation"
 import { page } from "$app/state"
 import Navigation from "$lib/components/Navigation.svelte"
 import PlaybackControls from "$lib/components/ui/PlaybackControls.svelte"
@@ -16,6 +17,7 @@ import {
     p2p_send_video_seek_to,
     p2p_send_video_set_playback_rate,
 } from "$lib/peer_handling/peer_send.svelte"
+import { teardown_room } from "$lib/peer_handling/peer_teardown.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
 import { get_search_params } from "$lib/utils/url_utils"
 
@@ -28,6 +30,7 @@ let room_id = $derived.by(() => {
     return null
 })
 let peer = $state<Peer>()
+let timer_sync_time: number | undefined
 
 onMount(() => {
     // Handle peer id
@@ -48,10 +51,29 @@ onMount(() => {
     handle_peer_on_connection(peer)
 
     // Broadcast current time to keep peers in sync (this may adjust playback rate)
-    const timer_sync_time = setInterval(broadcast_current_time_for_sync, VIDEO_SYNC_INTERVAL_MS)
+    timer_sync_time = setInterval(broadcast_current_time_for_sync, VIDEO_SYNC_INTERVAL_MS)
     return () => {
+        if (timer_sync_time !== undefined) {
+            clearInterval(timer_sync_time)
+        }
+        teardown_room(peer)
+    }
+})
+
+onDestroy(() => {
+    // Teardown P2P state when leaving the room (idempotent with onMount cleanup)
+    if (timer_sync_time !== undefined) {
         clearInterval(timer_sync_time)
     }
+    teardown_room(peer)
+})
+
+beforeNavigate(() => {
+    // Clear sync timer and wipe P2P state before leaving the room
+    if (timer_sync_time !== undefined) {
+        clearInterval(timer_sync_time)
+    }
+    teardown_room(peer)
 })
 </script>
 
