@@ -7,7 +7,7 @@ import { APP_CONFIG } from "$lib/config"
 import PlayIcon from "$lib/icons/PlayIcon.svelte"
 import TrashIcon from "$lib/icons/TrashIcon.svelte"
 import { perma_state } from "$lib/persistent-storage.svelte"
-import { peer_count, type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
+import { type PlayListItem, peer_count, temp_state } from "$lib/temporary-storage.svelte"
 import { PLAYBACK_SPEED_VALUES, solo_watch_set_player_progress } from "$lib/types/video_player"
 import { extract_title, fetch_file_data, fetch_folder_videos, fetch_season_data } from "$lib/utils/fetch_jelly_data"
 import { add_recent_playlist_item, update_title_playlist_items } from "$lib/utils/playlist"
@@ -17,12 +17,12 @@ import type { Emote } from "./emotes"
 import PeerStatusRow from "./PeerStatusRow.svelte"
 
 interface MyProps {
-    send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
+    send_playlist_set?: (message: { playlist: PlayListItem[]; playlist_index: number }) => void
     send_video_set_playback_rate?: (message: { time: number; value: number }) => void
     send_subtitle_offset?: (message: { subtitle_offset: number }) => void
 }
 let {
-    send_playlist_set = (message: { playlist: TPlayListItem[]; playlist_index: number }) => {
+    send_playlist_set = (message: { playlist: PlayListItem[]; playlist_index: number }) => {
         console.log("Sending playlist_set", message)
     },
     send_video_set_playback_rate = (message: { time: number; value: number }) => {
@@ -177,7 +177,7 @@ async function add_jellyfin_season(_event: Event) {
         return
     }
     const series_id = metadata.SeriesId
-    let episodes: TPlayListItem[]
+    let episodes: PlayListItem[]
     if (series_id) {
         const season_id = metadata.SeasonId ?? null
         episodes = await fetch_season_data(new_playlist_url, series_id, season_id)

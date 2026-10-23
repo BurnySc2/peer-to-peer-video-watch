@@ -1,61 +1,42 @@
 import type { DataConnection } from "peerjs"
-import * as z from "zod"
+import type { PlayListItem } from "$lib/types/peer_to_peer"
+
+export type { PlayListItem }
 
 export type PeerConnectionMeta = {
     conn: DataConnection
     last_seen: number
 }
 
-// Zod
-export const PlayListItem = z.object({
-    url: z.string(),
-    video_title: z.string(),
-    subtitles_original_url: z.string(),
-    played_progress: z.number().min(0),
-    played_complete: z.boolean(),
-})
-const TempState = z.object({
-    emote_state: z.array(
-        z.object({
-            id: z.string(),
-            src: z.string(),
-        }),
-    ),
-    playlist: z.array(PlayListItem),
-    playlist_index: z.number(),
-    autoplay: z.boolean(),
-    ready_peers: z.array(z.string()),
-    peer_connections: z.record(z.string(), z.custom<PeerConnectionMeta>()),
-    subtitles: z.object({
-        enabled: z.boolean(),
-        active_url: z.string(),
-        offset: z.number(),
-    }),
-    is_muted: z.boolean(),
-    is_catching_up: z.boolean(),
-    is_sleeping: z.boolean(),
-    jellyfin_my_id: z.union([z.string(), z.null()]),
+export interface TempState {
+    emote_state: { id: string; src: string }[]
+    playlist: PlayListItem[]
+    playlist_index: number
+    autoplay: boolean
+    ready_peers: string[]
+    peer_connections: Record<string, PeerConnectionMeta>
+    subtitles: { enabled: boolean; active_url: string; offset: number }
+    is_muted: boolean
+    is_catching_up: boolean
+    is_sleeping: boolean
+    jellyfin_my_id: string | null
     // May be different when catching up to other clients
-    video_playback_speed: z.number(),
+    video_playback_speed: number
     // Use 'video_target_playback_speed' as goal, but use 'video_playback_speed' to catch up
-    video_target_playback_speed: z.number(),
+    video_target_playback_speed: number
     // Max time of any connected client. If difference to current time is larger than threshold, try to catch up
-    video_p2p_max_time: z.number(),
+    video_p2p_max_time: number
     // Video player data
-    video_current_time: z.number(),
-    video_duration: z.number(),
-    video_state_paused: z.boolean(),
+    video_current_time: number
+    video_duration: number
+    video_state_paused: boolean
     // In sync with "oncanplay" event, will be false on load and when seeking
-    video_can_play: z.boolean(),
-    video_element: z.custom<HTMLVideoElement | null>(),
-    video_title: z.string(),
-})
+    video_can_play: boolean
+    video_element: HTMLVideoElement | null
+    video_title: string
+}
 
-// Types
-export type TTempState = z.infer<typeof TempState>
-export type TPlayListItem = z.infer<typeof PlayListItem>
-
-export const temp_state: TTempState = $state({
+export const temp_state: TempState = $state({
     emote_state: [],
     playlist: [],
     playlist_index: -1,
