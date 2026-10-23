@@ -1,4 +1,4 @@
-import { type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
+import { type PlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
 import type { JellyfinUser } from "$lib/types/jellyfin_user"
 import { build_auth_headers, extract_jellyfin_item_id, get_api_key, get_search_params, is_valid_url } from "./url_utils"
@@ -48,7 +48,7 @@ export async function fetch_season_data(
     url: string,
     series_id: string,
     season_id: string | null,
-): Promise<TPlayListItem[]> {
+): Promise<PlayListItem[]> {
     const [url_data, params] = get_search_params(url)
     const api_key = get_api_key(params)
     const api_url = `${url_data.origin}/Shows/${encodeURIComponent(series_id)}/Episodes?sortBy=IndexNumber`
@@ -63,7 +63,7 @@ export async function fetch_season_data(
         if (!Array.isArray(data?.Items)) {
             return []
         }
-        const data_mapped: TPlayListItem[] = data.Items.filter(
+        const data_mapped: PlayListItem[] = data.Items.filter(
             (item: JellyfinItem) => season_id === null || season_id === item.SeasonId,
         ).map((item: JellyfinItem) => {
             const base = `${url_data.origin}/Items/${item.Id}/Download`
@@ -82,7 +82,7 @@ export async function fetch_season_data(
     return []
 }
 
-export async function fetch_folder_videos(url: string, folder_id: string): Promise<TPlayListItem[]> {
+export async function fetch_folder_videos(url: string, folder_id: string): Promise<PlayListItem[]> {
     const [url_data, params] = get_search_params(url)
     const api_key = get_api_key(params)
     const api_url = `${url_data.origin}/Items?ParentId=${encodeURIComponent(folder_id)}&Recursive=true&IncludeItemTypes=Movie,Video,Episode&Limit=500&SortBy=SortName&SortOrder=Ascending`
@@ -99,7 +99,7 @@ export async function fetch_folder_videos(url: string, folder_id: string): Promi
         if (data.TotalRecordCount != null && data.Items.length < data.TotalRecordCount) {
             console.warn(`Folder truncated: got ${data.Items.length} of ${data.TotalRecordCount}, increase Limit`)
         }
-        const data_mapped: TPlayListItem[] = data.Items.map((item: JellyfinItem) => {
+        const data_mapped: PlayListItem[] = data.Items.map((item: JellyfinItem) => {
             const base = `${url_data.origin}/Items/${item.Id}/Download`
             return {
                 url: api_key ? `${base}?ApiKey=${api_key}` : base,

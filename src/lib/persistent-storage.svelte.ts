@@ -48,12 +48,6 @@ export type TGlobalSettings = z.infer<typeof GlobalSettings>
 export type TRoomData = z.infer<typeof RoomData>
 export type TPermaState = z.infer<typeof PermaState>
 
-export const PlayListItem = z.object({
-    url: z.string(),
-    video_title: z.string(),
-    subtitles_original_url: z.string(),
-})
-
 // Permanent settings here
 // TODO: Room info - playlist, current index, current video time and playback speed
 

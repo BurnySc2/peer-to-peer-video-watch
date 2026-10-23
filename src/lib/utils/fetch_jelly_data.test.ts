@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { type TPlayListItem, temp_state } from "$lib/temporary-storage.svelte"
+import { type PlayListItem, temp_state } from "$lib/temporary-storage.svelte"
 import type { JellyfinItem } from "$lib/types/jellyfin_item"
 // import * as api from "./fetch_jelly_data"
 import {
@@ -170,7 +170,7 @@ describe("fetch_season_data test", () => {
         ],
     }
 
-    it("returns only TPlaylistItems in given SeasonId, for a series, when fetch succeeds", async () => {
+    it("returns only PlayListItems in given SeasonId, for a series, when fetch succeeds", async () => {
         const mock_result = [
             {
                 url: "https://vodching.example/Items/item_id_one/Download?ApiKey=abc",
@@ -178,14 +178,14 @@ describe("fetch_season_data test", () => {
                 subtitles_original_url: "",
                 played_progress: 0,
                 played_complete: false,
-            } as TPlayListItem,
+            } as PlayListItem,
             {
                 url: "https://vodching.example/Items/item_id_two/Download?ApiKey=abc",
                 video_title: "",
                 subtitles_original_url: "",
                 played_progress: 0,
                 played_complete: false,
-            } as TPlayListItem,
+            } as PlayListItem,
         ]
         vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, json: async () => mock_item } as Response)
 
@@ -196,7 +196,7 @@ describe("fetch_season_data test", () => {
         })
     })
 
-    it("returns all TPlaylistItems for series, when season_id is null", async () => {
+    it("returns all PlayListItems for series, when season_id is null", async () => {
         vi.spyOn(globalThis, "fetch").mockResolvedValue({ ok: true, json: async () => mock_item } as Response)
         const result = await fetch_season_data(url, "series_id", null)
         expect(result.length).toBe(mock_item.Items.length)
