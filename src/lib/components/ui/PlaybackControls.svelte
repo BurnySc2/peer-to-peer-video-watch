@@ -568,8 +568,8 @@ onMount(() => {
                 id="add_emote"
                 data-testid="add-emote"
                 placeholder="Paste emote"
-                class="border-t border-gray-600 max-w-full transition-colors duration-300 text-center p-1
-           {flash ? 'bg-blue-200' : ''}"
+                class="border-t border-gray-600 max-w-full transition-colors duration-300 text-center p-1"
+                class:bg-blue-200={flash}
                 bind:value={emote_input}
                 oninput={handle_emote_submit}
             >

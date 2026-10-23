@@ -11,27 +11,32 @@ const is_active = (path: string) => {
     <div class="container mx-auto flex justify-center space-x-8">
         <a
             href={resolve('/')}
-            class="transition-colors hover:text-gray-300 {is_active('/') ? 'font-bold' : ''}"
+            class="transition-colors hover:text-gray-300"
+            class:font-bold={is_active('/')}
             >Home</a
         >
         <a
             href={resolve('/peer-to-peer')}
-            class="transition-colors hover:text-gray-300 {is_active('/peer-to-peer') ? 'font-bold' : ''}"
+            class="transition-colors hover:text-gray-300"
+            class:font-bold={is_active('/peer-to-peer')}
             >Peer-to-peer</a
         >
         <a
             href={resolve('/slider')}
-            class="transition-colors hover:text-gray-300 {is_active('/slider') ? 'font-bold' : ''}"
+            class="transition-colors hover:text-gray-300"
+            class:font-bold={is_active('/slider')}
             >Slider</a
         >
         <a
             href={resolve('/video-player')}
-            class="transition-colors hover:text-gray-300 {is_active('/video-player') ? 'font-bold' : ''}"
+            class="transition-colors hover:text-gray-300"
+            class:font-bold={is_active('/video-player')}
             >Video player</a
         >
         <a
             href={resolve('/rooms')}
-            class="transition-colors hover:text-gray-300 {is_active('/rooms') || is_active('/room') ? 'font-bold' : ''}"
+            class="transition-colors hover:text-gray-300"
+            class:font-bold={is_active('/rooms') || is_active('/room')}
             >Rooms</a
         >
     </div>

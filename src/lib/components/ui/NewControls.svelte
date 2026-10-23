@@ -216,7 +216,9 @@ onMount(() => {
         ({current_remaining_time})
     </div>
     <button
-        class={`ml-auto ${temp_state.subtitles.enabled ? "text-blue-400": "text-white"} hover:scale-130 transition`}
+        class="ml-auto hover:scale-130 transition"
+        class:text-blue-400={temp_state.subtitles.enabled}
+        class:text-white={!temp_state.subtitles.enabled}
         onclick={toggle_custom_subtitles}
         aria-label="Closed captions"
         data-testid="closed-captions"

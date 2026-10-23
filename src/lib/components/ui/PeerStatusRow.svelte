@@ -15,10 +15,9 @@ let status = $derived(age < 6 ? "green" : age < 11 ? "orange" : "red")
     <span title={peer_id}>{peer_id.slice(-4)}</span>
     <div
         title={`Last seen ${age}s ago`}
-        class={`w-2 h-2 rounded-full ${
-            status === "green" ? "bg-green-500" :
-            status === "orange" ? "bg-orange-500" :
-            "bg-red-500"
-        }`}
+        class="w-2 h-2 rounded-full"
+        class:bg-green-500={status === "green"}
+        class:bg-orange-500={status === "orange"}
+        class:bg-red-500={status === "red"}
     ></div>
 </div>
