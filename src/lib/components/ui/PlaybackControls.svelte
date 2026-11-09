@@ -669,7 +669,7 @@ const playlist_remaining = $derived.by(() => {
         {#if temp_state.playlist.length}
             <div class="flex flex-col h-full">
                 <label
-                    class="select-none p-2"
+                    class="select-none px-2"
                     for="select-playlist"
                     >Current playlist
                     {temp_state.playlist.length > 0
@@ -687,7 +687,7 @@ const playlist_remaining = $derived.by(() => {
                     {/each}
                 </select>
                 {#if playlist_remaining.visible}
-                    <div class="border-t border-gray-600 p-1 text-sm select-none">
+                    <div class="border-t border-gray-600 px-1 text-sm select-none">
                         Remaining playtime: {format_time(playlist_remaining.remaining_sec)} @ {playlist_remaining.rate}x
                         {#if playlist_remaining.unknown_count > 0}
                             (+{playlist_remaining.unknown_count}
