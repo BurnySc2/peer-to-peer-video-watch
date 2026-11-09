@@ -44,6 +44,16 @@ export async function fetch_file_data(url: string) {
     return null
 }
 
+function extract_duration_sec(item: JellyfinItem): number | null {
+    const ticks =
+        (item as JellyfinItem & { RunTimeTicks?: unknown }).RunTimeTicks ?? item.MediaSources?.[0]?.RunTimeTicks
+    if (typeof ticks !== "number" || !Number.isFinite(ticks) || ticks <= 0) {
+        return null
+    }
+    const seconds = ticks / 10_000_000
+    return Number.isFinite(seconds) && seconds > 0 ? seconds : null
+}
+
 export async function fetch_season_data(
     url: string,
     series_id: string,
@@ -73,6 +83,7 @@ export async function fetch_season_data(
                 subtitles_original_url: "",
                 played_progress: 0,
                 played_complete: false,
+                duration_sec: extract_duration_sec(item),
             }
         })
         return data_mapped
@@ -107,6 +118,7 @@ export async function fetch_folder_videos(url: string, folder_id: string): Promi
                 subtitles_original_url: "",
                 played_progress: 0,
                 played_complete: false,
+                duration_sec: extract_duration_sec(item),
             }
         })
         return data_mapped

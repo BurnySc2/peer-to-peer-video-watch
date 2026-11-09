@@ -13,6 +13,7 @@ export const PlayListItem = z.object({
     subtitles_original_url: z.string(),
     played_progress: z.number().min(0),
     played_complete: z.boolean(),
+    duration_sec: z.number().min(0).nullish(),
 })
 const TempState = z.object({
     emote_state: z.array(

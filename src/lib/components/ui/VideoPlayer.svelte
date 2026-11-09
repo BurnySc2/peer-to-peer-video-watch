@@ -147,6 +147,7 @@ function handle_video_end() {
 
     // Autoplay below
     temp_state.playlist_index += 1
+    temp_state.video_duration = Number.NaN
     p2p_send_playlist_set({ playlist: temp_state.playlist, playlist_index: temp_state.playlist_index })
 }
 
