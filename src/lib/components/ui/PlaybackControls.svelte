@@ -37,6 +37,7 @@ let {
 // Input items
 let input_new_playlist_url = $state("")
 let select_playlist_items = $state<string[]>([])
+let current_playing_url = $derived(temp_state.playlist[temp_state.playlist_index]?.url ?? null)
 
 async function fetch_metadata(jellyfin_item_url: string): Promise<{
     video_title: string | null
@@ -683,7 +684,14 @@ const playlist_remaining = $derived.by(() => {
                     bind:value={select_playlist_items}
                 >
                     {#each temp_state.playlist as item}
-                        <option value={item.url}>{item.video_title || item.url}</option>
+                        {@const is_now_playing =
+                            current_playing_url !== null && item.url === current_playing_url}
+                        <option
+                            value={item.url}
+                            class:bg-emerald-700={is_now_playing}
+                        >
+                            {item.video_title || item.url}
+                        </option>
                     {/each}
                 </select>
                 {#if playlist_remaining.visible}
