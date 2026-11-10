@@ -12,6 +12,7 @@ import { PLAYBACK_SPEED_VALUES, solo_watch_set_player_progress } from "$lib/type
 import { extract_title, fetch_file_data, fetch_folder_videos, fetch_season_data } from "$lib/utils/fetch_jelly_data"
 import { format_time } from "$lib/utils/format_time"
 import { add_recent_playlist_item, calc_playlist_remaining, update_title_playlist_items } from "$lib/utils/playlist"
+import { remove_watched_playlist_items } from "$lib/utils/playlist_remove"
 import { get_subs_url } from "$lib/utils/subtitles_fetching"
 import { is_valid_url } from "$lib/utils/url_utils"
 import type { Emote } from "./emotes"
@@ -239,17 +240,9 @@ async function add_jellyfin_season(_event: Event) {
 }
 
 function remove_watched_items(_event: Event) {
-    // Removes all playlist items that have been marked as complete in jellyfin
-    let deleted_items_before_index = 0
-    const new_playlist = temp_state.playlist.filter((playlist_item, index) => {
-        if (index < temp_state.playlist_index) {
-            deleted_items_before_index += 1
-        }
-        return !playlist_item.played_complete
-    })
-
-    temp_state.playlist = new_playlist
-    temp_state.playlist_index = temp_state.playlist_index - deleted_items_before_index
+    const result = remove_watched_playlist_items(temp_state.playlist, temp_state.playlist_index)
+    temp_state.playlist = result.playlist
+    temp_state.playlist_index = result.playlist_index
 
     send_playlist_set({
         playlist: temp_state.playlist,
