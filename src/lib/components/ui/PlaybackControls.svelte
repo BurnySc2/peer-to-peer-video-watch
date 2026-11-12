@@ -689,6 +689,7 @@ const playlist_remaining = $derived.by(() => {
                         <option
                             value={item.url}
                             class:bg-emerald-700={is_now_playing}
+                            class:text-white={is_now_playing}
                         >
                             {item.video_title || item.url}
                         </option>
