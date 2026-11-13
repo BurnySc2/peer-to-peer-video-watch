@@ -193,7 +193,7 @@ onMount(() => {
     <!-- svelte-ignore a11y_no_static_element_interactions: tooltip-only hover for seek bar, keyboard users use inner slider input -->
     <!-- biome-ignore lint/a11y/noStaticElementInteractions: tooltip-only hover for seek bar, keyboard users use inner slider input -->
     <div
-        class="relative w-full mx-8"
+        class="relative w-full"
         onmousemove={handle_seek_hover}
         onmouseleave={() => seek_hover_value = null}
     >
