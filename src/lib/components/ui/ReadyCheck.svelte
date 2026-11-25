@@ -16,10 +16,16 @@ let {
 }: Props = $props()
 
 function local_set_play() {
+    temp_state.is_sleeping = false
     if (temp_state.video_state_paused) {
         temp_state.video_state_paused = false
         send_video_play(temp_state.video_current_time)
     }
+}
+
+function handle_wake_and_ready() {
+    temp_state.is_sleeping = false
+    p2p_send_ready()
 }
 
 let ready_check_active = $state(false)
@@ -77,7 +83,7 @@ $effect(() => {
 
 {#if ready_check_active}
     <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+        class="absolute z-30 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
          w-56 bg-white text-black rounded-2xl shadow-2xl
          border border-gray-200 p-5 flex flex-col gap-4"
     >
@@ -120,7 +126,7 @@ $effect(() => {
                 </div>
             {:else}
                 <button
-                    onclick={p2p_send_ready}
+                    onclick={handle_wake_and_ready}
                     data-testid="send-ready"
                     class="flex-1 py-2 rounded-lg bg-green-600
         font-semibold text-white hover:bg-green-700 active:bg-green-800
