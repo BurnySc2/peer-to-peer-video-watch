@@ -21,7 +21,6 @@ interface MyProps {
     send_playlist_set?: (message: { playlist: TPlayListItem[]; playlist_index: number }) => void
     send_video_set_playback_rate?: (message: { time: number; value: number }) => void
     send_subtitle_offset?: (message: { subtitle_offset: number }) => void
-    send_video_pause?: (time: number) => void
 }
 let {
     send_playlist_set = (message: { playlist: TPlayListItem[]; playlist_index: number }) => {
@@ -32,9 +31,6 @@ let {
     },
     send_subtitle_offset = (message: { subtitle_offset: number }) => {
         console.log("Sending subtitle_offset", message.subtitle_offset)
-    },
-    send_video_pause = (time: number) => {
-        console.log("Sending video_pause", time)
     },
 }: MyProps = $props()
 
@@ -388,7 +384,7 @@ function toggle_mute() {
 
 let remaining = $state(0)
 let timer: ReturnType<typeof setInterval> | undefined
-// Sleep timer - broadcasts pause to peers
+// Sleep timer - does not broadcast pause
 function set_sleep_timer(sleep_time: number) {
     if (timer) {
         clearInterval(timer)
@@ -411,7 +407,6 @@ function set_sleep_timer(sleep_time: number) {
                 // Client is sleeping, don't ask peers for readycheck for next video
                 temp_state.autoplay = false
             }
-            send_video_pause(temp_state.video_current_time)
             console.log("Sleep timer triggered")
             return
         }
