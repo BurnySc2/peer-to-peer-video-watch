@@ -16,10 +16,16 @@ let {
 }: Props = $props()
 
 function local_set_play() {
+    temp_state.is_sleeping = false
     if (temp_state.video_state_paused) {
         temp_state.video_state_paused = false
         send_video_play(temp_state.video_current_time)
     }
+}
+
+function handle_wake_and_ready() {
+    temp_state.is_sleeping = false
+    p2p_send_ready()
 }
 
 let ready_check_active = $state(false)
@@ -111,14 +117,7 @@ $effect(() => {
         </div>
 
         <div class="flex">
-            {#if temp_state.is_sleeping}
-                <div
-                    class="flex-1 p-2 rounded-lg bg-gray-400
-        font-semibold text-white text-center"
-                >
-                    Sleeping...
-                </div>
-            {:else if temp_state.ready_peers.includes(perma_state.global_settings.peer_id)}
+            {#if temp_state.ready_peers.includes(perma_state.global_settings.peer_id)}
                 <div
                     class="flex-1 p-2 rounded-lg bg-green-800
         font-semibold text-white text-center"
@@ -127,7 +126,7 @@ $effect(() => {
                 </div>
             {:else}
                 <button
-                    onclick={p2p_send_ready}
+                    onclick={handle_wake_and_ready}
                     data-testid="send-ready"
                     class="flex-1 py-2 rounded-lg bg-green-600
         font-semibold text-white hover:bg-green-700 active:bg-green-800
