@@ -65,6 +65,7 @@ onMount(() => {
         send_playlist_set={p2p_send_playlist_set}
         send_video_set_playback_rate={p2p_send_video_set_playback_rate}
         send_subtitle_offset={p2p_send_subtitle_offset}
+        send_video_pause={p2p_send_video_pause}
     />
     <Navigation />
 </div>

@@ -77,7 +77,7 @@ $effect(() => {
 
 {#if ready_check_active}
     <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+        class="absolute z-30 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
          w-56 bg-white text-black rounded-2xl shadow-2xl
          border border-gray-200 p-5 flex flex-col gap-4"
     >
@@ -111,7 +111,14 @@ $effect(() => {
         </div>
 
         <div class="flex">
-            {#if temp_state.ready_peers.includes(perma_state.global_settings.peer_id)}
+            {#if temp_state.is_sleeping}
+                <div
+                    class="flex-1 p-2 rounded-lg bg-gray-400
+        font-semibold text-white text-center"
+                >
+                    Sleeping...
+                </div>
+            {:else if temp_state.ready_peers.includes(perma_state.global_settings.peer_id)}
                 <div
                     class="flex-1 p-2 rounded-lg bg-green-800
         font-semibold text-white text-center"
